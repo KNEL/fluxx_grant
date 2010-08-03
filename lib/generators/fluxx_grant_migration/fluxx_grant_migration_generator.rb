@@ -19,7 +19,29 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
   end
   
   def create_geo_tables
-    handle_migration 'create_geo_countries.rb', 'db/migrate/fluxx_crm_create_geo_countries.rb'
+    handle_migration 'create_programs.rb', 'db/migrate/fluxx_grant_create_programs.rb'
+    sleep 1
+    handle_migration 'create_funding_sources.rb', 'db/migrate/fluxx_grant_create_funding_sources.rb'
+    sleep 1
+    handle_migration 'create_initiatives.rb', 'db/migrate/fluxx_grant_create_initiatives.rb'
+    sleep 1
+    handle_migration 'create_letter_templates.rb', 'db/migrate/fluxx_grant_create_letter_templates.rb'
+    sleep 1
+    handle_migration 'create_requests.rb', 'db/migrate/fluxx_grant_create_requests.rb'
+    sleep 1
+    handle_migration 'create_request_letters.rb', 'db/migrate/fluxx_grant_create_request_letters.rb'
+    sleep 1
+    handle_migration 'create_request_organizations.rb', 'db/migrate/fluxx_grant_create_request_organizations.rb'
+    sleep 1
+    handle_migration 'create_request_reports.rb', 'db/migrate/fluxx_grant_create_request_reports.rb'
+    sleep 1
+    handle_migration 'create_request_transactions.rb', 'db/migrate/fluxx_grant_create_request_transactions.rb'
+    sleep 1
+    handle_migration 'create_request_funding_sources.rb', 'db/migrate/fluxx_grant_create_request_funding_sources.rb'
+    sleep 1
+    handle_migration 'create_request_users.rb', 'db/migrate/fluxx_grant_create_request_users.rb'
+    sleep 1
+    handle_migration 'create_request_geo_states.rb', 'db/migrate/fluxx_grant_create_request_geo_states.rb'
     sleep 1
   end
   

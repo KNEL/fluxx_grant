@@ -11,6 +11,7 @@ gem 'haml', '>= 3'
 # gem "will_paginate-3.0"
 gem "will_paginate", :git => "http://github.com/mislav/will_paginate.git", :branch => "rails3"
 gem "fluxx_engine", '>= 0.0.5', :path => "../fluxx_engine"
+gem "fluxx_crm", '>= 0.0.3', :path => "../fluxx_crm", :require => 'fluxx_crm'
 gem 'jsmin', '>= 1.0.1'
 gem 'thin', '>= 1.2.7'
 gem 'machinist', '>=1.0.6'
