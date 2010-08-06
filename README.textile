@@ -7,4 +7,5 @@ Generate migrations and public
   r g fluxx_crm_migration
   r g fluxx_crm_public
   r g fluxx_grant_migration
+  r g fluxx_grant_public
 

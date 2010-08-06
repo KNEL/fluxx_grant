@@ -19,6 +19,8 @@ gem 'faker', '>=0.3.1'
 gem 'rcov'
 #gem 'thinking-sphinx', '2.0.0.rc1', :require => 'thinking_sphinx'
 gem "thinking-sphinx", :git => "http://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
+gem 'paperclip'
+gem 'devise', '1.1.1'
 
 gem "acts_as_audited", :git => "git://github.com/ehansen486/acts_as_audited.git"
 #gem "acts_as_audited", :path => "../acts_as_audited"

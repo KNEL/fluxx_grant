@@ -5,7 +5,7 @@ class FluxxGrantCreateRequests < ActiveRecord::Migration
       t.integer :created_by_id, :updated_by_id, :null => true, :limit => 12
       t.integer :program_organization_id, :fiscal_organization_id, :program_id, :initiative_id, :null => true, :limit => 12
 
-      t.boolean :granted, :renewal_grant
+      t.boolean :granted, :renewal_grant, :funding_general_operating_support, :board_authorization_required
       
       t.datetime :request_received_at, :grant_approved_at, :grant_agreement_at, :grant_begins_at, :grant_closed_at, :null => true
       t.integer :amount_requested, :amount_recommended, :null => true, :limit => 12
@@ -13,6 +13,24 @@ class FluxxGrantCreateRequests < ActiveRecord::Migration
       t.string :project_summary
       t.string :base_request_id
       
+      t.string :fip_title, :fip_consultant_name
+      t.datetime :fip_projected_end_at
+
+      t.datetime :fip_projected_end_at
+      
+      t.datetime :ierf_start_at
+      t.datetime :ierf_proposed_end_at
+      t.datetime :ierf_budget_end_at
+      t.text :ierf_goals
+      t.text :ierf_tactics
+      t.text :ierf_probability
+      t.text :ierf_due_diligence_overlap
+      t.text :ierf_due_diligence_risks
+      t.text :ierf_due_diligence_noc4_work
+      t.text :ierf_due_diligence_board_review
+      t.integer :funds_expended_amount
+      t.datetime :funds_expended_at
+
       t.string :type
       t.string :state
       t.integer :locked_by_id, :null => true, :limit => 12

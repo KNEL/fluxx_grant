@@ -375,30 +375,47 @@ ActiveRecord::Schema.define(:version => 20100803152045) do
   create_table "requests", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "created_by_id",           :limit => 12
-    t.integer  "updated_by_id",           :limit => 12
-    t.integer  "program_organization_id", :limit => 12
-    t.integer  "fiscal_organization_id",  :limit => 12
-    t.integer  "program_id",              :limit => 12
-    t.integer  "initiative_id",           :limit => 12
+    t.integer  "created_by_id",                     :limit => 12
+    t.integer  "updated_by_id",                     :limit => 12
+    t.integer  "program_organization_id",           :limit => 12
+    t.integer  "fiscal_organization_id",            :limit => 12
+    t.integer  "program_id",                        :limit => 12
+    t.integer  "initiative_id",                     :limit => 12
     t.boolean  "granted"
     t.boolean  "renewal_grant"
+    t.boolean  "funding_general_operating_support"
+    t.boolean  "board_authorization_required"
     t.datetime "request_received_at"
     t.datetime "grant_approved_at"
     t.datetime "grant_agreement_at"
     t.datetime "grant_begins_at"
     t.datetime "grant_closed_at"
-    t.integer  "amount_requested",        :limit => 12
-    t.integer  "amount_recommended",      :limit => 12
-    t.integer  "duration_in_months",      :limit => 12
+    t.integer  "amount_requested",                  :limit => 12
+    t.integer  "amount_recommended",                :limit => 12
+    t.integer  "duration_in_months",                :limit => 12
     t.string   "project_summary"
     t.string   "base_request_id"
+    t.string   "fip_title"
+    t.string   "fip_consultant_name"
+    t.datetime "fip_projected_end_at"
+    t.datetime "ierf_start_at"
+    t.datetime "ierf_proposed_end_at"
+    t.datetime "ierf_budget_end_at"
+    t.text     "ierf_goals"
+    t.text     "ierf_tactics"
+    t.text     "ierf_probability"
+    t.text     "ierf_due_diligence_overlap"
+    t.text     "ierf_due_diligence_risks"
+    t.text     "ierf_due_diligence_noc4_work"
+    t.text     "ierf_due_diligence_board_review"
+    t.integer  "funds_expended_amount"
+    t.datetime "funds_expended_at"
     t.string   "type"
     t.string   "state"
-    t.integer  "locked_by_id",            :limit => 12
+    t.integer  "locked_by_id",                      :limit => 12
     t.datetime "locked_until"
     t.datetime "deleted_at"
-    t.boolean  "delta",                                 :default => true, :null => false
+    t.boolean  "delta",                                           :default => true, :null => false
   end
 
   add_index "requests", ["fiscal_organization_id"], :name => "index_requests_on_fiscal_organization_id"
