@@ -9,6 +9,10 @@ module FluxxProgram
     base.belongs_to :parent_program, :class_name => 'Program'
     base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_program_id
     
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

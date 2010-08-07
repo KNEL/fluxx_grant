@@ -7,6 +7,10 @@ module FluxxInitiative
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
     
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+    
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

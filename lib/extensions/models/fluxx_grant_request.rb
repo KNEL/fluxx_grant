@@ -5,9 +5,9 @@ module FluxxGrantRequest
     base.validates_presence_of     :program_organization
     base.validates_presence_of     :program
     base.validates_presence_of     :project_summary
-    base.validates_presence_of     :duration_in_months, :if => :state_after_pre_recommended_chain
+    base.validates_presence_of     :duration_in_months
     base.validates_presence_of     :amount_requested
-    base.validates_presence_of     :amount_recommended, :if => :state_after_pre_recommended_chain
+    base.validates_presence_of     :amount_recommended
     base.validates_associated      :program_organization
     base.validates_associated      :program
 

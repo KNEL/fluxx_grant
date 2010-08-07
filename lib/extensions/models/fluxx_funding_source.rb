@@ -4,6 +4,10 @@ module FluxxFundingSource
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :modified_by, :class_name => 'User', :foreign_key => 'modified_by_id'
     base.acts_as_audited :protect => true
+
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
     
     base.extend(ModelClassMethods)
     base.class_eval do

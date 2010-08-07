@@ -75,8 +75,8 @@ GrantRequest.blueprint do
   amount_requested 45000
   amount_recommended 45001
   duration_in_months 12
-  program Program.make
-  program_organization Organization.make
+  program
+  program_organization
 end
 
 FipRequest.blueprint do
@@ -88,7 +88,7 @@ FipRequest.blueprint do
   amount_requested 45000
   amount_recommended 45001
   duration_in_months 12
-  program Program.make
+  program
 end
 
 Organization.blueprint do
@@ -107,13 +107,13 @@ UserOrganization.blueprint do
 end
 
 RequestReport.blueprint do
-  request GrantRequest.make
+  request {GrantRequest.make}
   report_type RequestReport.interim_budget_type_name
 end
 
 RequestFundingSource.blueprint do
   funding_source FundingSource.make
-  request GrantRequest.make
+  request {GrantRequest.make}
 end
 
 RequestTransaction.blueprint do
@@ -125,7 +125,7 @@ LetterTemplate.blueprint do
 end
 
 RequestLetter.blueprint do
-  request GrantRequest.make
+  request {GrantRequest.make}
   letter do
     bp_attrs[:ga_letter_template].letter
   end
@@ -147,11 +147,49 @@ end
 GroupMember.blueprint do
 end
 
+def setup_letter_templates
+  unless bp_attrs[:award_letter_template]
+    LetterTemplate.delete_all
+    bp_attrs[:award_letter_template] = LetterTemplate.make :letter_type => 'al_public_charity', :letter => Sham.sentence, :description => 'Award Letter Public Charity', :category => 'Award', :filename => 'al_public_charity'
+    bp_attrs[:ga_letter_template] = LetterTemplate.make :letter_type => 'ga_public_charity', :letter => Sham.sentence, :description => 'Grant Agreement Public Charity', :category => 'Grant Agreement', :filename => 'ga_public_charity'
+  end
+end
+
+def setup_org_tax_classes
+  unless bp_attrs[:executed_setup_org_tax_classes]
+    MultiElementValue.delete_all
+    bp_attrs[:executed_setup_org_tax_classes] = true
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => '509a1'
+    bp_attrs[:non_er_tax_status] = MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => '509a2'
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => '509a3'
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => 'Private Foundation'
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => '501c4'
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => '501c6'
+    MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => 'non-US'
+    bp_attrs[:er_tax_status] = MultiElementValue.make :multi_element_group_id => bp_attrs[:tax_class_group].id, :value => 'Non-Exempt'
+    Organization.add_multi_elements
+  end
+end
 
 def setup_multi_element_groups
   unless bp_attrs[:executed_setup_multi_element_groups]
     bp_attrs[:executed_setup_multi_element_groups] = true
     MultiElementValue.delete_all
     MultiElementGroup.delete_all
+    bp_attrs[:test_program] = Program.make
+    
+    bp_attrs[:tax_class_group] = MultiElementGroup.make :name => 'tax_classes', :description => 'TaxClass', :target_class_name => 'Organization'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'expenditure_types', :description => 'ExpenditureType'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'initiative_types', :description => 'InitiativeType'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'grant_types', :description => 'RequestGrantType'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'constituents', :description => 'Constituents'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'usa_means', :description => 'MeansUsa'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'china_means', :description => 'MeansChina'
+    MultiElementGroup.make :target_class_name => 'RequestFundingSource', :name => 'authorities', :description => 'BoardAuthority'
+    MultiElementGroup.make :target_class_name => 'User', :name => 'user_salutations', :description => 'UserSalutation'
+    MultiElementGroup.make :target_class_name => 'Request', :name => 'fip_types', :description => 'Fip Types'
+    Request.add_multi_elements
+    RequestFundingSource.add_multi_elements
+    User.add_multi_elements
   end
 end

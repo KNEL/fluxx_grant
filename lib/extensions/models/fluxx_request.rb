@@ -1,6 +1,5 @@
 module FluxxRequest
   def self.included(base)
-    # specify_utc_time_attributes [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_start_at, :ierf_proposed_end_at, :ierf_budget_end_at] 
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
     base.belongs_to :fiscal_organization, :class_name => 'Organization', :foreign_key => :fiscal_organization_id
     base.has_many :request_geo_states
@@ -19,9 +18,7 @@ module FluxxRequest
     base.belongs_to :initiative
     base.after_create :generate_request_id
     base.after_save :process_before_save_blocks
-    base.before_save :resolve_letter_type_changes
     base.after_commit :update_related_data
-    base.before_save :track_workflow_changes
     base.send :attr_accessor, :before_save_blocks
 
     base.send :attr_accessor, :grant_agreement_letter_type
@@ -35,139 +32,19 @@ module FluxxRequest
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :modified_by, :class_name => 'User', :foreign_key => 'modified_by_id'
 
-    # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
-    base.define_index :request_first do
-      # fields
-      indexes :fip_title
-      indexes "CONCAT(IF(type = 'FipRequest', 'F-', 'R-'),base_request_id)", :sortable => true, :as => :request_id, :sortable => true
-      indexes :project_summary, :sortable => true
-      indexes :id, :sortable => true
-      indexes "CONCAT(IF(type = 'FipRequest', 'FG-', 'G-'),base_request_id)", :sortable => true, :as => :grant_id, :sortable => true
-      indexes :type, :sortable => true
-      indexes program_organization.name, :as => :program_org_name, :sortable => true
-      indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-      indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
-      indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-      indexes program.name, :as => :program_name, :sortable => true
-    
-      # attributes
-      has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
-      has :program_organization_id, :fiscal_organization_id
-      has "if(granted = 0, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
-        :as => :related_request_organization_ids, :type => :multi
-      has "if(granted = 1, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
-        :as => :related_grant_organization_ids, :type => :multi
-      has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-      has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
-    
-      has :type, :type => :string, :crc => true, :as => :filter_type
-      has :state, :type => :string, :crc => true, :as => :filter_state
-      has lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
-
-      has "null", :type => :multi, :as => :org_owner_user_ids
-      has "null", :type => :multi, :as => :favorite_user_ids
-      has roles.roles_users.user(:id), :as => :user_ids
-      has "null", :type => :multi, :as => :raw_request_org_ids
-    
-      has "null", :type => :multi, :as => :request_org_ids
-      has "null", :type => :multi, :as => :grant_org_ids
-      has "null", :type => :multi, :as => :request_user_ids
-      has "null", :type => :multi, :as => :funding_source_ids
-
-      has "null", :type => :multi, :as => :all_request_program_ids
-      has "null", :type => :multi, :as => :un_approved_request_program_ids
-      has "null", :type => :multi, :as => :group_ids
-
-      set_property :delta => true
-    end
-
-    base.define_index :request_second do
-      indexes :fip_title
-      indexes 'null', :sortable => true, :as => :request_id, :sortable => true
-      indexes :project_summary, :sortable => true
-      indexes :id, :sortable => true
-      indexes 'null', :sortable => true, :as => :grant_id, :sortable => true
-      indexes :type, :sortable => true
-      indexes program_organization.name, :as => :program_org_name, :sortable => true
-      indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-      indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
-      indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-      indexes program.name, :as => :program_name, :sortable => true
-
-      # attributes
-      has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
-      has :program_organization_id, :fiscal_organization_id
-      has "null", :as => :related_request_organization_ids, :type => :multi
-      has "null", :as => :related_grant_organization_ids, :type => :multi
-      has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-      has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
-
-      has :type, :type => :string, :crc => true, :as => :filter_type
-      has :state, :type => :string, :crc => true, :as => :filter_state
-      has "null", :type => :multi, :as => :lead_user_ids
-
-      has grantee_owner_roles.roles_users.user(:id), :as => :org_owner_user_ids
-      has "null", :type => :multi, :as => :favorite_user_ids
-      has "null", :type => :multi, :as => :user_ids
-      has "null", :type => :multi, :as => :raw_request_org_ids
-    
-      has "null", :type => :multi, :as => :request_org_ids
-      has "null", :type => :multi, :as => :grant_org_ids
-      has request_users.user(:id), :as => :request_user_ids
-      has request_funding_sources.funding_source(:id), :as => :funding_source_ids
-    
-      has "CONCAT(requests.program_id, CONCAT(',', GROUP_CONCAT(DISTINCT IFNULL(`request_programs`.`program_id`, '0') SEPARATOR ',')))", :type => :multi, :as => :all_request_program_ids
-      has un_approved_request_programs.program_id, :as => :un_approved_request_program_ids
-      has "null", :type => :multi, :as => :group_ids
-
-      set_property :delta => true
-    end
-
-    base.define_index :request_third do
-      indexes :fip_title
-      indexes 'null', :sortable => true, :as => :request_id, :sortable => true
-      indexes :project_summary, :sortable => true
-      indexes :id, :sortable => true
-      indexes 'null', :sortable => true, :as => :grant_id, :sortable => true
-      indexes :type, :sortable => true
-      indexes program_organization.name, :as => :program_org_name, :sortable => true
-      indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-      indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
-      indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-      indexes program.name, :as => :program_name, :sortable => true
-
-      # attributes
-      has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
-      has :program_organization_id, :fiscal_organization_id
-      has "null", :as => :related_request_organization_ids, :type => :multi
-      has "null", :as => :related_grant_organization_ids, :type => :multi
-      has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-      has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
-
-      has :type, :type => :string, :crc => true, :as => :filter_type
-      has :state, :type => :string, :crc => true, :as => :filter_state
-      has "null", :type => :multi, :as => :lead_user_ids
-
-      has "null", :type => :multi, :as => :org_owner_user_ids
-      has favorites.user(:id), :as => :favorite_user_ids
-      has "null", :type => :multi, :as => :user_ids
-      has request_organizations.organization(:id), :type => :multi, :as => :raw_request_org_ids
-      has "GROUP_CONCAT(DISTINCT if(granted = 0, IFNULL(`organizations_request_organizations`.`id`, '0'), null) SEPARATOR ',')", :type => :multi, :as => :request_org_ids
-      has "GROUP_CONCAT(DISTINCT if(granted = 1, IFNULL(`organizations_request_organizations`.`id`, '0'), null) SEPARATOR ',')", :type => :multi, :as => :grant_org_ids
-      has "null", :type => :multi, :as => :request_user_ids
-      has "null", :type => :multi, :as => :funding_source_ids
-
-      has "null", :type => :multi, :as => :all_request_program_ids
-      has "null", :type => :multi, :as => :un_approved_request_program_ids
-      has group_members.group(:id), :type => :multi, :as => :group_ids
-
-      set_property :delta => true
-    end
-
     base.has_many :favorites, :as => :favorable
     base.has_many :notes, :as => :notable
     base.has_many :group_members, :as => :groupable
 
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+    base.insta_multi
+    base.insta_lock
+    base.insta_utc do |insta|
+      insta.time_attributes = [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_start_at, :ierf_proposed_end_at, :ierf_budget_end_at] 
+    end
+    
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
@@ -224,6 +101,18 @@ module FluxxRequest
         RequestReport.update_all 'delta = 1', ['id in (?)', request_reports.map(&:id)]
         RequestReport.index_delta
       end
+    end
+
+    def tax_class_org
+      fiscal_organization ? fiscal_organization : program_organization
+    end
+
+    def has_tax_class?
+      tax_class_org ? tax_class_org.tax_class_id : nil
+    end
+
+    def is_er?
+      tax_class_org ? tax_class_org.is_er? : nil
     end
 
     def is_grant?

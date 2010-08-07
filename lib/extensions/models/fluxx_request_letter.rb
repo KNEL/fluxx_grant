@@ -3,14 +3,12 @@ module FluxxRequestLetter
     base.belongs_to :request
     base.belongs_to :letter_template
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
-    base.define_index do
-      # fields
-      indexes letter, :sortable => true
 
-      # attributes
-      has created_at, request_id, letter_template_id
-      set_property :delta => true
-    end
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+    base.insta_multi
+    base.insta_lock
     
     base.extend(ModelClassMethods)
     base.class_eval do

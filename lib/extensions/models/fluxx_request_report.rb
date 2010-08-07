@@ -1,7 +1,8 @@
 module FluxxRequestReport
   def self.included(base)
     base.belongs_to :request
-    base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => 1}
+    base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => true}
+    
     base.has_many :model_documents, :as => :documentable
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :modified_by, :class_name => 'User', :foreign_key => 'modified_by_id'
@@ -9,53 +10,15 @@ module FluxxRequestReport
     base.has_many :favorites, :conditions => {:favorable_type => 'RequestReport'}, :foreign_key => :favorable_id # Override the favorites association to let it include all request types
     base.has_many :notes, :conditions => {:deleted_at => nil, :notable_type => 'RequestReport'}, :foreign_key => :notable_id
 
-    base.before_save :track_workflow_changes
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 
-    # specify_utc_time_attributes [:due_at, :approved_at, :bjo_received_at] 
-
-    base.define_index :req_report_first do
-      # fields
-      indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
-      indexes grant.program_organization.acronym, :as => :request_org_acronym, :sortable => true
-      indexes "if(requests.type = 'FipRequest', concat('FG-',requests.base_request_id), concat('G-',requests.base_request_id))", :as => :request_grant_id, :sortable => true
-
-      # attributes
-      has created_at, updated_at, deleted_at, due_at 
-      set_property :delta => true
-      has grant(:id), :as => :grant_ids
-      has grant.program(:id), :as => :grant_program_ids
-      has grant.sub_program(:id), :as => :grant_sub_program_ids
-      has grant.state, :type => :string, :crc => true, :as => :grant_state
-      has :report_type, :type => :string, :crc => true
-      has :state, :type => :string, :crc => true
-      has 'null', :type => :multi, :as => :favorite_user_ids
-      has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
-      has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
-      has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
-      has group_members.group(:id), :type => :multi, :as => :group_ids
-    end
-
-    base.define_index :req_report_second do
-      # fields
-      indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
-      indexes 'null', :type => :string, :as => :request_org_acronym, :sortable => true
-      indexes 'null', :type => :string, :as => :request_grant_id, :sortable => true
-
-      # attributes
-      has created_at, updated_at, deleted_at, due_at
-      set_property :delta => true
-      has 'null', :type => :multi, :as => :grant_ids
-      has 'null', :type => :multi, :as => :grant_program_ids
-      has 'null', :type => :multi, :as => :grant_sub_program_ids
-      has 'null', :type => :multi, :type => :string, :crc => true, :as => :grant_state
-      has :report_type, :type => :string, :crc => true
-      has :state, :type => :string, :crc => true
-      has favorites.user(:id), :as => :favorite_user_ids
-      has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
-      has 'null', :type => :multi, :as => :related_organization_ids
-      has 'null', :type => :multi, :as => :lead_user_ids
-      has 'null', :type => :multi, :as => :group_ids
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+    base.insta_multi
+    base.insta_lock
+    base.insta_utc do |insta|
+      insta.time_attributes = [:due_at, :approved_at, :bjo_received_at] 
     end
 
     base.send :include, AASM
@@ -66,7 +29,7 @@ module FluxxRequestReport
     base.aasm_state :pending_lead_approval
     base.aasm_state :pending_grant_team_approval
     base.aasm_state :pending_finance_approval
-    base.aasm_state :approved
+    base.aasm_state :approved, :enter => :adjust_request_transactions
     base.aasm_state :sent_back_to_pa
     base.aasm_state :sent_back_to_lead
     base.aasm_state :sent_back_to_grant_team
@@ -100,6 +63,8 @@ module FluxxRequestReport
     base.aasm_event :finance_send_back do
       transitions :from => :pending_finance_approval, :to => :sent_back_to_grant_team
     end
+    
+    
     
     base.extend(ModelClassMethods)
     base.class_eval do
@@ -295,6 +260,26 @@ module FluxxRequestReport
 
     def is_grant_er?
       grant && grant.is_er?
+    end
+
+    def adjust_request_transactions
+      # TODO ESH: confirm the exact functionality here; do we want to wait until all interim/final reports are approved or how does it work??
+      self.approved_at = Time.now
+      if self.report_type == 'InterimBudget' || self.report_type == 'InterimNarrative'
+        request.request_transactions.each do |rt|
+          if rt.tentatively_due? && rt.request_document_linked_to == 'interim_request'
+            rt.mark_actually_due 
+            rt.save
+          end
+        end
+      elsif self.report_type == 'FinalBudget' || self.report_type == 'FinalNarrative'
+        request.request_transactions.each do |rt|
+          if rt.tentatively_due? && rt.request_document_linked_to == 'final_request'
+            rt.mark_actually_due 
+            rt.save
+          end
+        end
+      end
     end
   end
 end

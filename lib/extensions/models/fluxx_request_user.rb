@@ -9,6 +9,10 @@ module FluxxRequestUser
     base.validates_presence_of :request_id
     base.validates_uniqueness_of :user_id, :scope => :request_id
     
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
+    
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

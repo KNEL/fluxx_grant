@@ -5,6 +5,11 @@ module FluxxRequestFundingSource
     base.belongs_to :program
     base.belongs_to :initiative
     
+    base.insta_search
+    base.insta_export
+    base.insta_multi
+    base.insta_realtime
+
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

@@ -2,6 +2,10 @@ module FluxxLetterTemplate
   def self.included(base)
     base.has_many :request_letters
     base.acts_as_audited :except => :delta, :protect => true
+
+    base.insta_search
+    base.insta_export
+    base.insta_realtime
     
     base.extend(ModelClassMethods)
     base.class_eval do
