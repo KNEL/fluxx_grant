@@ -3,7 +3,7 @@ module FluxxRequestTransaction
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => 1}
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
-    base.belongs_to :modified_by, :class_name => 'User', :foreign_key => 'modified_by_id'
+    base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.belongs_to :payment_recorded_by, :class_name => 'User', :foreign_key => 'payment_recorded_by_id'
     base.has_many :workflow_events, :as => :workflowable
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
@@ -17,48 +17,38 @@ module FluxxRequestTransaction
     base.insta_utc do |insta|
       insta.time_attributes = [:due_at, :paid_at, :transaction_at] 
     end
-
-    base.aasm_column :state
-    base.aasm_initial_state :tentatively_due
-
-    base.aasm_state :new
-    base.aasm_state :tentatively_due
-    base.aasm_state :actually_due, :enter => :adjust_due_date
-    base.aasm_state :paid
-    base.aasm_event :mark_actually_due do
-      transitions :from => :new, :to => :actually_due
-      transitions :from => :tentatively_due, :to => :actually_due
-    end
-
-    base.aasm_event :mark_paid do
-      transitions :from => :new, :to => :paid
-      transitions :from => :tentatively_due, :to => :paid
-      transitions :from => :actually_due, :to => :paid
+    
+    base.insta_workflow do |insta|
+      insta.states_to_english = {:actually_due => 'Actually Due',:tentatively_due => 'Tentatively Due', :paid => 'Paid', :new => 'New'}
+      insta.events_to_english = {:mark_actually_due => 'Mark Due', :mark_paid => 'Pay'}
     end
 
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
     end
+    
+    base.add_aasm
   end
 
   module ModelClassMethods
-    def state_names
-      [:new, :tentatively_due, :actually_due, :paid]
-    end
+    def add_aasm
+      aasm_column :state
+      aasm_initial_state :tentatively_due
 
-    def state_to_english_translation state_name
-      case state_name.to_s
-      when 'actually_due':
-        'Actually Due'
-      when 'tentatively_due':
-        'Tentatively Due'
-      when 'paid':
-        'Paid'
-      when 'new':
-        'New'
-      else
-        state_name.to_s
+      aasm_state :new
+      aasm_state :tentatively_due
+      aasm_state :actually_due, :enter => :adjust_due_date
+      aasm_state :paid
+      aasm_event :mark_actually_due do
+        transitions :from => :new, :to => :actually_due
+        transitions :from => :tentatively_due, :to => :actually_due
+      end
+
+      aasm_event :mark_paid do
+        transitions :from => :new, :to => :paid
+        transitions :from => :tentatively_due, :to => :paid
+        transitions :from => :actually_due, :to => :paid
       end
     end
   end

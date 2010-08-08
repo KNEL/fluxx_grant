@@ -2149,3 +2149,12 @@ SQLite3::SQLException: near "FROM": syntax error: SELECT      FROM       "audits
  WHERE type = 'table' AND NOT name = 'sqlite_sequence'
   [1m[36mAudit Load (0.1ms)[0m  [1mSELECT FROM "audits" WHERE ("audits".auditable_id = 1 AND "audits".auditable_type = 'RequestReport') ORDER BY "audits".version[0m
 SQLite3::SQLException: near "FROM": syntax error: SELECT      FROM       "audits" WHERE     ("audits".auditable_id = 1 AND "audits".auditable_type = 'RequestReport') ORDER BY  "audits".version
+  [1m[36mSQL (0.5ms)[0m  [1m SELECT name
+ FROM sqlite_master
+ WHERE type = 'table' AND NOT name = 'sqlite_sequence'
+[0m
+  [1m[35mMultiElementGroup Load (0.2ms)[0m  SELECT "multi_element_groups"."id" FROM "multi_element_groups" LIMIT 1
+  [1m[36mMultiElementGroup Load (0.2ms)[0m  [1mSELECT "multi_element_groups".* FROM "multi_element_groups" WHERE ("multi_element_groups"."target_class_name" = 'RequestTransaction')[0m
+DEPRECATION WARNING: Base.named_scope has been deprecated, please use Base.scope instead. (called from aasm_state at /Users/ehansen/.rvm/gems/ruby-1.8.7-tv1_8_7_174/bundler/gems/aasm-690137c/lib/aasm/persistence/active_record_persistence.rb:241)
+DEPRECATION WARNING: Base.named_scope has been deprecated, please use Base.scope instead. (called from aasm_state at /Users/ehansen/.rvm/gems/ruby-1.8.7-tv1_8_7_174/bundler/gems/aasm-690137c/lib/aasm/persistence/active_record_persistence.rb:241)
+DEPRECATION WARNING: Base.named_scope has been deprecated, please use Base.scope instead. (called from aasm_state at /Users/ehansen/.rvm/gems/ruby-1.8.7-tv1_8_7_174/bundler/gems/aasm-690137c/lib/aasm/persistence/active_record_persistence.rb:241)

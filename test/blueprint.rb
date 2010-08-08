@@ -43,14 +43,12 @@ end
 User.blueprint do
   first_name Sham.first_name
   last_name Sham.last_name
-  password 'eshansen'
-  password_confirmation 'eshansen'
   login Sham.login
   email Sham.email
   created_at 5.days.ago.to_s(:db)
-  activated_at 5.days.ago.to_s(:db)
   state 'active'
 end
+
 
 def rand_nums
   "#{(99999999/rand).floor}#{Time.now.to_i}"
@@ -112,7 +110,7 @@ RequestReport.blueprint do
 end
 
 RequestFundingSource.blueprint do
-  funding_source FundingSource.make
+  funding_source {FundingSource.make}
   request {GrantRequest.make}
 end
 
@@ -145,6 +143,19 @@ Group.blueprint do
 end
 
 GroupMember.blueprint do
+end
+
+RequestGeoState.blueprint do
+end
+
+RequestOrganization.blueprint do
+  request {GrantRequest.make}
+  organization
+end
+
+RequestUser.blueprint do
+  request {GrantRequest.make}
+  user
 end
 
 def setup_letter_templates

@@ -13,6 +13,7 @@ module FluxxRequest
     base.has_many :request_letters
     base.has_many :workflow_events, :as => :workflowable
     base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
+    base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
 
     base.belongs_to :program
     base.belongs_to :initiative
@@ -30,7 +31,7 @@ module FluxxRequest
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
-    base.belongs_to :modified_by, :class_name => 'User', :foreign_key => 'modified_by_id'
+    base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
 
     base.has_many :favorites, :as => :favorable
     base.has_many :notes, :as => :notable
@@ -244,3 +245,20 @@ module FluxxRequest
 
   end
 end
+
+# 
+# 1. What program roles should we include with grant_ri?  President/PA/etc... 
+    # I’m thinking the RI should include the same roles as EF, minus the Program Director and SVP. 
+    # From what I’ve seen, the PD and SVP are an extra level of hierarchy that most grantmakers don’t have. 
+    # That being said, what’s the easiest – adding PD for groups who do have one, or removing for groups who don’t?
+# 2. What should we populate in the new request form for:
+#   - primary contact: guessing this should be anybody from the primary/fiscal org Yes, correct.
+#   - primary signatory: do we want this? Yes, I’ve heard from others that this is often the case with grantees even outside EF. 
+#     People have remarked during demo’s that they like this feature.
+#   - program officer: which role/s should we use here?  Keep it the way we do now where program officer or higher program role for 
+#     the current program or rollup program? Yup, same way works well.
+# 3. What request workflow should we include with fluxx-oss for Grants/FIPS? (I’m wondering if we should just ditch FIPs for the RI, 
+#    and keep things simple to start – again, it depends on whether it’s easier to add or subtract during implementation. 
+#    Here’s the flow I think we should go with:
+# 
+# PA > PO > President > Grant Promotion > Granted > Closed
