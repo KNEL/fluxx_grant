@@ -7,7 +7,6 @@ module FluxxRequestTransaction
     base.belongs_to :payment_recorded_by, :class_name => 'User', :foreign_key => 'payment_recorded_by_id'
     base.has_many :workflow_events, :as => :workflowable
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
-    base.send :include, AASM
 
     base.insta_search
     base.insta_export
@@ -28,6 +27,7 @@ module FluxxRequestTransaction
       include ModelInstanceMethods
     end
     
+    base.send :include, AASM
     base.add_aasm
   end
 

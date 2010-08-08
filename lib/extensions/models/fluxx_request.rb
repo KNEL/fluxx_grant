@@ -46,17 +46,287 @@ module FluxxRequest
       insta.time_attributes = [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_start_at, :ierf_proposed_end_at, :ierf_budget_end_at] 
     end
     
+    base.insta_workflow do |insta|
+      insta.states_to_english = {:actually_due => 'Actually Due',:tentatively_due => 'Tentatively Due', :paid => 'Paid', :new => 'New'}
+      insta.events_to_english = {:mark_actually_due => 'Mark Due', :mark_paid => 'Pay'}
+    end
+
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
     end
+
+    base.send :include, AASM
+    base.add_aasm
   end
 
   module ModelClassMethods
+    def state_to_english
+      Request.state_to_english_translation state
+    end
+
+    def self.state_to_english_translation state_name
+      case state_name.to_s
+      when 'new':
+        'New Request'
+      when 'pending_grant_team_approval':
+        'Pending Grant Team Approval'
+      when 'small_complete_ierf':
+        'Pending SVP Approval'
+      when 'pending_po_approval':
+        'Pending PO Approval'
+      when 'pending_president_approval':
+        'Pending President Approval'
+      when 'rejected':
+        'Rejected'
+      when 'funding_recommended':
+        'Funding Recommended'
+      when 'pending_grant_promotion':
+        'Pending Grant/FIP Promotion'
+      when 'sent_back_to_pa':
+        'Sent back to PA'
+      when 'sent_back_to_po':
+        'Sent back to PO'
+      when 'granted':
+        'Granted'
+      when 'closed':
+        'Closed'
+      when 'canceled':
+        'Canceled'
+      when 'unknown_from_import':
+        'Unknown from Import'
+      else
+        state_name.to_s
+      end
+    end
+
+    # Translate the old state to the next state that will be completed
+    # Useful for the funnel
+    def self.old_state_complete_english_translation state_name
+      case state_name.to_s
+      when 'new':
+        'Submitted -> Final Proposal'
+      when 'funding_recommended':
+        'Final Proposal -> IERF Complete'
+      when 'pending_grant_team_approval':
+        'Grants Approved'
+      when 'pending_po_approval':
+        'PO Approved'
+      when 'pending_svp_approval':
+        'SVP Approved'
+      when 'pending_president_approval':
+        'President Approval'
+      when 'pending_grant_promotion':
+        'Promoted to Grant'
+      when 'granted':
+        'Closed'
+      else
+        state_name.to_s
+      end
+    end
+
+
+    def self.event_to_english_translation event_name
+      case event_name.to_s
+      when 'recommend_funding':
+        'Recommend Funding'
+      when 'complete_ierf':
+        'Mark IERF Completed'
+      when 'grant_team_approve':
+        'Approve'
+      when 'po_approve':
+        'Approve'
+      when 'president_approve':
+        'Approve'
+      when 'grant_team_send_back':
+        'Send Back'
+      when 'po_send_back':
+        'Send Back'
+      when 'president_send_back':
+        'Send Back'
+      when 'reject':
+        'Reject'
+      when 'un_reject':
+        'Un-Reject'
+      when 'become_grant':
+        'Promote to Grant'
+      when 'close_grant':
+        'Close'
+      when 'cancel_grant':
+        'Cancel'
+      else
+        event_name.to_s
+      end
+    end
+    
+    def add_aasm
+      aasm_column :state
+      aasm_initial_state :new
+
+      aasm_state :new
+      @local_pre_recommended_chain = [:new, :funding_recommended, :unknown_from_import]
+      @local_approval_chain = [:pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
+      @local_approved = @local_approval_chain - [:pending_grant_team_approval]
+      @local_sent_back_states = [:sent_back_to_pa, :sent_back_to_po]
+      @local_sent_back_state_mapping_to_workflow = {:sent_back_to_pa => :funding_recommended, :sent_back_to_po => :pending_po_approval}
+      @local_pre_approval_states = [:new, :rejected]
+      
+      @local_rejected_states = [:rejected]
+      @local_grant_states = [:granted, :closed]
+      @local_canceled_states = [:canceled]
+
+      @local_promotion_events = [:recommend_funding, :complete_ierf, :grant_team_approve, :po_approve, :president_approve]
+      @local_grant_events = [:become_grant, :close_grant]
+      @local_send_back_events = [:grant_team_send_back, :po_send_back, :president_send_back]
+      @local_reject_events = [:reject]
+      @local_cancel_grant_events = [:cancel_grant]
+      @local_un_reject_events = [:un_reject]
+      
+      def self.new_states
+        [:new, :unknown_from_import]
+      end
+
+      def self.grant_states
+        @local_grant_states
+      end
+
+      def self.canceled_states
+        @local_canceled_states
+      end
+
+      def self.pre_recommended_chain
+        @local_pre_recommended_chain
+      end
+
+      def self.rejected_states
+        @local_rejected_states
+      end
+
+      def self.approval_chain
+        @local_approval_chain
+      end
+
+      def self.sent_back_states
+        @local_sent_back_states
+      end
+
+      def self.sent_back_state_mapping_to_workflow
+        @local_sent_back_state_mapping_to_workflow
+      end
+
+      def self.pre_approval_states
+        @local_pre_approval_states
+      end
+
+      def self.promotion_events
+        @local_promotion_events
+      end
+
+      def self.grant_events
+        @local_grant_events
+      end
+
+      def self.send_back_events
+        @local_send_back_events
+      end
+
+      def self.cancel_grant_events
+        @local_cancel_grant_events
+      end
+
+      def self.reject_events
+        @local_reject_events
+      end
+
+      def self.un_reject_events
+        @local_un_reject_events
+      end
+      
+
+      @local_sent_back_states.each {|cur_state| aasm_state cur_state }
+
+      aasm_state :pending_grant_team_approval
+      aasm_state :pending_po_approval
+      aasm_state :pending_president_approval
+      aasm_state :pending_grant_promotion, :enter => :add_president_approval_date
+      aasm_state :unknown_from_import
+      aasm_state :rejected
+      aasm_state :funding_recommended
+      aasm_state :new
+      aasm_state :granted
+      aasm_state :closed # Note that a user needs to close the grant.  The grants team would do this
+      aasm_state :canceled # The grants team can cancel a grant after it has been granted
+
+      aasm_event :reject do
+        (Request.pre_recommended_chain + Request.approval_chain + Request.sent_back_states).each do |cur_state|
+          transitions :from => cur_state, :to => :rejected unless cur_state == :rejected
+        end
+      end
+
+      aasm_event :un_reject do
+        transitions :from => :rejected, :to => :new
+      end
+
+      aasm_event :recommend_funding do
+        transitions :from => :unknown_from_import, :to => :funding_recommended
+        transitions :from => :new, :to => :funding_recommended
+      end
+
+      aasm_event :complete_ierf do
+        transitions :from => :funding_recommended, :to => :pending_grant_team_approval
+        transitions :from => :sent_back_to_pa, :to => :pending_grant_team_approval, :guard => (lambda { |req| !(req.has_grant_team_ever_approved?) })
+        transitions :from => :sent_back_to_pa, :to => :pending_po_approval, :guard => (lambda { |req| req.has_grant_team_ever_approved? })
+      end
+
+      aasm_event :grant_team_approve do
+        transitions :from => :pending_grant_team_approval, :to => :pending_po_approval
+      end
+
+      def has_grant_team_ever_approved?
+        !(workflow_events.select do |event| 
+          (event.old_state == 'pending_grant_team_approval' && event.new_state == 'pending_po_approval')
+        end.empty?)
+      end
+
+      aasm_event :grant_team_send_back do
+        transitions :from => :pending_grant_team_approval, :to => :sent_back_to_pa
+      end
+
+      aasm_event :po_approve do
+        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :pending_pd_approval
+      end
+
+      aasm_event :po_send_back do
+        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :pending_president_approval
+      end
+
+      aasm_event :president_approve do
+        transitions :from => :pending_president_approval, :to => :pending_grant_promotion
+      end
+
+      aasm_event :president_send_back do
+        transitions :from => :pending_president_approval, :to => :sent_back_to_po
+      end
+
+      aasm_event :become_grant do
+        transitions :from => :pending_grant_promotion, :to => :granted
+      end
+
+      aasm_event :close_grant do
+        transitions :from => :granted, :to => :closed
+      end
+
+      aasm_event :cancel_grant do
+        transitions :from => :granted, :to => :canceled
+      end
+    end
+    
     def translate_delta_type granted=false
       # Note ESH: we need to not differentiate between FipRequest and GrantRequest so that they can show mixed up within the same card
       'Request' + (granted ? 'Granted' : 'NotYetGranted')
     end
+    
+    
   end
 
   module ModelInstanceMethods
@@ -135,7 +405,7 @@ module FluxxRequest
 
     def allowed_to_edit?(user)
       user_roles = program.roles_for_user user
-      if PRE_APPROVAL_STATES.include? state.to_sym
+      if @local_pre_approval_states.include? state.to_sym
         (Program.request_roles & user_roles).empty? # any user with a request role for this program can edit if it's in the pre approval state
       elsif false
       end
