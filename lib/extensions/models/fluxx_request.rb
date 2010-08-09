@@ -9,9 +9,7 @@ module FluxxRequest
     base.has_many :request_transactions
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
-    base.has_many :roles_users, :through => :roles
     base.has_many :request_letters
-    base.has_many :workflow_events, :as => :workflowable
     base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
 
@@ -26,16 +24,23 @@ module FluxxRequest
     base.send :attr_accessor, :award_letter_type
     base.send :attr_accessor, :force_all_request_programs_approved
 
-    base.has_many :request_documents, :conditions => 'request_documents.deleted_at IS NULL'
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL'
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
-
-    base.has_many :favorites, :as => :favorable
-    base.has_many :notes, :as => :notable
-    base.has_many :group_members, :as => :groupable
+    
+    base.belongs_to :program_lead, :class_name => 'User', :foreign_key => 'program_lead_id'
+    base.belongs_to :fiscal_org_owner, :class_name => 'User', :foreign_key => 'fiscal_org_owner_id'
+    base.belongs_to :grantee_signatory, :class_name => 'User', :foreign_key => 'grantee_signatory_id'
+    base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
+    base.belongs_to :grantee_org_owner, :class_name => 'User', :foreign_key => 'grantee_org_owner_id'
+    
+    # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
+    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
+    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
+    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
+    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
 
     base.insta_search
     base.insta_export
@@ -164,86 +169,101 @@ module FluxxRequest
       aasm_initial_state :new
 
       aasm_state :new
-      @local_pre_recommended_chain = [:new, :funding_recommended, :unknown_from_import]
-      @local_approval_chain = [:pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
-      @local_approved = @local_approval_chain - [:pending_grant_team_approval]
-      @local_sent_back_states = [:sent_back_to_pa, :sent_back_to_po]
-      @local_sent_back_state_mapping_to_workflow = {:sent_back_to_pa => :funding_recommended, :sent_back_to_po => :pending_po_approval}
-      @local_pre_approval_states = [:new, :rejected]
+      class_inheritable_reader :local_pre_recommended_chain
+      write_inheritable_attribute :local_pre_recommended_chain, [:new, :funding_recommended, :unknown_from_import]
+      class_inheritable_reader :local_approval_chain
+      write_inheritable_attribute :local_approval_chain, [:pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
+      class_inheritable_reader :local_approved
+      write_inheritable_attribute :local_approved, (local_approval_chain - [:pending_grant_team_approval])
+      class_inheritable_reader :local_sent_back_states
+      write_inheritable_attribute :local_sent_back_states, [:sent_back_to_pa, :sent_back_to_po]
+      class_inheritable_reader :local_sent_back_state_mapping_to_workflow
+      write_inheritable_attribute :local_sent_back_state_mapping_to_workflow, {:sent_back_to_pa => :funding_recommended, :sent_back_to_po => :pending_po_approval}
+      class_inheritable_reader :local_pre_approval_states
+      write_inheritable_attribute :local_pre_approval_states, [:new, :rejected]
       
-      @local_rejected_states = [:rejected]
-      @local_grant_states = [:granted, :closed]
-      @local_canceled_states = [:canceled]
+      class_inheritable_reader :local_rejected_states
+      write_inheritable_attribute :local_rejected_states, [:rejected]
+      class_inheritable_reader :local_grant_states
+      write_inheritable_attribute :local_grant_states, [:granted, :closed]
+      class_inheritable_reader :local_canceled_states
+      write_inheritable_attribute :local_canceled_states, [:canceled]
 
-      @local_promotion_events = [:recommend_funding, :complete_ierf, :grant_team_approve, :po_approve, :president_approve]
-      @local_grant_events = [:become_grant, :close_grant]
-      @local_send_back_events = [:grant_team_send_back, :po_send_back, :president_send_back]
-      @local_reject_events = [:reject]
-      @local_cancel_grant_events = [:cancel_grant]
-      @local_un_reject_events = [:un_reject]
+      class_inheritable_reader :local_promotion_events
+      write_inheritable_attribute :local_promotion_events, [:recommend_funding, :complete_ierf, :grant_team_approve, :po_approve, :president_approve]
+      class_inheritable_reader :local_grant_events
+      write_inheritable_attribute :local_grant_events, [:become_grant, :close_grant]
+      class_inheritable_reader :local_send_back_events
+      write_inheritable_attribute :local_send_back_events, [:grant_team_send_back, :po_send_back, :president_send_back]
+      class_inheritable_reader :local_reject_events
+      write_inheritable_attribute :local_reject_events, [:reject]
+      class_inheritable_reader :local_cancel_grant_events
+      write_inheritable_attribute :local_cancel_grant_events, [:cancel_grant]
+      class_inheritable_reader :local_un_reject_events
+      write_inheritable_attribute :local_un_reject_events, [:un_reject]
       
       def self.new_states
         [:new, :unknown_from_import]
       end
 
       def self.grant_states
-        @local_grant_states
+        local_grant_states
       end
 
       def self.canceled_states
-        @local_canceled_states
+        local_canceled_states
       end
 
       def self.pre_recommended_chain
-        @local_pre_recommended_chain
+        local_pre_recommended_chain
       end
 
       def self.rejected_states
-        @local_rejected_states
+        local_rejected_states
       end
 
       def self.approval_chain
-        @local_approval_chain
+        local_approval_chain
       end
 
       def self.sent_back_states
-        @local_sent_back_states
+        local_sent_back_states
       end
 
       def self.sent_back_state_mapping_to_workflow
-        @local_sent_back_state_mapping_to_workflow
+        local_sent_back_state_mapping_to_workflow
       end
 
       def self.pre_approval_states
-        @local_pre_approval_states
+        local_pre_approval_states
       end
 
       def self.promotion_events
-        @local_promotion_events
+        local_promotion_events
       end
 
       def self.grant_events
-        @local_grant_events
+        local_grant_events
       end
 
       def self.send_back_events
-        @local_send_back_events
+        local_send_back_events
       end
 
       def self.cancel_grant_events
-        @local_cancel_grant_events
+        local_cancel_grant_events
       end
 
       def self.reject_events
-        @local_reject_events
+        local_reject_events
       end
 
       def self.un_reject_events
-        @local_un_reject_events
+        local_un_reject_events
       end
       
 
-      @local_sent_back_states.each {|cur_state| aasm_state cur_state }
+      local_sent_back_states.each {|cur_state| aasm_state cur_state }
 
       aasm_state :pending_grant_team_approval
       aasm_state :pending_po_approval
@@ -282,22 +302,16 @@ module FluxxRequest
         transitions :from => :pending_grant_team_approval, :to => :pending_po_approval
       end
 
-      def has_grant_team_ever_approved?
-        !(workflow_events.select do |event| 
-          (event.old_state == 'pending_grant_team_approval' && event.new_state == 'pending_po_approval')
-        end.empty?)
-      end
-
       aasm_event :grant_team_send_back do
         transitions :from => :pending_grant_team_approval, :to => :sent_back_to_pa
       end
 
       aasm_event :po_approve do
-        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :pending_pd_approval
+        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :pending_president_approval
       end
 
       aasm_event :po_send_back do
-        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :pending_president_approval
+        transitions :from => [:pending_po_approval, :sent_back_to_po], :to => :sent_back_to_pa
       end
 
       aasm_event :president_approve do
@@ -349,11 +363,12 @@ module FluxxRequest
     def update_related_data
       Request.index_delta
       User.without_delta do
-        user_ids = roles.map do |role| 
-          role.roles_users.map do |ru| 
-            ru.user.id
-          end
-        end.compact.flatten
+        # TODO ESH: fix roles
+        # user_ids = roles.map do |role| 
+        #   role.roles_users.map do |ru| 
+        #     ru.user.id
+        #   end
+        # end.compact.flatten
         User.update_all 'delta = 1', ['id in (?)', user_ids]
         User.index_delta
       end
@@ -405,7 +420,7 @@ module FluxxRequest
 
     def allowed_to_edit?(user)
       user_roles = program.roles_for_user user
-      if @local_pre_approval_states.include? state.to_sym
+      if local_pre_approval_states.include? state.to_sym
         (Program.request_roles & user_roles).empty? # any user with a request role for this program can edit if it's in the pre approval state
       elsif false
       end
@@ -435,10 +450,6 @@ module FluxxRequest
 
     def amount_recommended= new_amount
       write_attribute(:amount_recommended, filter_amount(new_amount))
-    end
-
-    def old_amount_funded= new_amount
-      write_attribute(:old_amount_funded, filter_amount(new_amount))
     end
 
     def generate_request_id
@@ -513,6 +524,15 @@ module FluxxRequest
       Request.translate_delta_type self.granted
     end
 
+    def add_president_approval_date
+      self.grant_approved_at = Time.now
+    end
+
+    def has_grant_team_ever_approved?
+      !(workflow_events.select do |event| 
+        (event.old_state == 'pending_grant_team_approval' && event.new_state == 'pending_po_approval')
+      end.empty?)
+    end
   end
 end
 

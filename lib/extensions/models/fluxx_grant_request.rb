@@ -2,6 +2,12 @@ module FluxxGrantRequest
   def self.included(base)
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 
+    # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
+    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
+    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
+    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
+    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
+    
     base.validates_presence_of     :program_organization
     base.validates_presence_of     :program
     base.validates_presence_of     :project_summary
