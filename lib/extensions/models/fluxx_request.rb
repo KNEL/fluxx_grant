@@ -31,10 +31,10 @@ module FluxxRequest
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     
     base.belongs_to :program_lead, :class_name => 'User', :foreign_key => 'program_lead_id'
-    base.belongs_to :fiscal_org_owner, :class_name => 'User', :foreign_key => 'fiscal_org_owner_id'
-    base.belongs_to :grantee_signatory, :class_name => 'User', :foreign_key => 'grantee_signatory_id'
-    base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
     base.belongs_to :grantee_org_owner, :class_name => 'User', :foreign_key => 'grantee_org_owner_id'
+    base.belongs_to :grantee_signatory, :class_name => 'User', :foreign_key => 'grantee_signatory_id'
+    base.belongs_to :fiscal_org_owner, :class_name => 'User', :foreign_key => 'fiscal_org_owner_id'
+    base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
     
     # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
     base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
@@ -63,6 +63,10 @@ module FluxxRequest
 
     base.send :include, AASM
     base.add_aasm
+    base.alias_method_chain :grantee_org_owner, :specific
+    base.alias_method_chain :grantee_signatory, :specific
+    base.alias_method_chain :fiscal_org_owner, :specific
+    base.alias_method_chain :fiscal_signatory, :specific
   end
 
   module ModelClassMethods
@@ -532,6 +536,27 @@ module FluxxRequest
       !(workflow_events.select do |event| 
         (event.old_state == 'pending_grant_team_approval' && event.new_state == 'pending_po_approval')
       end.empty?)
+    end
+    
+    def grantee_org_owner_with_specific
+      if program_organization
+        grantee_org_owner_without_specific
+      end
+    end
+    def grantee_signatory_with_specific
+      if program_organization
+        grantee_signatory_without_specific
+      end
+    end
+    def fiscal_org_owner_with_specific
+      if fiscal_organization
+        fiscal_org_owner_without_specific
+      end
+    end
+    def fiscal_signatory_with_specific
+      if fiscal_organization
+        fiscal_signatory_without_specific
+      end
     end
   end
 end
