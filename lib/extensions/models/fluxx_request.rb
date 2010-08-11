@@ -52,8 +52,33 @@ module FluxxRequest
     end
     
     base.insta_workflow do |insta|
-      insta.states_to_english = {:actually_due => 'Actually Due',:tentatively_due => 'Tentatively Due', :paid => 'Paid', :new => 'New'}
+      insta.states_to_english = {:new => 'New Request',
+        :pending_grant_team_approval => 'Pending Grant Team Approval',
+        :pending_po_approval => 'Pending PO Approval',
+        :pending_president_approval => 'Pending President Approval',
+        :rejected => 'Rejected',
+        :funding_recommended => 'Funding Recommended',
+        :pending_grant_promotion => 'Pending Grant/FIP Promotion',
+        :sent_back_to_pa => 'Sent back to PA',
+        :sent_back_to_po => 'Sent back to PO',
+        :granted => 'Granted',
+        :closed => 'Closed',
+        :canceled => 'Canceled'}
+      
       insta.events_to_english = {:mark_actually_due => 'Mark Due', :mark_paid => 'Pay'}
+        :recommend_funding => 'Recommend Funding',
+        :complete_ierf => 'Mark IERF Completed',
+        :grant_team_approve => 'Approve',
+        :po_approve =>  'Approve',
+        :president_approve => 'Approve',
+        :grant_team_send_back =>  'Send Back',
+        :po_send_back => 'Send Back',
+        :president_send_back => 'Send Back',
+        :reject =>  'Reject',
+        :un_reject => 'Un-Reject',
+        :become_grant => 'Promote to Grant',
+        :close_grant => 'Close',
+        :cancel_grant => 'Cancel'
     end
 
     base.extend(ModelClassMethods)
@@ -70,45 +95,6 @@ module FluxxRequest
   end
 
   module ModelClassMethods
-    def state_to_english
-      Request.state_to_english_translation state
-    end
-
-    def self.state_to_english_translation state_name
-      case state_name.to_s
-      when 'new':
-        'New Request'
-      when 'pending_grant_team_approval':
-        'Pending Grant Team Approval'
-      when 'small_complete_ierf':
-        'Pending SVP Approval'
-      when 'pending_po_approval':
-        'Pending PO Approval'
-      when 'pending_president_approval':
-        'Pending President Approval'
-      when 'rejected':
-        'Rejected'
-      when 'funding_recommended':
-        'Funding Recommended'
-      when 'pending_grant_promotion':
-        'Pending Grant/FIP Promotion'
-      when 'sent_back_to_pa':
-        'Sent back to PA'
-      when 'sent_back_to_po':
-        'Sent back to PO'
-      when 'granted':
-        'Granted'
-      when 'closed':
-        'Closed'
-      when 'canceled':
-        'Canceled'
-      when 'unknown_from_import':
-        'Unknown from Import'
-      else
-        state_name.to_s
-      end
-    end
-
     # Translate the old state to the next state that will be completed
     # Useful for the funnel
     def self.old_state_complete_english_translation state_name
@@ -131,40 +117,6 @@ module FluxxRequest
         'Closed'
       else
         state_name.to_s
-      end
-    end
-
-
-    def self.event_to_english_translation event_name
-      case event_name.to_s
-      when 'recommend_funding':
-        'Recommend Funding'
-      when 'complete_ierf':
-        'Mark IERF Completed'
-      when 'grant_team_approve':
-        'Approve'
-      when 'po_approve':
-        'Approve'
-      when 'president_approve':
-        'Approve'
-      when 'grant_team_send_back':
-        'Send Back'
-      when 'po_send_back':
-        'Send Back'
-      when 'president_send_back':
-        'Send Back'
-      when 'reject':
-        'Reject'
-      when 'un_reject':
-        'Un-Reject'
-      when 'become_grant':
-        'Promote to Grant'
-      when 'close_grant':
-        'Close'
-      when 'cancel_grant':
-        'Cancel'
-      else
-        event_name.to_s
       end
     end
     
