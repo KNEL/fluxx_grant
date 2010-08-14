@@ -1,4 +1,8 @@
 module FluxxRequest
+  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
+  FAR_IN_THE_FUTURE = Time.now + 1000.year
+  begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
+
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
     base.belongs_to :fiscal_organization, :class_name => 'Organization', :foreign_key => :fiscal_organization_id
@@ -45,9 +49,99 @@ module FluxxRequest
 
     base.insta_search
     base.insta_export
-    base.insta_realtime
     base.insta_multi
     base.insta_lock
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :funding_agreement_from_date, :funding_agreement_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]
+      insta.derived_filters = {
+          :has_been_rejected => (lambda do |search_with_attributes, val|
+            if val == '1'
+              search_with_attributes.delete :has_been_rejected
+            else
+              search_with_attributes[:has_been_rejected] = 0
+            end
+          end),
+
+          :filter_state => (lambda do |search_with_attributes, val|
+            states = val.split(',').map{|v| v.strip}
+            states << 'pending_secondary_pd_approval' if states.include?('pending_pd_approval')
+
+            if states.include?('pending_secondary_pd_approval') && search_with_attributes[:program_id]
+              # Have to consider that program_id may have been parsed before filter_state
+              search_with_attributes[:all_request_program_ids] = search_with_attributes[:program_id]
+              search_with_attributes.delete :program_id
+            end
+            search_with_attributes[:filter_state] = states.map{|val|val.to_crc32} if states && !states.empty?
+          end),
+
+          :program_id => (lambda do |search_with_attributes, val|
+            program_id_strings = val.split(',').map{|v| v.strip}
+            programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
+            program_ids = programs.map do |program| 
+              children = program.children_programs
+              if children.empty?
+                program
+              else
+                children
+              end
+            end.compact.flatten.map &:id
+            # Have to consider that state may have been parsed before program_id
+            if program_ids && !program_ids.empty?
+              if search_with_attributes[:filter_state] && search_with_attributes[:filter_state].is_a?(Array) && search_with_attributes[:filter_state].include?('pending_secondary_pd_approval')
+                search_with_attributes[:all_request_program_ids] = program_ids
+              else
+                search_with_attributes[:program_id] = program_ids
+              end
+            end
+          end),
+          :greater_amount_recommended => (lambda do |search_with_attributes, val|
+            if search_with_attributes[:amount_recommended]
+              search_with_attributes[:amount_recommended] = (val.to_i..(search_with_attributes[:amount_recommended].end))
+            else
+              search_with_attributes[:amount_recommended] = (val.to_i..999999999999)
+            end
+            search_with_attributes
+          end),
+          :lesser_amount_recommended => (lambda do |search_with_attributes, val|
+            if search_with_attributes[:amount_recommended]
+              search_with_attributes[:amount_recommended] = ((search_with_attributes[:amount_recommended].begin)..val.to_i)
+            else
+              search_with_attributes[:amount_recommended] = (0..val.to_i)
+            end
+            search_with_attributes
+          end),
+          :funding_agreement_from_date => (lambda do |search_with_attributes, val|
+            if (Time.parse(val) rescue nil)
+              start_at = Time.parse(val)
+              search_with_attributes[:has_been_approved] = false
+              if search_with_attributes[:grant_agreement_at] && search_with_attributes[:grant_agreement_at].end < FAR_IN_THE_FUTURE
+                search_with_attributes[:grant_agreement_at] = (start_at.to_i..(search_with_attributes[:grant_agreement_at].end))
+              else
+                search_with_attributes[:grant_agreement_at] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
+              end
+              search_with_attributes
+            end || {}
+          end),
+          :funding_agreement_to_date => (lambda do |search_with_attributes, val|
+            if (Time.parse(val) rescue nil)
+              search_with_attributes[:has_been_approved] = false
+              end_at = Time.parse(val)
+              {:grant_agreement_at => (0..end_at.to_i), :has_been_approved => false}
+              if search_with_attributes[:grant_agreement_at] && search_with_attributes[:grant_agreement_at].begin > 0
+                search_with_attributes[:grant_agreement_at] = ((search_with_attributes[:grant_agreement_at].begin)..end_at.to_i)
+              else
+                search_with_attributes[:grant_agreement_at] = (0..end_at.to_i)
+              end
+              search_with_attributes
+            end || {}
+          end)
+        }
+      
+    end
+    base.insta_realtime do |insta|
+      insta.delta_attributes = SEARCH_ATTRIBUTES
+      insta.updated_by_field = :updated_by_id
+    end
     base.insta_utc do |insta|
       insta.time_attributes = [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_start_at, :ierf_proposed_end_at, :ierf_budget_end_at] 
     end

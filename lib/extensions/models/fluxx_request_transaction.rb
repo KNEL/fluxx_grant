@@ -1,4 +1,5 @@
 module FluxxRequestTransaction
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state]
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => 1}
@@ -10,7 +11,41 @@ module FluxxRequestTransaction
 
     base.insta_search
     base.insta_export
-    base.insta_realtime
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids]
+      insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, value|
+          if value.to_s.is_numeric?
+            due_date_check = Time.now + value.to_i.days
+            search_with_attributes[:due_at] = (0..due_date_check.to_i)
+            search_with_attributes[:has_been_paid] = false
+          end || {}
+        end),
+        :overdue_by_days => (lambda do |search_with_attributes, value|
+          if value.to_s.is_numeric?
+            due_date_check = Time.now - value.to_i.days
+            search_with_attributes[:due_at] = (0..due_date_check.to_i)
+            search_with_attributes[:has_been_paid] = false
+          end || {}
+        end),
+        :grant_program_ids => (lambda do |search_with_attributes, val|
+          program_id_strings = val.split(',').map{|v| v.strip}
+          programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
+          program_ids = programs.map do |program| 
+            children = program.children_programs
+            if children.empty?
+              program
+            else
+              children
+            end
+          end.compact.flatten.map &:id
+          search_with_attributes[:grant_program_ids] = program_ids if program_ids && !program_ids.empty?
+        end),
+        }
+    end
+    base.insta_realtime do |insta|
+      insta.delta_attributes = SEARCH_ATTRIBUTES
+      insta.updated_by_field = :updated_by_id
+    end
     base.insta_multi
     base.insta_lock
     base.insta_utc do |insta|

@@ -1,4 +1,5 @@
 module FluxxGrantUser
+  SEARCH_ATTRIBUTES = [:state, :updated_at, :first_name, :last_name]
   def self.included(base)
     base.has_many :request_users
     base.has_many :users, :through => :request_users
@@ -8,6 +9,13 @@ module FluxxGrantUser
     base.has_many :fiscal_org_owner_requests, :class_name => 'Request', :foreign_key => :fiscal_org_owner_id
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
     
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES
+    end
+    base.insta_realtime do |insta|
+      insta.delta_attributes = SEARCH_ATTRIBUTES
+      insta.updated_by_field = :updated_by_id
+    end
     
     base.extend(ModelClassMethods)
     base.class_eval do

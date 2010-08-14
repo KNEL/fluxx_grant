@@ -1,4 +1,6 @@
 module FluxxGrantOrganization
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids]
+
   def self.included(base)
     base.has_many :grants, :class_name => 'GrantRequest', :foreign_key => :program_organization_id, :conditions => {:granted => 1}
     base.has_many :grant_requests, :class_name => 'Request', :foreign_key => :program_organization_id
@@ -7,9 +9,15 @@ module FluxxGrantOrganization
 
     base.insta_search
     base.insta_export
-    base.insta_realtime
     base.insta_multi
     base.insta_lock
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids]
+    end
+    base.insta_realtime do |insta|
+      insta.delta_attributes = SEARCH_ATTRIBUTES
+      insta.updated_by_field = :updated_by_id
+    end
 
     base.extend(ModelClassMethods)
     base.class_eval do
