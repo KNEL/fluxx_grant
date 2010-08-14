@@ -12,6 +12,7 @@ module FluxxRequest
     base.has_many :request_letters
     base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 
     base.belongs_to :program
     base.belongs_to :initiative

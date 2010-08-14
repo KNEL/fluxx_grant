@@ -70,9 +70,57 @@ module FluxxRequestReport
     base.class_eval do
       include ModelInstanceMethods
     end
+    
+    base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
 
   module ModelClassMethods
+    def add_sphinx
+      define_index :req_report_first do
+        # fields
+        indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
+        indexes grant.program_organization.acronym, :as => :request_org_acronym, :sortable => true
+        indexes "if(requests.type = 'FipRequest', concat('FG-',requests.base_request_id), concat('G-',requests.base_request_id))", :as => :request_grant_id, :sortable => true
+
+        # attributes
+        has created_at, updated_at, deleted_at, due_at 
+        set_property :delta => true
+        has grant(:id), :as => :grant_ids
+        has grant.program(:id), :as => :grant_program_ids
+        has grant.sub_program(:id), :as => :grant_sub_program_ids
+        has grant.state, :type => :string, :crc => true, :as => :grant_state
+        has :report_type, :type => :string, :crc => true
+        has :state, :type => :string, :crc => true
+        has 'null', :type => :multi, :as => :favorite_user_ids
+        has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
+        has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
+        has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
+        has group_members.group(:id), :type => :multi, :as => :group_ids
+      end
+
+      define_index :req_report_second do
+        # fields
+        indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
+        indexes 'null', :type => :string, :as => :request_org_acronym, :sortable => true
+        indexes 'null', :type => :string, :as => :request_grant_id, :sortable => true
+
+        # attributes
+        has created_at, updated_at, deleted_at, due_at
+        set_property :delta => true
+        has 'null', :type => :multi, :as => :grant_ids
+        has 'null', :type => :multi, :as => :grant_program_ids
+        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :type => :string, :crc => true, :as => :grant_state
+        has :report_type, :type => :string, :crc => true
+        has :state, :type => :string, :crc => true
+        has favorites.user(:id), :as => :favorite_user_ids
+        has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
+        has 'null', :type => :multi, :as => :related_organization_ids
+        has 'null', :type => :multi, :as => :lead_user_ids
+        has 'null', :type => :multi, :as => :group_ids
+      end
+    end
+    
     def eval_type_name
       'Eval'
     end
