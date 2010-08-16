@@ -1,5 +1,5 @@
 module FluxxRequest
-  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
+  SEARCH_ATTRIBUTES = [:program_id, :initiative_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
@@ -41,14 +41,98 @@ module FluxxRequest
     base.belongs_to :fiscal_org_owner, :class_name => 'User', :foreign_key => 'fiscal_org_owner_id'
     base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
     
-    # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
-    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
-    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
-    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
-    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
+    base.insta_favorite
 
     base.insta_search
-    base.insta_export
+    base.insta_export do |insta|
+      insta.filename = (lambda { |with_clause| with_clause[:granted]==1 ? 'grant' : 'request'})
+      insta.headers = (lambda do |with_clause|
+          block1 = ['Request ID', 'Request Type', 'Status', ['Amount Requested', :currency], ['Amount Recommended', :currency]]
+          grant_block = [['Amount Funded', :currency], ['Total Paid', :currency], ['Total Due', :currency], ['Grant Agreement Date', :date], ['Grant Start Date', :date], ['Grant End Date', :date]]
+          block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
+            'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL',
+            'Lead PO/PD', 'Program', 'Initiative', ['Date Request Received', :date], ['Duration', :integer], 
+            'Geo Focus (Region)', 'Geo Focus (States)', 'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 'Request Summary']
+          if with_clause[:granted]==1
+            block1 + grant_block + block2
+          else
+            block1 + block2
+          end
+        end)
+      insta.sql_query =   (lambda do |with_clause|
+          block1 = "  select 
+          requests.base_request_id, requests.type, requests.state,
+                         requests.amount_requested,
+                         requests.amount_recommended,"
+
+          grant_block =  "requests.amount_recommended amount_funded,
+                         (select sum(amount_paid) from request_transactions rt where rt.request_id = requests.id) total_amount_paid, 
+                         (select sum(amount_due) from request_transactions rt where rt.request_id = requests.id) total_amount_due,
+                         requests.grant_agreement_at, 
+                         grant_begins_at, 
+                         date_add(grant_begins_at, interval requests.duration_in_months MONTH) grant_ends_at,"
+
+          block2 = "program_organization.name, 
+          program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
+          program_org_country_states.name program_org_state_name, program_org_countries.name program_org_country_name, program_organization.postal_code program_org_postal_code,
+          program_organization.url program_org_url,
+          fiscal_organization.name,
+          fiscal_organization.street_address fiscal_org_street_address, fiscal_organization.street_address2 fiscal_org_street_address2, fiscal_organization.city fiscal_org_city,
+          fiscal_org_country_states.name fiscal_org_state_name, fiscal_org_countries.name fiscal_org_country_name, fiscal_organization.postal_code fiscal_org_postal_code,
+          fiscal_organization.url fiscal_org_url,
+          (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
+          roles, roles_users, users where roles.name = 'Program Lead'
+          and roles.id = roles_users.role_id and users.id = roles_users.user_id
+          and roles.authorizable_type = 'Request' and roles.authorizable_id = requests.id) lead_po,
+          program.name, sub_program.name,
+          requests.request_received_at, 
+          requests.duration_in_months,
+          (select replace(group_concat(name, ', '), ', ', '') from geo_regions, request_geo_regions where geo_regions.id = request_geo_regions.geo_region_id and request_geo_regions.request_id = requests.id group by request_geo_regions.request_id) geo_region, 
+          (select replace(group_concat(name, ', '), ', ', '') from geo_states, request_geo_states where geo_states.id = request_geo_states.geo_state_id
+           and request_geo_states.request_id = requests.id group by request_geo_states.request_id) geo_states, 
+          (select replace(group_concat(mev.value, ', '), ', ', '')
+          from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
+          WHERE   meg.name = 'constituents'
+          and multi_element_group_id = meg.id
+          and multi_element_value_id = mev.id
+          and target_id = requests.id
+          group by requests.id) constituents,
+          (select replace(group_concat(mev.value, ', '), ', ', '')
+          from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
+          WHERE   (meg.name = 'usa_means' OR meg.name = 'china_means')
+          and multi_element_group_id = meg.id
+          and multi_element_value_id = mev.id
+          and target_id = requests.id
+          group by requests.id) means,
+          (select mev_tax_class.value from
+           multi_element_groups meg_tax_class,
+           multi_element_values mev_tax_class 
+           WHERE meg_tax_class.name = 'tax_classes' and
+           multi_element_group_id = meg_tax_class.id and program_organization.tax_class_id = mev_tax_class.id) org_tax_class,
+          replace(group_concat(funding_sources.name, ', '), ', ', '') funding_source_name,
+          requests.created_at, requests.updated_at, 
+          project_summary
+                         FROM requests
+                         LEFT OUTER JOIN programs program ON program.id = requests.program_id
+                         LEFT OUTER JOIN iniatives initiative ON initiatives.id = requests.initiative_id
+                         LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
+                         left outer join country_states as program_org_country_states on program_org_country_states.id = program_organization.country_state_id
+                         left outer join countries as program_org_countries on program_org_countries.id = program_organization.country_id
+                         LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
+                         left outer join country_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.country_state_id
+                         left outer join countries as fiscal_org_countries on fiscal_org_countries.id = fiscal_organization.country_id
+                         LEFT OUTER JOIN geo_zones geo_zone ON geo_zone.id = requests.geo_zone_id
+                         LEFT OUTER JOIN request_funding_sources ON request_funding_sources.request_id = requests.id
+                         LEFT OUTER JOIN funding_sources ON funding_sources.id = request_funding_sources.funding_source_id
+                         WHERE requests.id IN (?) GROUP BY requests.id"
+         if with_clause[:granted]==1 || (with_clause[:granted].is_a?(Array) && with_clause[:granted].include?(1))
+           block1 + grant_block + block2
+         else
+           block1 + block2
+         end
+       end)
+    end
+
     base.insta_multi
     base.insta_lock
     base.insta_search do |insta|
@@ -187,6 +271,12 @@ module FluxxRequest
     base.alias_method_chain :fiscal_org_owner, :specific
     base.alias_method_chain :fiscal_signatory, :specific
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
+
+    # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
+    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
+    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
+    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
+    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
   end
 
   module ModelClassMethods
@@ -675,6 +765,22 @@ module FluxxRequest
     def award_letter_type
       al_letter = award_request_letter
       al_letter.letter_template.id if al_letter && al_letter.letter_template
+    end
+    
+    def filter_state
+      self.state
+    end
+
+    def filter_type
+      self.type
+    end
+
+    def lead_user_ids
+      program_lead ? program_lead.id : nil
+    end
+
+    def org_owner_user_ids
+      grantee_org_owner ? grantee_org_owner.id : nil
     end
 
     # Find out all the states a request of this type can pass through from the time it is new doing normal promotion

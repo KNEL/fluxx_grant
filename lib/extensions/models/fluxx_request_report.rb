@@ -1,5 +1,5 @@
 module FluxxRequestReport
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids] 
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiatives, :due_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids] 
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => true}
@@ -14,7 +14,24 @@ module FluxxRequestReport
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 
     base.insta_search
-    base.insta_export
+    base.insta_export do |insta|
+      insta.filename = 'report'
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'request_id', 'state', 'report_type', ['Date Due', :date], ['Date Approved', :date], 'org_name', 
+            ['Amount Recommended', :currency], 'lead_po', 'project_summary']
+      insta.sql_query = "select rd.created_at, rd.updated_at, requests.base_request_id request_id, rd.state, rd.report_type, rd.due_at, rd.approved_at, organizations.name program_org_name,
+              requests.amount_recommended, 
+              (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
+                 roles, roles_users, users where roles.name = 'Program Lead'
+                 and roles.id = roles_users.role_id and users.id = roles_users.user_id
+                 and roles.authorizable_type = 'Request' and roles.authorizable_id = requests.id) lead_po,
+              requests.project_summary
+              from request_reports rd
+              left outer join requests on rd.request_id = requests.id
+              left outer join organizations on requests.program_organization_id = organizations.id
+              where rd.id IN (?)"
+    end
+    
+    base.insta_favorite
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids]
       insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, value|
@@ -122,7 +139,7 @@ module FluxxRequestReport
         set_property :delta => true
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
-        has grant.sub_program(:id), :as => :grant_sub_program_ids
+        has grant.initiative(:id), :as => :grant_initiatives
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
         has :state, :type => :string, :crc => true
@@ -144,7 +161,7 @@ module FluxxRequestReport
         set_property :delta => true
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiatives
         has 'null', :type => :multi, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
         has :state, :type => :string, :crc => true
@@ -329,9 +346,9 @@ module FluxxRequestReport
       end
     end
 
-    def grant_sub_program_ids
-      if grant && grant.sub_program
-        [grant.sub_program.id]
+    def grant_initiatives
+      if grant && grant.initiative
+        [grant.initiative.id]
       else
         []
       end

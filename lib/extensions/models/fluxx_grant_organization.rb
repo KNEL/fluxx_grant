@@ -9,6 +9,22 @@ module FluxxGrantOrganization
 
     base.insta_search
     base.insta_export
+    base.insta_export do |insta|
+      insta.filename = 'organization'
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'name', 'street_address', 'street_address2', 'city', 'state_name', 
+                  'country_name', 'postal_code', 'phone', 'other_contact', 'fax', 'email', 'url', 'blog_url', 'twitter_url', 'acronym', 'tax_class']
+      insta.sql_query = "select organizations.created_at, organizations.updated_at, organizations.name, street_address, street_address2, city, country_states.name state_name,  
+                  countries.name country_name,
+                  postal_code, phone, other_contact, fax, email, url, blog_url, twitter_url, acronym, mev_tax_class.value tax_class_value
+                  from organizations
+                  left outer join country_states on country_states.id = country_state_id
+                  left outer join countries on countries.id = organizations.country_id
+                  left outer join multi_element_groups meg_tax_class on meg_tax_class.name = 'tax_classes'
+                  left outer join multi_element_values mev_tax_class on multi_element_group_id = meg_tax_class.id and tax_class_id = mev_tax_class.id 
+                  WHERE
+                  organizations.id IN (?)"
+    end
+    
     base.insta_multi
     base.insta_lock
     base.insta_search do |insta|
