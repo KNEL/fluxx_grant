@@ -8,6 +8,7 @@ module FluxxRequestFundingSource
     base.insta_search
     base.insta_export
     base.insta_multi
+    base.insta_lock
     base.insta_realtime
 
     base.extend(ModelClassMethods)

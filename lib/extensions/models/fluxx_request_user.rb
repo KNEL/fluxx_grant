@@ -12,6 +12,7 @@ module FluxxRequestUser
     base.insta_search
     base.insta_export
     base.insta_realtime
+    base.insta_lock
     
     base.extend(ModelClassMethods)
     base.class_eval do

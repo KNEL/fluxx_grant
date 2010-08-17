@@ -25,6 +25,8 @@ gem 'devise', '1.1.1'
 gem "acts_as_audited", :git => "git://github.com/ehansen486/acts_as_audited.git"
 #gem "acts_as_audited", :path => "../acts_as_audited"
 gem 'paperclip'
+gem 'mysql'
+
 
 if RUBY_VERSION < '1.9'
   gem "ruby-debug", ">= 0.10.3"

@@ -1,7 +1,7 @@
 development:
   adapter: mysql
   database: fgdummy_development
-  host: sprout.local
+  host: localhost
   pool: 5
   username: root
   password:
@@ -13,7 +13,7 @@ development:
 test:
   adapter: mysql
   database: fgdummy_test
-  host: sprout.local
+  host: localhost
   pool: 5
   username: root
   password: 
@@ -22,7 +22,7 @@ test:
 production:
   adapter: mysql
   database: fgdummy_production
-  host: sprout.local
+  host: localhost
   pool: 5
   username: root
   password: 

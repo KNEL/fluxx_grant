@@ -32,6 +32,15 @@ class TestHelper
   end
 end
 
+def login_as user
+  @controller.current_user = user
+end
+
+class ActionController::Base
+  attr_accessor :current_user
+end
+
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
   #

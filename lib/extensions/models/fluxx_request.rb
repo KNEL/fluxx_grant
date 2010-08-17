@@ -44,6 +44,7 @@ module FluxxRequest
     base.insta_favorite
 
     base.insta_search
+    base.insta_lock
     base.insta_export do |insta|
       insta.filename = (lambda { |with_clause| with_clause[:granted]==1 ? 'grant' : 'request'})
       insta.headers = (lambda do |with_clause|
@@ -753,7 +754,7 @@ module FluxxRequest
       request_letters.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.grant_agreement_category)}.first
     end
 
-    def grant_agreement_letter_type
+    def load_grant_agreement_letter_type
       ga_letter = grant_agreement_request_letter
       ga_letter.letter_template.id if ga_letter && ga_letter.letter_template
     end
@@ -762,10 +763,41 @@ module FluxxRequest
       request_letters.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.award_category)}.first
     end
 
-    def award_letter_type
+    def load_award_letter_type
       al_letter = award_request_letter
       al_letter.letter_template.id if al_letter && al_letter.letter_template
     end
+    
+    def resolve_letter_type_changes
+      ga_request_letter = grant_agreement_request_letter
+      if !@grant_agreement_letter_type.blank? && ((load_grant_agreement_letter_type && @grant_agreement_letter_type != load_grant_agreement_letter_type) || !load_grant_agreement_letter_type)
+        ga_letter_template = LetterTemplate.find(@grant_agreement_letter_type)
+        if ga_request_letter
+          # Need to swap out the existing content and point to the new letter_template
+          ga_request_letter.letter_template = ga_letter_template
+          ga_request_letter.letter = ga_letter_template.letter
+          ga_request_letter.save
+        else
+          # No GA request letter exists yet- let's create one
+          RequestLetter.create :request => self, :letter_template => ga_letter_template, :letter => ga_letter_template.letter
+        end
+      end
+
+      awd_request_letter = award_request_letter
+      if !@award_letter_type.blank? && ((load_award_letter_type && @award_letter_type != load_award_letter_type) || !load_award_letter_type)
+        award_letter_template = LetterTemplate.find(@award_letter_type)
+        if awd_request_letter
+          # Need to swap out the existing content and point to the new letter_template
+          awd_request_letter.letter_template = award_letter_template
+          awd_request_letter.letter = award_letter_template.letter
+          awd_request_letter.save
+        else
+          # No GA request letter exists yet- let's create one
+          RequestLetter.create :request => self, :letter_template => award_letter_template, :letter => award_letter_template.letter
+        end
+      end
+    end
+    
     
     def filter_state
       self.state

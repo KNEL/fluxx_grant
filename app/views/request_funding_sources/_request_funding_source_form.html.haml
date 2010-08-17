@@ -1,0 +1,3 @@
+= form.input :funding_source, :label => 'Funding Source:', :as => :select, :collection => FundingSource.all.map {|funding_source| [funding_source.name, funding_source.id]}
+
+= form.commit_button

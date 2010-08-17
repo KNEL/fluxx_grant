@@ -22,7 +22,7 @@ module FluxxLetterTemplate
 
           LetterTemplate.instance_eval %Q{
             def self.reload_#{method_name}
-              letter_contents = File.open("#{RAILS_ROOT}/app/views/letter_templates/#{template_name}.html.erb", 'r').read_whole_file
+              letter_contents = File.open("#{File.dirname(__FILE__).to_s}/../../../app/views/letter_templates/#{template_name}.html.erb", 'r').read_whole_file
               letter_type = LetterTemplate.find #{letter_template.id}
               letter_type.update_attribute :letter, letter_contents
             end
