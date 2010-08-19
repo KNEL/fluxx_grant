@@ -7,6 +7,7 @@ module FluxxRequestReportsController
     end
     base.insta_show RequestReport do |insta|
       insta.template = 'request_report_show'
+      insta.add_workflow
     end
     base.insta_new RequestReport do |insta|
       insta.template = 'request_report_form'
@@ -19,6 +20,7 @@ module FluxxRequestReportsController
     end
     base.insta_put RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.add_workflow
     end
     base.insta_delete RequestReport do |insta|
       insta.template = 'request_report_form'

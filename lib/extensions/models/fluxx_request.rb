@@ -867,6 +867,10 @@ module FluxxRequest
         fiscal_signatory_without_specific
       end
     end
+    
+    def state_after_pre_recommended_chain
+      !((Request.pre_recommended_chain + Request.rejected_states).include?(state.to_sym))
+    end
   end
 end
 

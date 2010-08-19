@@ -7,6 +7,7 @@ module FluxxGrantRequestsController
     end
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_request_show'
+      insta.add_workflow
     end
     base.insta_new GrantRequest do |insta|
       insta.template = 'grant_request_form'
@@ -19,6 +20,7 @@ module FluxxGrantRequestsController
     end
     base.insta_put GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.add_workflow
     end
     base.insta_delete GrantRequest do |insta|
       insta.template = 'grant_request_form'

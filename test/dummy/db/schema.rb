@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100809090857) do
+ActiveRecord::Schema.define(:version => 20100819101944) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -258,7 +258,7 @@ ActiveRecord::Schema.define(:version => 20100809090857) do
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
   add_index "organizations", ["geo_country_id"], :name => "organizations_geo_country_id"
   add_index "organizations", ["geo_state_id"], :name => "organizations_geo_state_id"
-  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"255"}
+  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"767"}
   add_index "organizations", ["parent_org_id"], :name => "index_organizations_on_parent_org_id"
   add_index "organizations", ["updated_by_id"], :name => "organizations_updated_by_id"
 
@@ -450,13 +450,39 @@ ActiveRecord::Schema.define(:version => 20100809090857) do
     t.datetime "locked_until"
     t.datetime "deleted_at"
     t.boolean  "delta",                             :default => true, :null => false
+    t.integer  "program_lead_id"
+    t.integer  "fiscal_org_owner_id"
+    t.integer  "grantee_signatory_id"
+    t.integer  "fiscal_signatory_id"
+    t.integer  "grantee_org_owner_id"
   end
 
+  add_index "requests", ["fiscal_org_owner_id"], :name => "requests_fiscal_org_owner_id"
   add_index "requests", ["fiscal_organization_id"], :name => "index_requests_on_fiscal_organization_id"
+  add_index "requests", ["fiscal_signatory_id"], :name => "requests_fiscal_signatory_id"
   add_index "requests", ["granted"], :name => "index_requests_on_granted"
+  add_index "requests", ["grantee_org_owner_id"], :name => "requests_grantee_org_owner_id"
+  add_index "requests", ["grantee_signatory_id"], :name => "requests_grantee_signatory_id"
   add_index "requests", ["initiative_id"], :name => "index_requests_on_initiative_id"
   add_index "requests", ["program_id"], :name => "index_requests_on_program_id"
+  add_index "requests", ["program_lead_id"], :name => "requests_program_lead_id"
   add_index "requests", ["program_organization_id"], :name => "index_requests_on_program_organization_id"
+
+  create_table "role_users", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "name",          :null => false
+    t.integer  "user_id"
+    t.string   "roleable_type"
+    t.integer  "roleable_id"
+  end
+
+  add_index "role_users", ["created_by_id"], :name => "role_users_created_by_id"
+  add_index "role_users", ["name", "roleable_type", "roleable_id"], :name => "index_role_users_on_name_and_roleable_type_and_roleable_id"
+  add_index "role_users", ["updated_by_id"], :name => "role_users_updated_by_id"
+  add_index "role_users", ["user_id"], :name => "index_role_users_on_user_id"
 
   create_table "user_organizations", :force => true do |t|
     t.datetime "created_at"

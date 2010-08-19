@@ -36,6 +36,13 @@ def login_as user
   @controller.current_user = user
 end
 
+def login_as_user_with_role role_name, program=@program
+  @alternate_user = User.make
+  @alternate_user.has_role! role_name, program 
+  login_as @alternate_user
+  @alternate_user
+end
+
 class ActionController::Base
   attr_accessor :current_user
 end

@@ -7,6 +7,7 @@ module FluxxRequestTransactionsController
     end
     base.insta_show RequestTransaction do |insta|
       insta.template = 'request_transaction_show'
+      insta.add_workflow
     end
     base.insta_new RequestTransaction do |insta|
       insta.template = 'request_transaction_form'
@@ -19,6 +20,7 @@ module FluxxRequestTransactionsController
     end
     base.insta_put RequestTransaction do |insta|
       insta.template = 'request_transaction_form'
+      insta.add_workflow
     end
     base.insta_delete RequestTransaction do |insta|
       insta.template = 'request_transaction_form'

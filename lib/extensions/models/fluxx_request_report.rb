@@ -123,6 +123,26 @@ module FluxxRequestReport
       include ModelInstanceMethods
     end
     
+    base.insta_workflow do |insta|
+      insta.states_to_english = {
+        RequestReport.eval_type_name => 'Eval',
+        RequestReport.final_budget_type_name => 'Final Financial',
+        RequestReport.final_narrative_type_name => 'Final Narrative',
+        RequestReport.interim_budget_type_name => 'Interim Financial',
+        RequestReport.interim_narrative_type_name => 'Interim Narrative',
+      }
+      
+      insta.events_to_english = {
+        RequestReport.submit_report_event => 'Submit Report',
+        RequestReport.lead_approve_event => 'Approve',
+        RequestReport.lead_send_back_event => 'Send Back',
+        RequestReport.grant_team_approve_event => 'Approve',
+        RequestReport.grant_team_send_back_event => 'Send Back',
+        RequestReport.finance_approve_event => 'Approve',
+        RequestReport.finance_send_back_event => 'Send Back',
+      }
+    end
+    
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
 

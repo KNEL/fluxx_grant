@@ -23,22 +23,22 @@ class GrantRequestsControllerTest < ActionController::TestCase
     login_as @user1
   end
   
-  test "check on _allowed? methods" do
-    @controller.session = @request.session
-    @controller.load_request @request1.id
-    assert @controller.reject_allowed?
-    assert @controller.un_reject_allowed?
-    assert @controller.recommend_funding_allowed?
-    assert @controller.po_approve_allowed?
-    assert @controller.po_send_back_allowed?
-    assert !@controller.pd_approve_allowed?
-    assert !@controller.pd_send_back_allowed?
-    assert !@controller.svp_approve_allowed?
-    assert !@controller.svp_send_back_allowed?
-    assert !@controller.president_approve_allowed?
-    assert !@controller.president_send_back_allowed?
-    assert !@controller.become_grant_allowed?
-  end
+  # test "check on _allowed? methods" do
+  #   @controller.session = @request.session
+  #   @controller.load_request @request1.id
+  #   assert @controller.reject_allowed?
+  #   assert @controller.un_reject_allowed?
+  #   assert @controller.recommend_funding_allowed?
+  #   assert @controller.po_approve_allowed?
+  #   assert @controller.po_send_back_allowed?
+  #   assert !@controller.pd_approve_allowed?
+  #   assert !@controller.pd_send_back_allowed?
+  #   assert !@controller.svp_approve_allowed?
+  #   assert !@controller.svp_send_back_allowed?
+  #   assert !@controller.president_approve_allowed?
+  #   assert !@controller.president_send_back_allowed?
+  #   assert !@controller.become_grant_allowed?
+  # end
 
   test "try to reject a request" do
      [(GrantRequest.approval_chain + GrantRequest.sent_back_states).first].each do |cur_state|
@@ -46,14 +46,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
       Program.request_roles.each do |role_name|
         @request1.state = cur_state.to_s
         @request1.save
-        if cur_state == :pending_secondary_pd_approval
-          secondary_program = Program.make 
-          @request1.secondary_programs << secondary_program
-          login_as_user_with_role role_name, secondary_program
-        else
-          login_as_user_with_role role_name
-        end
-        check_models_are_updated{get :reject, :id => @request1.id}
+        login_as_user_with_role role_name
+        check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'reject'}
         assert_equal 'rejected', @request1.reload().state
         assert flash[:info]
       end
@@ -609,33 +603,6 @@ class GrantRequestsControllerTest < ActionController::TestCase
     # assert_redirected_to grant_request_path(assigns(:grant_request))
   end
 
-  test "should create request with secondary programs" do
-    program_1 = Program.make
-    program_2 = Program.make
-    assert_difference('RequestProgram.count', 2) do
-      assert_difference('GrantRequest.count') do
-        post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000,
-          :request_programs_attributes =>{1=>{:program_id=>program_1.id}, 2=>{:program_id=>program_2.id}},
-           }
-       end
-     end
-  end
-
-  test "should delete secondary program from a request" do
-    program_1 = Program.make
-    program_2 = Program.make
-    
-    @request1.secondary_programs << program_1
-    @request1.secondary_programs << program_2
-    assert_equal 2, @request1.secondary_programs.size
-    @request1.save
-    put :update, :id => @request1.to_param, :grant_request => { 
-        :request_programs_attributes =>{1=>{:id=>@request1.request_programs[0].id, :_delete=>1}, 2=>{:id=>@request1.request_programs[1].id, :_delete=>1}},
-      }
-    assert_equal 0, @request1.reload.secondary_programs.size
-  end
-
-
   test "should choose a request letter for a request that currently has none" do
     @request1.save
     award_letter = LetterTemplate.make
@@ -675,11 +642,12 @@ class GrantRequestsControllerTest < ActionController::TestCase
   
   test "should create role grantee org owner user" do
     assert_difference('Request.count') do
-      post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :role_grantee_org_owner_user => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
+      post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
     end
     request = assigns(:grant_request)
     assert_not_nil request
-    assert_equal 1, request.reload.roles_users.size
+    assert_not_nil request.reload.grantee_org_owner
+    assert_equal @user1.id, request.grantee_org_owner.id
 
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
     # assert_redirected_to grant_request_path(assigns(:grant_request))
