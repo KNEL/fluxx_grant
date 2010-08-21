@@ -46,15 +46,15 @@ module FluxxRequest
     base.insta_search
     base.insta_lock
     base.insta_export do |insta|
-      insta.filename = (lambda { |with_clause| with_clause[:granted]==1 ? 'grant' : 'request'})
+      insta.filename = (lambda { |with_clause| (with_clause != nil && with_clause[:granted]==1) ? 'grant' : 'request'})
       insta.headers = (lambda do |with_clause|
           block1 = ['Request ID', 'Request Type', 'Status', ['Amount Requested', :currency], ['Amount Recommended', :currency]]
           grant_block = [['Amount Funded', :currency], ['Total Paid', :currency], ['Total Due', :currency], ['Grant Agreement Date', :date], ['Grant Start Date', :date], ['Grant End Date', :date]]
           block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
             'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL',
             'Lead PO/PD', 'Program', 'Initiative', ['Date Request Received', :date], ['Duration', :integer], 
-            'Geo Focus (Region)', 'Geo Focus (States)', 'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 'Request Summary']
-          if with_clause[:granted]==1
+            'Geo Focus (States)', 'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 'Request Summary']
+          if with_clause && with_clause[:granted]==1
             block1 + grant_block + block2
           else
             block1 + block2
@@ -82,13 +82,10 @@ module FluxxRequest
           fiscal_org_country_states.name fiscal_org_state_name, fiscal_org_countries.name fiscal_org_country_name, fiscal_organization.postal_code fiscal_org_postal_code,
           fiscal_organization.url fiscal_org_url,
           (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
-          roles, roles_users, users where roles.name = 'Program Lead'
-          and roles.id = roles_users.role_id and users.id = roles_users.user_id
-          and roles.authorizable_type = 'Request' and roles.authorizable_id = requests.id) lead_po,
-          program.name, sub_program.name,
+          users where id = program_lead_id) lead_po,
+          program.name, initiative.name,
           requests.request_received_at, 
           requests.duration_in_months,
-          (select replace(group_concat(name, ', '), ', ', '') from geo_regions, request_geo_regions where geo_regions.id = request_geo_regions.geo_region_id and request_geo_regions.request_id = requests.id group by request_geo_regions.request_id) geo_region, 
           (select replace(group_concat(name, ', '), ', ', '') from geo_states, request_geo_states where geo_states.id = request_geo_states.geo_state_id
            and request_geo_states.request_id = requests.id group by request_geo_states.request_id) geo_states, 
           (select replace(group_concat(mev.value, ', '), ', ', '')
@@ -115,16 +112,15 @@ module FluxxRequest
           project_summary
                          FROM requests
                          LEFT OUTER JOIN programs program ON program.id = requests.program_id
-                         LEFT OUTER JOIN iniatives initiative ON initiatives.id = requests.initiative_id
+                         LEFT OUTER JOIN initiatives initiative ON initiative.id = requests.initiative_id
                          LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
-                         left outer join country_states as program_org_country_states on program_org_country_states.id = program_organization.country_state_id
-                         left outer join countries as program_org_countries on program_org_countries.id = program_organization.country_id
                          LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
-                         left outer join country_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.country_state_id
-                         left outer join countries as fiscal_org_countries on fiscal_org_countries.id = fiscal_organization.country_id
-                         LEFT OUTER JOIN geo_zones geo_zone ON geo_zone.id = requests.geo_zone_id
                          LEFT OUTER JOIN request_funding_sources ON request_funding_sources.request_id = requests.id
                          LEFT OUTER JOIN funding_sources ON funding_sources.id = request_funding_sources.funding_source_id
+                         left outer join geo_states as program_org_country_states on program_org_country_states.id = program_organization.geo_state_id
+                         left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
+                         left outer join geo_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.geo_state_id
+                         left outer join geo_countries as fiscal_org_countries on fiscal_org_countries.id = fiscal_organization.geo_country_id
                          WHERE requests.id IN (?) GROUP BY requests.id"
          if with_clause[:granted]==1 || (with_clause[:granted].is_a?(Array) && with_clause[:granted].include?(1))
            block1 + grant_block + block2
@@ -160,7 +156,7 @@ module FluxxRequest
           end),
 
           :program_id => (lambda do |search_with_attributes, val|
-            program_id_strings = val.split(',').map{|v| v.strip}
+            program_id_strings = val.split(',').map{|v| v.to_s.strip}
             programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
             program_ids = programs.map do |program| 
               children = program.children_programs
