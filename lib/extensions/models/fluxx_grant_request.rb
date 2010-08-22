@@ -1,6 +1,6 @@
 module FluxxGrantRequest
   def self.included(base)
-    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
+    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :updated_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 
     # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
     base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
@@ -32,6 +32,7 @@ module FluxxGrantRequest
   module ModelInstanceMethods
     # This will generate (but not persist to DB) all the transactions, etc. necessary to make the grant go through
     def generate_grant_details
+      p "ESH: in generate_grant_details"
       generate_grant_dates
 
       new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
@@ -60,43 +61,46 @@ module FluxxGrantRequest
       request_reports << eval_request_document
 
       if self.is_er?
+        p "ESH: 111 yes, it is ER"
         if program_organization.grants.size > 0 # Is there another grant that already exists
+          p "ESH: 222 yes, a grant already exists"
           # Transactions for ER trusted orgs
           if duration_in_months > 12
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id,
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
               :amount_due => amount_recommended * 0.5, :due_at => grant_agreement_at, :state => 'actually_due')
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id,
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
               :amount_due => amount_recommended * 0.4, :due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, 
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
               :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           else
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id,  
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,  
               :amount_due => amount_recommended * 0.9, :due_at => grant_agreement_at, :state => 'actually_due')
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, 
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
               :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           end
         else
+          p "ESH: 333 no, a grant does not already exist"
           # Transactions for ER non-trusted orgs
           if duration_in_months > 12
             raise I18n.t(:er_grants_may_not_be_greater_than_one_year, :duration_in_months => duration_in_months)
           else
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, 
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
               :amount_due => amount_recommended * 0.6, :due_at => grant_agreement_at, :state => 'actually_due')
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, 
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
               :amount_due => amount_recommended * 0.3,:due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
-            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id,
+            request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
               :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           end
         end
       else
         # Transactions for public charities
         if duration_in_months > 12
-          request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, :amount_due => amount_recommended * 0.5, 
+          request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended * 0.5, 
             :due_at => grant_agreement_at, :state => 'actually_due')
-          request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, :amount_due => amount_recommended * 0.5, 
+          request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended * 0.5, 
             :due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
         else
-          request_transactions << RequestTransaction.new(:request_id => self.id, :created_by_id => self.modified_by_id, :modified_by_id => self.modified_by_id, :amount_due => amount_recommended, 
+          request_transactions << RequestTransaction.new(:request_id => self.id, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended, 
             :due_at => grant_agreement_at, :state => 'actually_due')
         end
       end

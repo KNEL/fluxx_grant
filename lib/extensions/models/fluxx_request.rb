@@ -22,6 +22,8 @@ module FluxxRequest
     base.belongs_to :initiative
     base.after_create :generate_request_id
     base.after_save :process_before_save_blocks
+    base.before_save :resolve_letter_type_changes
+    
     base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
@@ -747,7 +749,7 @@ module FluxxRequest
     end
 
     def grant_agreement_request_letter
-      request_letters.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.grant_agreement_category)}.first
+      request_letters.reload.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.grant_agreement_category)}.first
     end
 
     def load_grant_agreement_letter_type
@@ -756,7 +758,7 @@ module FluxxRequest
     end
 
     def award_request_letter
-      request_letters.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.award_category)}.first
+      request_letters.reload.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.award_category)}.first
     end
 
     def load_award_letter_type

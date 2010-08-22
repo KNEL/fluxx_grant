@@ -94,7 +94,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     assert flash[:info]
 
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'grant_team_send_back'}
-    assert_equal 'pending_po_approval', @request1.reload().state
+    assert_equal 'sent_back_to_pa', @request1.reload().state
     assert flash[:info]
   end
 
@@ -117,7 +117,6 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
 
   test "try to have PO recommend and approve a request" do
-    check_models_are_updated {get :promote, :id => @request1.id}
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'recommend_funding'}
     assert flash[:info]
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'complete_ierf'}
@@ -143,7 +142,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.state = 'sent_back_to_po'
     @request1.save
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'po_approve'}
-    assert_equal 'pending_pd_approval', @request1.reload().state
+    assert_equal 'pending_president_approval', @request1.reload().state
     assert flash[:info]
   end
 
@@ -157,7 +156,6 @@ class GrantRequestsControllerTest < ActionController::TestCase
 
   test "try to have president recommend and approve a request" do
     login_as_user_with_role Program.president_role_name
-    check_models_are_updated {get :promote, :id => @request1.id}
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'recommend_funding'}
     assert flash[:info]
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'complete_ierf'}
@@ -174,7 +172,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     login_as_user_with_role Program.president_role_name
     @request1.state = 'pending_grant_promotion'
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'president_approve'}
+    check_models_are_not_updated{put :update, :id => @request1.to_param, :event_action => 'president_approve'}
     assert_equal 'pending_grant_promotion', @request1.reload().state
     assert flash[:error]
   end
@@ -184,7 +182,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.state = 'pending_president_approval'
     @request1.save
     check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'president_send_back'}
-    assert_equal 'sent_back_to_svp', @request1.reload().state
+    assert_equal 'sent_back_to_po', @request1.reload().state
     assert flash[:info]
   end
   
@@ -207,7 +205,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.duration_in_months = 12
     @request1.amount_recommended = 45000
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     er_request = assigns(:model)
   end
@@ -216,7 +214,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     login_as_user_with_role Program.grants_assistant_role_name
     @request1.state = 'closed'
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'close_grant'}
+    check_models_are_not_updated{put :update, :id => @request1.to_param, :event_action => 'close_grant'}
     assert_equal 'closed', @request1.reload().state
   end
 
@@ -226,7 +224,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.duration_in_months = 12
     @request1.amount_recommended = 45000
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     er_request = assigns(:model)
   end
@@ -248,7 +246,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.amount_recommended = 45000
     @request1.save
     assert_nil @request1.grant_id
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     @request1 = assigns(:model)
     assert_equal 5, @request1.request_reports.size
@@ -266,7 +264,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.amount_recommended = 45000
     @request1.save
     assert !@request1.grant_id
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     @request1 = assigns(:model)
     assert_equal 5, @request1.request_reports.size
@@ -291,7 +289,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.amount_recommended = 45000
     @request1.save
     assert !@request1.grant_id
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     @request1 = assigns(:model)
     assert @request1.grant_agreement_at
@@ -309,7 +307,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     login_as_user_with_role Program.grants_administrator_role_name, program
     er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
     er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 11
-    check_models_are_updated{put :update, :id => er_request.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     er_request = assigns(:model)
     assert er_request.grant_agreement_at
@@ -323,7 +321,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
     er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
     assert_equal er_org, er_request.program_organization
-    check_models_are_updated{put :update, :id => er_request.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
     assert flash[:error]
   end
 
@@ -333,7 +331,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
     er_grant = GrantRequest.make :state => 'granted', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18, :granted => true
     er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 11
-    check_models_are_updated{put :update, :id => er_request.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     er_request = assigns(:model)
     assert er_request.grant_agreement_at
@@ -349,7 +347,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
     assert er_request.has_tax_class?
     
-    check_models_are_updated{put :update, :id => er_request.to_param, :event_action => 'become_grant'}
+    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
     assert_template :partial => '_approve_grant_details'
     er_request = assigns(:model)
     assert er_request.grant_agreement_at
@@ -428,10 +426,12 @@ class GrantRequestsControllerTest < ActionController::TestCase
 
   test "should choose a request letter for a request that currently has none" do
     @request1.save
-    award_letter = LetterTemplate.make
-    ga_letter = LetterTemplate.make
+    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
+    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
     assert_difference('RequestLetter.count', 2) do
       put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter.id, :grant_agreement_letter_type => ga_letter.id }
+      @request1.reload.request_letters.each do |rl|
+      end
     end
   end
   
@@ -459,8 +459,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
     end
     
     @request1.reload.grant_agreement_letter_type
-    assert_equal award_letter2.id, @request1.reload.award_letter_type
-    assert_equal ga_letter2.id, @request1.reload.grant_agreement_letter_type
+    assert_equal award_letter2.id, @request1.reload.load_award_letter_type
+    assert_equal ga_letter2.id, @request1.reload.load_grant_agreement_letter_type
   end
   
   test "should create role grantee org owner user" do
@@ -535,7 +535,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.state = 'granted'
     @request1.granted = true
     @request1.save
-    check_models_are_updated {get :cancel_grant, :id => @request1.id}
+    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'cancel_grant'}
     assert_equal 'canceled', @request1.reload().state
     assert flash[:info]
   end 

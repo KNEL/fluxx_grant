@@ -119,6 +119,8 @@ end
 
 LetterTemplate.blueprint do
   letter_type Sham.word
+  category Sham.word
+  description Sham.word
   letter Sham.sentence
 end
 
