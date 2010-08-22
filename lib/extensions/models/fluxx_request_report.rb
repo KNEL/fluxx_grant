@@ -21,9 +21,7 @@ module FluxxRequestReport
       insta.sql_query = "select rd.created_at, rd.updated_at, requests.base_request_id request_id, rd.state, rd.report_type, rd.due_at, rd.approved_at, organizations.name program_org_name,
               requests.amount_recommended, 
               (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
-                 roles, roles_users, users where roles.name = 'Program Lead'
-                 and roles.id = roles_users.role_id and users.id = roles_users.user_id
-                 and roles.authorizable_type = 'Request' and roles.authorizable_id = requests.id) lead_po,
+                users where id = program_lead_id) lead_po,
               requests.project_summary
               from request_reports rd
               left outer join requests on rd.request_id = requests.id
@@ -49,7 +47,7 @@ module FluxxRequestReport
           end || {}
         end),
         :grant_program_ids => (lambda do |search_with_attributes, val|
-          program_id_strings = val.split(',').map{|v| v.strip}
+          program_id_strings = val.each{|v| v.to_s.strip}
           programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
           program_ids = programs.map do |program| 
             children = program.children_programs
@@ -123,13 +121,23 @@ module FluxxRequestReport
       include ModelInstanceMethods
     end
     
+    # types:
+    # RequestReport.eval_type_name => 'Eval',
+    # RequestReport.final_budget_type_name => 'Final Financial',
+    # RequestReport.final_narrative_type_name => 'Final Narrative',
+    # RequestReport.interim_budget_type_name => 'Interim Financial',
+    # RequestReport.interim_narrative_type_name => 'Interim Narrative',
+    
     base.insta_workflow do |insta|
       insta.states_to_english = {
-        RequestReport.eval_type_name => 'Eval',
-        RequestReport.final_budget_type_name => 'Final Financial',
-        RequestReport.final_narrative_type_name => 'Final Narrative',
-        RequestReport.interim_budget_type_name => 'Interim Financial',
-        RequestReport.interim_narrative_type_name => 'Interim Narrative',
+        RequestReport.new_state => 'New',
+        RequestReport.pending_lead_approval_state => 'Pending Lead Approval',
+        RequestReport.pending_grant_team_approval_state => 'Pending Grants Team Approval',
+        RequestReport.pending_finance_approval_state => 'Pending Finance Approval',
+        RequestReport.approved_state => 'Approved',
+        RequestReport.sent_back_to_pa_state => 'Sent Back to PA',
+        RequestReport.sent_back_to_lead_state => 'Sent Back to Lead',
+        RequestReport.sent_back_to_grant_team_state => 'Sent Back to Grants Team',
       }
       
       insta.events_to_english = {

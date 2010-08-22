@@ -42,9 +42,8 @@ class RequestReportsControllerTest < ActionController::TestCase
     assert_not_nil assigns(:request_reports)
   end
   
-  
   test "should get index with grant_program_ids" do
-    get :index, :grant_program_ids => @program.id
+    get :index, :grant_program_ids => [@program.id]
     assert_response :success
     assert_not_nil assigns(:request_reports)
   end
@@ -93,7 +92,8 @@ class RequestReportsControllerTest < ActionController::TestCase
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name
     
     login_as_user_with_role Program.program_associate_role_name
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.submit_report_event}
+    
     assert_equal 'pending_lead_approval', request_report1.reload.state
     assert flash[:info]
   end
@@ -103,7 +103,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'sent_back_to_pa'
     
     login_as_user_with_role Program.program_associate_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.submit_report_event}
     assert_equal 'pending_lead_approval', request_report1.reload.state
     assert flash[:info]
   end
@@ -112,7 +112,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @request1.program
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_lead_approval'
     login_as_user_with_role Program.program_officer_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.lead_approve_event}
     assert_equal 'pending_grant_team_approval', request_report1.reload.state
     assert flash[:info]
   end
@@ -121,7 +121,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @request1.program
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'sent_back_to_lead'
     login_as_user_with_role Program.program_officer_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.lead_approve_event}
     assert_equal 'pending_grant_team_approval', request_report1.reload.state
     assert flash[:info]
   end
@@ -130,7 +130,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @request1.program
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_lead_approval'
     login_as_user_with_role Program.program_officer_role_name, @program
-    check_models_are_updated {get :send_back, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.lead_send_back_event}
     assert_equal 'sent_back_to_pa', request_report1.reload.state
     assert flash[:info]
   end
@@ -143,7 +143,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     assert_equal @request1, request_report1.request
     assert request_report1.has_tax_class?
     login_as_user_with_role Program.grants_administrator_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.grant_team_approve_event}
     assert_equal 'approved', request_report1.reload.state
     assert flash[:info]
   end
@@ -152,7 +152,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @request1.program
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'sent_back_to_grant_team'
     login_as_user_with_role Program.grants_administrator_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.grant_team_approve_event}
     assert_equal 'approved', request_report1.reload.state
     assert flash[:info]
   end
@@ -161,7 +161,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @request1.program
     request_report1 = RequestReport.make :request => @request1, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_grant_team_approval'
     login_as_user_with_role Program.grants_administrator_role_name, @program
-    check_models_are_updated {get :send_back, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.grant_team_send_back_event}
     assert_equal 'sent_back_to_lead', request_report1.reload.state
     assert flash[:info]
   end
@@ -171,7 +171,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @er_request.program
     request_report1 = RequestReport.make :request => @er_request, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_grant_team_approval'
     login_as_user_with_role Program.grants_administrator_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.grant_team_approve_event}
     assert_equal 'approved', request_report1.reload.state
     assert flash[:info]
   end
@@ -181,7 +181,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @er_request.program
     request_report1 = RequestReport.make :request => @er_request, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_finance_approval'
     login_as_user_with_role Program.finance_administrator_role_name, @program
-    check_models_are_updated {get :send_back, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.finance_send_back_event}
     assert_equal 'sent_back_to_grant_team', request_report1.reload.state
     assert flash[:info]
   end
@@ -191,7 +191,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program = @er_request.program
     request_report1 = RequestReport.make :request => @er_request, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_finance_approval'
     login_as_user_with_role Program.finance_administrator_role_name, @program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.finance_approve_event}
     assert_equal 'approved', request_report1.reload.state
     assert flash[:info]
   end
@@ -204,7 +204,7 @@ class RequestReportsControllerTest < ActionController::TestCase
     @program.save
     request_report1 = RequestReport.make :request => @er_request, :report_type => RequestReport.interim_budget_type_name, :state => 'pending_finance_approval'
     login_as_user_with_role Program.finance_administrator_role_name, rollup_program
-    check_models_are_updated {get :promote, :id => request_report1.id}
+    check_models_are_updated{put :update, :id => request_report1.to_param, :event_action => RequestReport.finance_approve_event}
     assert_equal 'approved', request_report1.reload.state
     assert flash[:info]
   end

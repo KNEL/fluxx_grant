@@ -1,0 +1,1 @@
+= form.input :program_id, :label => 'Program', :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}

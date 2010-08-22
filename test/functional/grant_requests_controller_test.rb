@@ -515,7 +515,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
   
   test "test filter display" do
-    get :filter
+    get :index, :view => 'filter'
   end
   
   test "should not be allowed to edit if somebody else is editing" do
