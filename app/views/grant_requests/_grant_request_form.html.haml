@@ -1,7 +1,20 @@
-= form.input :program_organization_lookup, :label => "Program Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json), :related_attribute_name => :name, :input_html => {'data-related-child'.to_sym => '.org-sat-select'}
+= form.input :program_organization_lookup, :label => "Program Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json), :related_attribute_name => :name, :input_html => {:class => 'program_organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
 - program_organization_satellites = form.object.program_organization ? form.object.program_organization.satellites : []
-= form.input :program_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
+= form.input :program_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
+
+= form.input :program_organization_lookup, :label => "Fiscal Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json), :related_attribute_name => :name, :input_html => {:class => 'fiscal_organization_lookup_select', 'data-related-child' => ".fiscal-org-sat-select"}
+- fiscal_organization_satellites = form.object.fiscal_organization ? form.object.fiscal_organization.satellites : []
+= form.input :fiscal_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'fiscal-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select'}, :collection => fiscal_organization_satellites.map {|org| [org.name, org.id]}
 
 = form.input :amount_requested, :label => "Amount Requested"
+
+= form.input :program, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}
+- # TODO ESH: this needs to happen on the javascript side based on what is chosen above; probably be able to use the same prog-org/location mechanism
+= form.input :program_lead, :label => "Program Lead", :as => :select, :collection => User.all.map{|user| [user.name, user.id]}
+
+= form.input :initiative, :label => "Initiative", :as => :select, :collection => Initiative.all.map{|initiative| [initiative.name, initiative.id]}
+
+= form.input :project_summary, :label => "Project Summary", :as => :text
+
 
 = form.commit_button
