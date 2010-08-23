@@ -1,10 +1,10 @@
 = form.input :program_organization_lookup, :label => "Program Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json), :related_attribute_name => :name, :input_html => {:class => 'program_organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
 - program_organization_satellites = form.object.program_organization ? form.object.program_organization.satellites : []
-= form.input :program_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
+= form.input :program_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
 
 = form.input :program_organization_lookup, :label => "Fiscal Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json), :related_attribute_name => :name, :input_html => {:class => 'fiscal_organization_lookup_select', 'data-related-child' => ".fiscal-org-sat-select"}
 - fiscal_organization_satellites = form.object.fiscal_organization ? form.object.fiscal_organization.satellites : []
-= form.input :fiscal_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'fiscal-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select'}, :collection => fiscal_organization_satellites.map {|org| [org.name, org.id]}
+= form.input :fiscal_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'fiscal-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1'}, :collection => fiscal_organization_satellites.map {|org| [org.name, org.id]}
 
 = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
 
