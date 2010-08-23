@@ -3,7 +3,7 @@
   <%= form.input :grant_begins_at, :label => "Grant Start Date", :id => (rand * 999999999).to_i %>
 
   <%- unless @model.type == 'FipRequest' -%>
-    <%- if Request.grant_states.include? @model.state.to_sym -%>
+    <%- if @model.state && Request.grant_states.include?(@model.state.to_sym) -%>
       <%= form.input :funds_expended_amount, :label => 'Funds Expended' %>
       <%= form.input :funds_expended_at, :label => 'Funds Expended Date', :id => (rand * 999999999).to_i %>
     <%- end -%>
