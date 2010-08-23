@@ -1,5 +1,5 @@
 module FluxxGrantOrganization
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids]
 
   def self.included(base)
     base.has_many :grants, :class_name => 'GrantRequest', :foreign_key => :program_organization_id, :conditions => {:granted => 1}
@@ -52,7 +52,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has grants(:id), :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -60,6 +60,9 @@ module FluxxGrantOrganization
         has favorites.user(:id), :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
+        has satellite_orgs(:id), :as => :satellite_org_ids
+        has "CONCAT(organizations.id, CONCAT(',', GROUP_CONCAT(IFNULL(satellite_orgs_organizations.id, '0') SEPARATOR ','))) ", 
+          :as => :related_org_ids, :type => :multi
 
         set_property :delta => true
       end
@@ -71,7 +74,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has grants.program(:id), :as => :grant_program_ids
-        has grants.sub_program(:id), :as => :grant_sub_program_ids
+        has grants.initiative(:id), :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -79,6 +82,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :favorite_user_ids
         has users(:id), :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
+        has 'null', :type => :multi, :as => :satellite_org_ids
+        has 'null', :type => :multi, :as => :related_org_ids
 
         set_property :delta => true
       end
@@ -90,7 +95,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has grant_requests(:id), :as => :request_ids
         has fiscal_requests(:id), :as => :fiscal_request_ids
@@ -98,6 +103,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
+        has 'null', :type => :multi, :as => :satellite_org_ids
+        has 'null', :type => :multi, :as => :related_org_ids
 
         set_property :delta => true
       end
@@ -109,7 +116,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -117,6 +124,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :user_ids
         has group_members.group(:id), :type => :multi, :as => :group_ids
+        has 'null', :type => :multi, :as => :satellite_org_ids
+        has 'null', :type => :multi, :as => :related_org_ids
 
         set_property :delta => true
       end
@@ -153,8 +162,8 @@ module FluxxGrantOrganization
       grants.map{|grant| grant.program.id if grant.program}.flatten.compact
     end
 
-    def grant_sub_program_ids
-      grants.map{|grant| grant.sub_program.id if grant.sub_program}.flatten.compact
+    def grant_initiative_ids
+      grants.map{|grant| grant.initiative.id if grant.initiative}.flatten.compact
     end
 
     def is_trusted?

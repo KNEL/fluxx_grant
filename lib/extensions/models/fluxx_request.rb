@@ -5,7 +5,9 @@ module FluxxRequest
 
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
+    base.send :attr_accessor, :program_organization_lookup
     base.belongs_to :fiscal_organization, :class_name => 'Organization', :foreign_key => :fiscal_organization_id
+    base.send :attr_accessor, :fiscal_organization_lookup
     base.has_many :request_geo_states
     base.has_many :request_organizations
     base.has_many :request_users
