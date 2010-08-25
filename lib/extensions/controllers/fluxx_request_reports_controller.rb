@@ -29,11 +29,38 @@ module FluxxRequestReportsController
       insta.add_related do |related|
         related.display_name = 'People'
         related.related_class = User
-        related.search_id = :request_report_id
+        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
         related.extra_condition = {:deleted_at => 0}
         related.max_results = 20
         related.order = 'last_name asc, first_name asc'
         related.display_template = '/users/related_users'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Orgs'
+        related.related_class = Organization
+        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'name asc'
+        related.display_template = '/organizations/related_organizations'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Requests'
+        related.related_class = GrantRequest
+        related.search_id = (lambda {|rd| {:sphinx_internal_id => rd.request_id} })
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'grant_agreement_at desc, request_received_at desc'
+        related.display_template = '/grant_requests/related_request'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Reports'
+        related.related_class = RequestReport
+        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'due_at asc'
+        related.display_template = '/request_reports/related_documents'
       end
     end
     

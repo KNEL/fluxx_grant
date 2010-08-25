@@ -35,6 +35,33 @@ module FluxxGrantedRequestsController
         related.order = 'last_name asc, first_name asc'
         related.display_template = '/users/related_users'
       end
+      insta.add_related do |related|
+        related.display_name = 'Orgs'
+        related.related_class = Organization
+        related.search_id = [:request_ids, :fiscal_request_ids, :org_request_ids]
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'name asc'
+        related.display_template = '/organizations/related_organizations'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Trans'
+        related.related_class = RequestTransaction
+        related.search_id = [:grant_ids]
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'due_at asc'
+        related.display_template = '/request_transactions/related_request_transactions'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Reports'
+        related.related_class = RequestReport
+        related.search_id = [:grant_ids]
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'due_at asc'
+        related.display_template = '/request_reports/related_documents'
+      end
     end
     
     base.extend(ModelClassMethods)

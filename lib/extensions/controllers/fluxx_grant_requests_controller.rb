@@ -65,6 +65,15 @@ module FluxxGrantRequestsController
         related.order = 'last_name asc, first_name asc'
         related.display_template = '/users/related_users'
       end
+      insta.add_related do |related|
+        related.display_name = 'Orgs'
+        related.related_class = Organization
+        related.search_id = [:request_ids, :fiscal_request_ids, :org_request_ids]
+        related.extra_condition = {:deleted_at => 0}
+        related.max_results = 20
+        related.order = 'name asc'
+        related.display_template = '/organizations/related_organizations'
+      end
     end
     
     base.extend(ModelClassMethods)

@@ -1,0 +1,4 @@
+class OrganizationsController < ApplicationController
+  include FluxxOrganizationsController
+  include FluxxGrantOrganizationsController
+end

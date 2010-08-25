@@ -1,0 +1,11 @@
+span.fluxx-card-content-metadata-section-title= render :partial => "request_reports/list_item1", :locals => { :model => model, :due => false }
+%span.fluxx-card-content-metadata-section-info
+  = model.request.grant_id if model.request
+  <br/>
+  - if model.due_at
+    = "Due #{mdy_date_format(model.due_at)}"
+  <br/>
+  - model.model_documents.each do |doc| 
+    - if doc
+      = link_to doc.document_file_name, doc.url, :target => '_blank', :class => mime_type_to_class(doc.document_content_type)
+      %span.upload-date= "Uploaded #{mdy_date_format(doc.created_at)}"
