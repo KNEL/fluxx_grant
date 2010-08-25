@@ -1,1 +1,48 @@
-%h1= model.evaluation_rating
+%h1= model.type_to_english
+
+%div.subhead= render_request_or_grant_amount model.request, ' granted'
+  
+%div.subhead= render_program_name model.request
+  
+%div.description= render_grant_or_request_id model.request
+  
+- unless model.request.nil? || model.request.project_summary.blank?
+  %div.description= model.request.project_summary
+
+<hr noshade size="1">
+%div.description
+  %dl
+    %dt= "Status:"
+    %dd= model.state_to_english
+  %dl
+    %dt= "Program:"
+    %dd= model.request.program.name if model.request && model.request.program
+  %dl
+    - if model.is_approved?
+      %dt= 'Approved At:'
+      %dt= model.approved_at.mdy if model.approved_at
+    - if model.due_at
+      %dt= "Due:"
+      %dt= model.due_at.mdy if model.due_at
+  
+  - if model.is_eval_report_type?
+    %dl
+      %dt= "Evaluation Rating:"
+      %dd= model.evaluation_rating
+
+%div.clear
+
+- unless model.is_eval_report_type?
+  %div.fluxx-card-show-documents
+    %ol.fluxx-card-show-documents-list
+      %li.fluxx-card-show-documents-title
+        - if can_current_user_edit_create_requests?
+          - # TODO ESH: replace with new upload method
+          %div.fluxx-card-show-documents-add= #uploadify_tag request_document_index_path(:request_report_id => model.id, :request_id => model.request_id), '/images/icons/add.png'
+        Report Document
+
+        %li.fluxx-card-show-documents-item
+    
+        = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
+        
+= render :partial => "notes/list_notes", :locals => { :model => model, :class_type => RequestReport.name}

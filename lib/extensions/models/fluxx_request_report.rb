@@ -381,6 +381,10 @@ module FluxxRequestReport
         []
       end
     end
+    
+    def is_approved?
+      state == 'approved' && approved_at
+    end
 
     def has_tax_class?
       grant && grant.has_tax_class?

@@ -1,1 +1,159 @@
-%h1= model.amount_requested
+%h1
+  = raw render_program_name model
+  = raw render_grant_or_request_id model
+
+%div.subhead= raw render_request_or_grant_amount model
+- unless model.project_summary.blank?
+  %div.description= simple_format(model.project_summary)
+- warnings = []
+- warnings << '* This grant is funding general operating support' if model.funding_general_operating_support 
+- warnings << '* This grant requires direct board authority' if model.board_authorization_required 
+- warnings << '* This grant is a renewal' if model.renewal_grant 
+
+- warnings.each do |warning|
+  %p= warning
+
+- if model.is_a? FipRequest
+  %dl
+    %dt= 'Fip Type:'
+    %dd= model.fip_type if model.fip_type
+
+%dl
+  %dt= "Status:"
+  %dd.fluxx-card-request-state
+    = link_to image_tag('icons/arrow_right.png'),  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'non-printable fluxx-card-link-to-modal', :title => 'View Workflow'
+    = model.state_to_english
+
+%dl
+  %dt= "Request Submitted:"
+  %dd= model.request_received_at.mdy if model.request_received_at
+
+%dl
+  %dt= "Final Proposal Date:"
+  %dd= model.ierf_proposed_end_at.mdy if model.ierf_proposed_end_at
+
+%dl
+  %dt= "Final Budget Date:"
+  %dd= model.ierf_budget_end_at.mdy if model.ierf_budget_end_at
+
+%dl
+  %dt= "Tax Status:"
+  %dd= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
+
+- if model.is_grant?
+  %dl
+    %dt= "Agreement Date:"
+    %dd= model.grant_agreement_at.mdy if model.grant_agreement_at
+  %dl
+    %dt= "Grant Start Date:"
+    %dd= model.grant_begins_at.mdy if model.grant_begins_at
+
+%dl.section_end
+  - if model.is_a? GrantRequest
+    %dt= "Duration:"
+    %dd= "#{model.duration_in_months} months" if model.duration_in_months
+  - elsif model.is_a? FipRequest
+    %dt= "Projected End Date:"
+    %dd= model.fip_projected_end_at.mdy if model.fip_projected_end_at 
+
+%dl
+  %dt= "Main Contact:"
+  %dd
+    - if model.grantee_org_owner
+      = model.grantee_org_owner.full_name
+    - if model.program && model.program_lead
+      = ", #{model.program.name} Program #{program_lead.full_name}"
+
+%dl
+  %dt= "Program:"
+  %dd= model.program.name if model.program
+
+%dl.section_end
+  %dt= "Request Created By:"
+  %dd= "#{model.created_by.full_name if model.created_by} (#{model.created_at.mdy if model.created_at})"
+
+%dl
+  %dt= "Amount Requested:"
+  %dd= number_to_currency(model.amount_requested, :precision => 0) if model.amount_requested
+
+%dl
+  %dt= "Amount Recommended:"
+  %dd= number_to_currency(model.amount_recommended, :precision => 0) if model.amount_recommended
+
+- if model.is_grant?
+  %dl.section_end
+    %dt= "Amount Paid to Date:"
+    %dd= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
+
+<br clear="both" />
+- # TODO ESH: need to create grant_requests/funding_sources and grant_requests/request_letters
+-#= render :partial => "grant_requests/funding_sources", :locals => { :model => @model}
+-#= render :partial => "grant_requests/request_letters", :locals => { :model => @model}
+
+%h2
+  - if can_current_user_edit_create_requests?
+    %div.edit_link
+      = link_to 'link an org', new_request_organization_path(:request_id => model.id), :class => 'non-printable fluxx-card-link-to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
+      = link_to 'link a person', new_request_user_path(:request_id => model.id), :class => 'non-printable fluxx-card-link-to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
+    Relationships
+
+-#= render :partial => "grant_requests/organizations", :locals => { :model => @model}
+-#= render :partial => "grant_requests/users", :locals => { :model => @model}
+
+%h2= "#{model.is_grant? ? "Grant" : "Request"} Details"
+
+%dl
+  %dt= "Funds Expended:"
+  %dd
+    - if model.funds_expended_amount
+      = number_to_currency(model.funds_expended_amount, :precision => 0)
+      = " on #{model.funds_expended_at.mdy}" if model.funds_expended_at
+
+%dl
+  %dt= "Initiative #{plural_by_list model.initiative_types, 'Type', 'Types'}:"
+  %dd= model.initiative_types.map(&:value).join(', ')
+
+%dl
+  %dt= "#{plural_by_list model.constituents, 'Constituent', 'Constituents'}:"
+  %dd= model.constituents.map(&:value).join(', ')
+
+%dl
+  %dt= "#{plural_by_list model.usa_means, 'Means', 'Means'}:"
+  %dd= model.usa_means.map(&:value).join(', ')
+
+%dl
+  %dt= "#{plural_by_list model.china_means, 'Type', 'Types'} of Organization:"
+  %dd= model.china_means.map(&:value).join(', ')
+
+<br clear="both" />
+<br clear="both" />
+= render :partial => "model_documents/list_model_documents", :locals => { :model => model}
+<br clear="both" /> 
+
+- unless model.state_in(GrantRequest.new_states)
+  <h2>Strategic Assessment</h2>
+  <p class="question">Goals: How does this grant or cluster of grants fit into your logic model?  What will this grant or cluster of grants accomplish if it is successful?</p>
+  = simple_format(model.ierf_goals, :class => 'answer')
+
+  <p class="question">Tactics: What are the primary means the grantee(s) will use?  How are the tactics linked to the strategy?</p>
+  = simple_format(model.ierf_tactics, :class => 'answer')
+
+  <p class="question">Probability: What is the likelihood that the grantee(s) will succeed in the tactics they lay out?  What are the possible failure scenarios?</p>
+  = simple_format(model.ierf_probability, :class => 'answer')
+
+  <h2>Due Diligence Assessment</h2>
+  
+  <p class="question">Does this grant overlap with any other sectors or key funders?  If so, please explain which sectors/funder, and provide any scheduled meetings.</p>
+  = simple_format(model.ierf_due_diligence_overlap, :class => 'answer')
+
+  <p class="question">Does this grant pose any institutional risks to EF?  If yes, please explain how these issues will be addressed.</p>
+  = simple_format(model.ierf_due_diligence_risks, :class => 'answer')
+
+  <p class="question">Have you carefully reviewed the proposal and budget to make sure that they contain no C4 work?</p>
+  = simple_format(model.ierf_due_diligence_noc4_work, :class => 'answer')
+
+  <p class="question">Does this grant warrant input and/or review by board members?  If yes, please list board member name and any related information.</p>
+  = simple_format(model.ierf_due_diligence_board_review, :class => 'answer')
+
+= render :partial => "notes/list_notes", :locals => { :model => model, :class_type => Request.name}
+= render :partial => "audits/list_audits", :locals => { :model => model}

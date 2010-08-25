@@ -25,7 +25,8 @@ end
 
 ActiveSupport::Dependencies.autoload_paths << File.dirname(__FILE__) + 
 "/../app/helpers"
-  Dir[File.dirname(__FILE__) + "/../app/helpers/**/*_helper.rb"].each do 
+
+Dir[File.dirname(__FILE__) + "/../app/helpers/**/*_helper.rb"].each do 
 |file|
-      ActionController::Base.helper "#{File.basename(file,'.rb').camelize}".constantize
-  end
+  ActionController::Base.helper "#{File.basename(file,'.rb').camelize}".constantize
+end

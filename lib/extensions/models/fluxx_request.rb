@@ -731,6 +731,10 @@ module FluxxRequest
     def grant_id
       "#{grant_prefix}-#{base_request_id}" if self.granted && base_request_id
     end
+    
+    def grant_or_request_id
+      is_grant? ? grant_id : request_id
+    end
 
     def generate_grant_dates
       self.grant_agreement_at = Time.now
