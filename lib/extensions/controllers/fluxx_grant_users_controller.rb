@@ -1,6 +1,11 @@
 # Supplements FluxxUsersController in fluxx_crm
 module FluxxGrantUsersController
   def self.included(base)
+    base.insta_index User do |insta|
+      insta.filter_title = "Users Filter"
+      insta.filter_template = 'users/user_filter'
+    end
+    
     base.insta_related User do |insta|
       insta.add_related do |related|
         related.display_name = 'Requests'

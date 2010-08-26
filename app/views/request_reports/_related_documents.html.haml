@@ -1,4 +1,4 @@
-span.fluxx-card-content-metadata-section-title= render :partial => "request_reports/list_item1", :locals => { :model => model, :due => false }
+%span.fluxx-card-content-metadata-section-title= render :partial => "request_reports/list_item1", :locals => { :model => model, :due => false }
 %span.fluxx-card-content-metadata-section-info
   = model.request.grant_id if model.request
   <br/>

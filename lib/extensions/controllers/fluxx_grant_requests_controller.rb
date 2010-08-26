@@ -1,6 +1,7 @@
 module FluxxGrantRequestsController
   def self.included(base)
     base.insta_index GrantRequest do |insta|
+      insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_request_list'
       insta.filter_title = "Grant Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'

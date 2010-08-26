@@ -2,8 +2,6 @@ module FluxxRequestUsersController
   def self.included(base)
     base.insta_index RequestUser do |insta|
       insta.template = 'request_user_list'
-      insta.filter_title = "Request Users Filter"
-      insta.filter_template = 'request_users/request_user_filter'
     end
     base.insta_show RequestUser do |insta|
       insta.template = 'request_user_show'

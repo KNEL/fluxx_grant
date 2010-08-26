@@ -1,9 +1,9 @@
 %span.fluxx-card-content-metadata-section-title
-  = render_program_name(model, false)
+  = raw render_program_name(model, false)
   <br />
-  = render_grant_or_request_id(model)
+  = raw render_grant_or_request_id(model)
   <br />
-  = render_request_or_grant_amount(model, '', '')
+  = raw render_request_or_grant_amount(model, '', '')
   = "|" if !render_request_or_grant_amount(model, '', '').blank?
   = ((model.granted && model.grant_approved_at) ? model.grant_approved_at.mdy : (model.request_received_at ? model.request_received_at.mdy : ''))
   <br />

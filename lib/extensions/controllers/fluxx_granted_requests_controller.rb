@@ -1,29 +1,30 @@
 module FluxxGrantedRequestsController
   def self.included(base)
     base.insta_index GrantRequest do |insta|
-      insta.template = 'granted_request_list'
+      insta.template = 'grant_requests/grant_request_list'
       insta.filter_title = "Granted Requests Filter"
-      insta.filter_template = 'granted_requests/granted_requet_filter'
+      insta.filter_template = 'granted_requests/granted_request_filter'
+      insta.search_conditions = {:granted => 1, :has_been_rejected => 0}
     end
     base.insta_show GrantRequest do |insta|
-      insta.template = 'granted_request_show'
+      insta.template = 'grant_requests/grant_request_show'
       insta.add_workflow
     end
     base.insta_new GrantRequest do |insta|
-      insta.template = 'granted_request_form'
+      insta.template = 'grant_requests/grant_request_form'
     end
     base.insta_edit GrantRequest do |insta|
-      insta.template = 'granted_request_form'
+      insta.template = 'grant_requests/grant_request_form'
     end
     base.insta_post GrantRequest do |insta|
-      insta.template = 'granted_request_form'
+      insta.template = 'grant_requests/grant_request_form'
     end
     base.insta_put GrantRequest do |insta|
-      insta.template = 'granted_request_form'
+      insta.template = 'grant_requests/grant_request_form'
       insta.add_workflow
     end
     base.insta_delete GrantRequest do |insta|
-      insta.template = 'granted_request_form'
+      insta.template = 'grant_requests/grant_request_form'
     end
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
