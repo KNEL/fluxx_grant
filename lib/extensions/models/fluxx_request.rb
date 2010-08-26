@@ -47,7 +47,6 @@ module FluxxRequest
     
     base.insta_favorite
 
-    base.insta_search
     base.insta_lock
     base.insta_export do |insta|
       insta.filename = (lambda { |with_clause| (with_clause != nil && with_clause[:granted]==1) ? 'grant' : 'request'})

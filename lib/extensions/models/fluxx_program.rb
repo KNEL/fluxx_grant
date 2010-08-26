@@ -69,7 +69,7 @@ module FluxxProgram
     end
 
     def all_program_users
-      RoleUser.include(:user).where(:roleable_type => self.name).map{|ru| ru.user}
+      RoleUser.includes(:user).where(:roleable_type => self.name).map{|ru| ru.user}
     end
   end
 

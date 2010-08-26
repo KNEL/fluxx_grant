@@ -1,5 +1,5 @@
 module FluxxRequestReport
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiatives, :due_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids] 
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :due_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids] 
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => true}
@@ -167,7 +167,7 @@ module FluxxRequestReport
         set_property :delta => true
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
-        has grant.initiative(:id), :as => :grant_initiatives
+        has grant.initiative(:id), :as => :grant_initiative_ids
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
         has :state, :type => :string, :crc => true
@@ -189,7 +189,7 @@ module FluxxRequestReport
         set_property :delta => true
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_initiatives
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has 'null', :type => :multi, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
         has :state, :type => :string, :crc => true
@@ -374,7 +374,7 @@ module FluxxRequestReport
       end
     end
 
-    def grant_initiatives
+    def grant_initiative_ids
       if grant && grant.initiative
         [grant.initiative.id]
       else

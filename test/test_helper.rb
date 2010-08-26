@@ -47,6 +47,14 @@ class ActionController::Base
   attr_accessor :current_user
 end
 
+def current_user
+  @current_user unless @current_user == false
+end
+
+# Store the given user id in the session.
+def current_user=(new_user)
+  @current_user = new_user || false
+end
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.

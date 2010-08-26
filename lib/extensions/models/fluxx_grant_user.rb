@@ -1,5 +1,6 @@
 module FluxxGrantUser
-  SEARCH_ATTRIBUTES = [:state, :updated_at, :first_name, :last_name]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
+  
   def self.included(base)
     base.has_many :request_users
     base.has_many :users, :through => :request_users
@@ -10,7 +11,7 @@ module FluxxGrantUser
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
     
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids]
     end
     base.insta_realtime do |insta|
       insta.delta_attributes = SEARCH_ATTRIBUTES
@@ -58,9 +59,10 @@ module FluxxGrantUser
         # attributes
         has created_at, updated_at, deleted_at
 
-        has roles_users.any_request_type_role.any_request(:id), :as => :request_ids
-        has roles_users.grant_role.grant.program(:id), :as => :grant_program_ids
-        has roles_users.grant_role.grant.sub_program(:id), :as => :grant_sub_program_ids
+        # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
+        # has roles_users.any_request_type_role.any_request(:id), :as => :request_ids
+        # has roles_users.grant_role.grant.program(:id), :as => :grant_program_ids
+        # has roles_users.grant_role.grant.sub_program(:id), :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id
         has 'null', :type => :multi, :as => :last_name_ord
@@ -95,5 +97,27 @@ module FluxxGrantUser
   end
 
   module ModelInstanceMethods
+    
+    
+    # TODO ESH: find a way of making this more efficient
+    def all_related_requests
+      program_lead_requests + grantee_org_owner_requests + grantee_signatory_requests + fiscal_org_owner_requests + fiscal_signatory_requests
+    end
+    
+    def request_ids
+      all_related_requests.map(&:id).uniq
+    end
+
+    def grant_program_ids
+     all_related_requests.map{|req| req.program.id if req && req.program}.flatten.compact
+    end
+
+    def grant_initiative_ids
+      all_related_requests.map{|req| req.initiative.id if req && req.initiative}.flatten.compact
+    end
+
+    def organization_id
+     user_organizations.map{|uo| uo.organization.id if uo.organization}.flatten.compact
+    end
   end
 end
