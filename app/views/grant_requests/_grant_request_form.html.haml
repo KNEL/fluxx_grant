@@ -30,9 +30,9 @@
   = form.input :ierf_proposed_end_at, :label => "Final Proposal Date:"
   = form.input :ierf_budget_end_at, :label => "Final Budget Date:"
   -# TODO ESH: = render :partial => "grant_requests/funding_sources", :locals => { :model => model, :form => form}
-  = form.input :constituents, :label => "Consituents:", :as => :select_transfer
-  = form.input :usa_means, :label => "Means:", :as => :select_transfer
-  = form.input :china_means, :label => "Type of Organization (China use only):", :as => :select_transfer
+  = form.input :constituents, :label => "Consituents:", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
+  = form.input :usa_means, :label => "Means:", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
+  = form.input :china_means, :label => "Type of Organization (China use only):", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
 
 - unless model.state_in GrantRequest.new_states
   = form.input :ierf_goals, :label => "Goals: How does this grant or cluster of grants fit into your logic model?  What will this grant or cluster of grants accomplish if it is successful?", :label_class=>'wide_label'
