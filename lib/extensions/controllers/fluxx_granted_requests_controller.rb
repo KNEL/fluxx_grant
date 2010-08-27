@@ -1,5 +1,6 @@
 module FluxxGrantedRequestsController
   def self.included(base)
+    base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|
       insta.template = 'grant_requests/grant_request_list'
       insta.filter_title = "Granted Requests Filter"
@@ -9,6 +10,9 @@ module FluxxGrantedRequestsController
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_requests/grant_request_show'
       insta.add_workflow
+      insta.post do |controller_dsl, controller|
+        base.set_enabled_variables controller_dsl, controller
+      end
     end
     base.insta_new GrantRequest do |insta|
       insta.template = 'grant_requests/grant_request_form'

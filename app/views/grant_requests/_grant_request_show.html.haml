@@ -21,7 +21,7 @@
 %dl
   %dt= "Status:"
   %dd.fluxx-card-request-state
-    = link_to image_tag('icons/arrow_right.png'),  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'non-printable fluxx-card-link-to-modal', :title => 'View Workflow'
+    = link_to image_tag('/fluxx_engine/theme/default/images/icons/arrow_right.png'),  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'non-printable to-modal', :title => 'View Workflow'
     = model.state_to_english
 
 %dl
@@ -86,19 +86,19 @@
     %dd= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
 
 <br clear="both" />
-- # TODO ESH: need to create grant_requests/funding_sources and grant_requests/request_letters
--#= render :partial => "grant_requests/funding_sources", :locals => { :model => @model}
--#= render :partial => "grant_requests/request_letters", :locals => { :model => @model}
+
+= render :partial => "grant_requests/funding_sources", :locals => { :model => @model}
+= render :partial => "grant_requests/request_letters", :locals => { :model => @model}
 
 %h2
   - if can_current_user_edit_create_requests?
     %div.edit_link
-      = link_to 'link an org', new_request_organization_path(:request_id => model.id), :class => 'non-printable fluxx-card-link-to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
-      = link_to 'link a person', new_request_user_path(:request_id => model.id), :class => 'non-printable fluxx-card-link-to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
+      = link_to 'link an org', new_request_organization_path(:request_id => model.id), :class => 'non-printable to-modal'
+      = link_to 'link a person', new_request_user_path(:request_id => model.id), :class => 'non-printable to-modal'
     Relationships
 
--#= render :partial => "grant_requests/organizations", :locals => { :model => @model}
--#= render :partial => "grant_requests/users", :locals => { :model => @model}
+= render :partial => "grant_requests/organizations", :locals => { :model => @model}
+= render :partial => "grant_requests/users", :locals => { :model => @model}
 
 %h2= "#{model.is_grant? ? "Grant" : "Request"} Details"
 

@@ -59,6 +59,10 @@ module ApplicationGrantHelper
     (value && value.is_a?(Time)) ? value.to_s(:mdy) : value
   end
   
+  def show_path_for_model model, options={}
+    send("#{model.class.name.tableize.pluralize.downcase}_path", options)
+  end
+  
   def load_audits model
     model.audits.sort_by{|aud| aud.id * -1}
   end

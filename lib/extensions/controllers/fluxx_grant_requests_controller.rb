@@ -1,5 +1,6 @@
 module FluxxGrantRequestsController
   def self.included(base)
+    base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|
       insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_request_list'
@@ -14,9 +15,40 @@ module FluxxGrantRequestsController
           if controller.params[:view_states]
             local_model = controller.instance_variable_get '@model'
             fluxx_show_card local_model, {:template => 'grant_requests/view_states', :footer_template => 'insta/simple_footer'}
+          elsif controller.params[:show_funding_sources]
           end
           default_block.call
         end
+      end
+      insta.post do |controller_dsl, controller|
+        base.set_enabled_variables controller_dsl, controller
+      end
+    end
+    base.insta_role GrantRequest do |insta|
+      # Define who is allowd to perform which events
+      insta.add_event_roles 'reject', Program, Program.request_roles
+      insta.add_event_roles 'un_reject', Program, Program.request_roles
+      insta.add_event_roles 'recommend_funding', Program, Program.request_roles
+      insta.add_event_roles 'complete_ierf', Program, Program.request_roles
+      insta.add_event_roles 'grant_team_approve', Program, Program.grant_roles
+      insta.add_event_roles 'grant_team_send_back', Program, Program.grant_roles
+      insta.add_event_roles 'po_approve', Program, Program.program_officer_role_name
+      insta.add_event_roles 'po_send_back', Program, Program.program_officer_role_name
+      insta.add_event_roles 'pd_approve', Program, Program.program_director_role_name
+      insta.add_event_roles 'secondary_pd_approve', Program, Program.program_director_role_name
+      insta.add_event_roles 'pd_send_back', Program, Program.program_director_role_name
+      insta.add_event_roles 'cr_approve', Program, Program.cr_role_name
+      insta.add_event_roles 'cr_send_back', Program, Program.cr_role_name
+      insta.add_event_roles 'svp_approve', Program, Program.svp_role_name
+      insta.add_event_roles 'svp_send_back', Program, Program.svp_role_name
+      insta.add_event_roles 'president_approve', Program, Program.president_role_name
+      insta.add_event_roles 'president_send_back', Program, Program.president_role_name
+      insta.add_event_roles 'become_grant', Program, Program.grant_roles
+      insta.add_event_roles 'close_grant', Program, Program.grant_roles
+      insta.add_event_roles 'cancel_grant', Program, Program.grant_roles
+      
+      insta.extract_related_object do |model|
+        model.program
       end
     end
     base.insta_new GrantRequest do |insta|

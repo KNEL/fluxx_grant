@@ -6,8 +6,8 @@ module FluxxProgram
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
 
-    base.belongs_to :parent_program, :class_name => 'Program'
-    base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_program_id
+    base.belongs_to :parent_program, :class_name => 'Program', :foreign_key => :parent_id
+    base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_id
     
     base.insta_search
     base.insta_export

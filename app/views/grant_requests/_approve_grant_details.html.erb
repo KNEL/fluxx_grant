@@ -14,7 +14,7 @@
     <%= form.input :grant_agreement_letter_type, :as => :select, :collection => LetterTemplate.grant_agreement_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]} %>
   
     <div>
-      <h2>Transactions<%= link_to image_tag('/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#' %></h2>
+      <h2>Transactions<%= link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#' %></h2>
       <%- unless @model.request_transactions.empty? -%>
         <% form.semantic_fields_for :request_transactions do |req_trans| %>
           <%#= render :partial => 'grant_requests/edit_request_transaction', :locals => {:req_trans => req_trans} %>
@@ -23,7 +23,7 @@
     </div>
 
     <div>
-      <h2>Reports<%= link_to image_tag('/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#' %></h2>
+      <h2>Reports<%= link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#' %></h2>
       <%- unless @model.request_reports.empty? -%>
         <% form.semantic_fields_for :request_reports do |req_report| %>
           <%#= render :partial => 'grant_requests/edit_request_report', :locals => {:req_report => req_report} %>

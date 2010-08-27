@@ -350,6 +350,10 @@ module FluxxRequest
       def self.grant_states
         local_grant_states
       end
+      
+      def self.granted_state
+        :granted
+      end
 
       def self.canceled_states
         local_canceled_states

@@ -97,7 +97,6 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
     t.string   "population",           :limit => 90
     t.string   "title",                :limit => 90
     t.text     "comment"
-    t.integer  "original_id",                        :null => false
   end
 
   add_index "geo_countries", ["iso2"], :name => "country_iso2_index"
@@ -258,7 +257,7 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
   add_index "organizations", ["geo_country_id"], :name => "organizations_geo_country_id"
   add_index "organizations", ["geo_state_id"], :name => "organizations_geo_state_id"
-  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"255"}
+  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"767"}
   add_index "organizations", ["parent_org_id"], :name => "index_organizations_on_parent_org_id"
   add_index "organizations", ["updated_by_id"], :name => "organizations_updated_by_id"
 
@@ -269,11 +268,11 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
     t.integer  "updated_by_id"
     t.string   "name"
     t.string   "description"
-    t.integer  "parent_program_id"
+    t.integer  "parent_id"
     t.boolean  "rollup"
   end
 
-  add_index "programs", ["parent_program_id"], :name => "index_programs_on_parent_program_id"
+  add_index "programs", ["parent_id"], :name => "index_programs_on_parent_id"
 
   create_table "realtime_updates", :force => true do |t|
     t.datetime "created_at"
@@ -416,7 +415,7 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
     t.integer  "fiscal_organization_id"
     t.integer  "program_id"
     t.integer  "initiative_id"
-    t.boolean  "granted"
+    t.boolean  "granted",                           :default => false, :null => false
     t.boolean  "renewal_grant"
     t.boolean  "funding_general_operating_support"
     t.boolean  "board_authorization_required"
@@ -450,7 +449,7 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
-    t.boolean  "delta",                             :default => true, :null => false
+    t.boolean  "delta",                             :default => true,  :null => false
     t.integer  "program_lead_id"
     t.integer  "fiscal_org_owner_id"
     t.integer  "grantee_signatory_id"
