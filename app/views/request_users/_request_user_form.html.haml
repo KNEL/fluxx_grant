@@ -1,3 +1,4 @@
-= form.input :name, :label => "Name"
+= form.input :request_id, :as => :hidden
+= form.input :user, :label => "Name", :as => :autocomplete, :autocomplete_url => users_path(:format => :json), :related_attribute_name => :full_name
 
 = form.commit_button

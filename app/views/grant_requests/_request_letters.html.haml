@@ -1,0 +1,6 @@
+%h2= "Request Letters"
+- model.request_letters.sort_by{|rl| rl.letter_template.category if rl.letter_template }.each do |letter|
+  <p>
+  = link_to letter.description, "#{url_for(letter)}", :target => '_blank'
+  = link_to image_tag('/images/icons/page_edit.png'), edit_request_letter_path(letter), :class => 'to-modal', :title => "Edit #{letter.description}" if can_current_user_edit_create_requests?
+  </p>

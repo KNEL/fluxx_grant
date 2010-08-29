@@ -1,0 +1,12 @@
+- unless(model.request_users.size > 0)
+  No links to people
+- else
+  - model.request_users.each do |request_user|
+    %div.org_row
+      %div.edit_row_links
+        - if can_current_user_edit_create_requests?
+          %span.temp">
+          %span.temp= link_to image_tag("/fluxx_engine/theme/default/images/icons/delete.png", :class => 'delete-button'), request_user, :class => 'as-delete'
+      = request_user.user.full_name
+      %div.relationship-description= request_user.description if request_user.description
+    <br clear="all"/>

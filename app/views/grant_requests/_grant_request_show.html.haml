@@ -92,8 +92,8 @@
 %h2
   - if can_current_user_edit_create_requests?
     .actions
-      = link_to 'link an org', new_request_organization_path(:request_id => model.id), :class => 'to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
-      = link_to 'link a person', new_request_user_path(:request_id => model.id), :class => 'to-modal fluxx-card-link-modal-action-onclose-reload-self fluxx-card-modal-close-on-success[.fluxx-card-show]'
+      = link_to 'link an org', new_request_organization_path(:request_organization => {:request_id => model.id}), :class => 'to-modal'
+      = link_to 'link a person', new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal'
 
     Relationships
 
