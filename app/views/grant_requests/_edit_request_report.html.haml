@@ -1,6 +1,5 @@
 %div
-  -# TODO ESH: need to look into how to handle deleting embedded form elements in rails 3
-  -#=req_report.input :_delete, :value => 0, :as => :hidden, :class => 'fluxx_delete_hidden_element_flag'
+  =req_report.input :_destroy, :value => 0, :as => :hidden, :class => 'fluxx_delete_hidden_element_flag'
   =req_report.input :id, :as => :hidden, :class => 'fluxx_delete_hidden_element_id'
   =req_report.input :report_type, :label => "Report Type", :as => :select, :collection => RequestReport.report_doc_types.map{|doc_type| [RequestReport.type_to_english_translation(doc_type), doc_type]},  :aft => ('<img src="/fluxx_engine/theme/default/images/icons/delete.png" class="fluxx-delete-div" align="absmiddle" />')
   =req_report.input :due_at, :label => "Due", :id => (rand * 999999999).to_i

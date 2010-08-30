@@ -116,7 +116,7 @@ module ApplicationGrantHelper
       end
       audit_table += "</table>"
     end
-    [audit_summary, audit_table]
+    [raw(audit_summary), raw(audit_table)]
   end
   
   def build_user_work_contact_details primary_user_org, model
@@ -167,7 +167,7 @@ module ApplicationGrantHelper
   
   def render_program_name request, include_fiscal=true
     if request.is_a? FipRequest
-     "<span class=\"minimize-detail-pull\">#{request.fip_title}</span> <br />"
+     raw "<span class=\"minimize-detail-pull\">#{request.fip_title}</span> <br />"
     else
       org_name = if request.program_organization
         request.program_organization.name
@@ -175,7 +175,7 @@ module ApplicationGrantHelper
       fiscal_org_name = if include_fiscal && request.fiscal_organization
         ", a project of #{request.fiscal_organization.name}"
       end || ''
-      "<span class=\"minimize-detail-pull\">#{org_name + fiscal_org_name}</span> <br />"
+      raw "<span class=\"minimize-detail-pull\">#{org_name + fiscal_org_name}</span> <br />"
     end
   end
   
@@ -192,7 +192,7 @@ module ApplicationGrantHelper
   end
   
   def render_request_or_grant_amount request, grant_text='Granted', request_text='Request for'
-    render_grant_amount(request, grant_text) || render_request_amount(request, request_text)
+    raw render_grant_amount(request, grant_text) || render_request_amount(request, request_text)
   end
 
   def plural_by_list list, singular, plural=nil

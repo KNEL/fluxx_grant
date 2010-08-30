@@ -24,33 +24,7 @@ module FluxxGrantRequestsController
         base.set_enabled_variables controller_dsl, controller
       end
     end
-    base.insta_role GrantRequest do |insta|
-      # Define who is allowd to perform which events
-      insta.add_event_roles 'reject', Program, Program.request_roles
-      insta.add_event_roles 'un_reject', Program, Program.request_roles
-      insta.add_event_roles 'recommend_funding', Program, Program.request_roles
-      insta.add_event_roles 'complete_ierf', Program, Program.request_roles
-      insta.add_event_roles 'grant_team_approve', Program, Program.grant_roles
-      insta.add_event_roles 'grant_team_send_back', Program, Program.grant_roles
-      insta.add_event_roles 'po_approve', Program, Program.program_officer_role_name
-      insta.add_event_roles 'po_send_back', Program, Program.program_officer_role_name
-      insta.add_event_roles 'pd_approve', Program, Program.program_director_role_name
-      insta.add_event_roles 'secondary_pd_approve', Program, Program.program_director_role_name
-      insta.add_event_roles 'pd_send_back', Program, Program.program_director_role_name
-      insta.add_event_roles 'cr_approve', Program, Program.cr_role_name
-      insta.add_event_roles 'cr_send_back', Program, Program.cr_role_name
-      insta.add_event_roles 'svp_approve', Program, Program.svp_role_name
-      insta.add_event_roles 'svp_send_back', Program, Program.svp_role_name
-      insta.add_event_roles 'president_approve', Program, Program.president_role_name
-      insta.add_event_roles 'president_send_back', Program, Program.president_role_name
-      insta.add_event_roles 'become_grant', Program, Program.grant_roles
-      insta.add_event_roles 'close_grant', Program, Program.grant_roles
-      insta.add_event_roles 'cancel_grant', Program, Program.grant_roles
-      
-      insta.extract_related_object do |model|
-        model.program
-      end
-    end
+    base.add_grant_request_instal_role
     base.insta_new GrantRequest do |insta|
       insta.template = 'grant_request_form'
     end

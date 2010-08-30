@@ -2,34 +2,21 @@ module FluxxGrantedRequestsController
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_list'
+      insta.template = 'granted_requests/grant_request_list'
       insta.filter_title = "Granted Requests Filter"
       insta.filter_template = 'granted_requests/granted_request_filter'
       insta.search_conditions = {:granted => 1, :has_been_rejected => 0}
+      insta.suppress_model_anchor_tag = true
     end
     base.insta_show GrantRequest do |insta|
+      insta.add_workflow
       insta.template = 'grant_requests/grant_request_show'
       insta.add_workflow
       insta.post do |controller_dsl, controller|
         base.set_enabled_variables controller_dsl, controller
       end
     end
-    base.insta_new GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_form'
-    end
-    base.insta_edit GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_form'
-    end
-    base.insta_post GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_form'
-    end
-    base.insta_put GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_form'
-      insta.add_workflow
-    end
-    base.insta_delete GrantRequest do |insta|
-      insta.template = 'grant_requests/grant_request_form'
-    end
+    base.add_grant_request_instal_role
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
