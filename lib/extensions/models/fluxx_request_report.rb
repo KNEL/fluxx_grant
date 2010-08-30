@@ -4,12 +4,15 @@ module FluxxRequestReport
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => true}
     
-    base.has_many :model_documents, :as => :documentable
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.has_many :workflow_events, :as => :workflowable
     base.has_many :favorites, :conditions => {:favorable_type => 'RequestReport'}, :foreign_key => :favorable_id # Override the favorites association to let it include all request types
-    base.has_many :notes, :conditions => {:deleted_at => nil, :notable_type => 'RequestReport'}, :foreign_key => :notable_id
+
+    base.has_many :model_documents, :as => :documentable
+    base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
+    base.has_many :group_members, :as => :groupable
+    base.has_many :groups, :through => :group_members
 
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
 

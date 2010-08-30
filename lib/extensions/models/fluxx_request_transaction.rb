@@ -8,6 +8,10 @@ module FluxxRequestTransaction
     base.belongs_to :payment_recorded_by, :class_name => 'User', :foreign_key => 'payment_recorded_by_id'
     base.has_many :workflow_events, :as => :workflowable
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
+    base.has_many :model_documents, :as => :documentable
+    base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
+    base.has_many :group_members, :as => :groupable
+    base.has_many :groups, :through => :group_members
 
     base.insta_favorite
     base.insta_export do |insta|
