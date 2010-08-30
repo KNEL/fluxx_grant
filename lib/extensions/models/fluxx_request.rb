@@ -407,6 +407,10 @@ module FluxxRequest
         local_un_reject_events
       end
       
+      def self.become_grant_event
+        'become_grant'
+      end
+      
 
       local_sent_back_states.each {|cur_state| aasm_state cur_state }
 
@@ -418,7 +422,7 @@ module FluxxRequest
       aasm_state :rejected
       aasm_state :funding_recommended
       aasm_state :new
-      aasm_state :granted
+      aasm_state :granted, :enter => :process_become_grant
       aasm_state :closed # Note that a user needs to close the grant.  The grants team would do this
       aasm_state :canceled # The grants team can cancel a grant after it has been granted
 
@@ -846,6 +850,10 @@ module FluxxRequest
 
     def add_president_approval_date
       self.grant_approved_at = Time.now
+    end
+
+    def process_become_grant
+      self.granted = true
     end
 
     def has_grant_team_ever_approved?

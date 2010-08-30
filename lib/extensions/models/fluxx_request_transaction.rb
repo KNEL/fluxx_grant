@@ -93,7 +93,8 @@ module FluxxRequestTransaction
         has request(:type), :type => :string, :crc => true, :as => :request_type
         has "IF(request_transactions.state = 'paid' OR (paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
-        has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
+        # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
+        # has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
         has group_members.group(:id), :type => :multi, :as => :group_ids
         has favorites.user(:id), :as => :favorite_user_ids
       end

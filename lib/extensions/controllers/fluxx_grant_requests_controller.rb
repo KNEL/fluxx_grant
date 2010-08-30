@@ -60,12 +60,19 @@ module FluxxGrantRequestsController
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
           if controller.params[:approve_grant_details]
-            local_model = controller.instance_variable_get '@model'
-            local_model = local_model.clone
+            actual_local_model = controller.instance_variable_get '@model'
+            # Need to clone when we run generate grant details or the changes will be persisted; trick rails into thinking this is a new request
+            local_model = actual_local_model.clone
+            # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
+            local_model.id = actual_local_model.id
             controller.instance_variable_set '@model', local_model
             begin
               local_model.generate_grant_details
-              controller.send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details'
+
+              # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
+              local_model.instance_variable_set '@new_record', false
+              form_url = controller.send("#{actual_local_model.class.name.underscore.downcase}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
+              controller.send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details', nil, form_url
             rescue Exception => e
               #p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
               controller.logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
