@@ -1,11 +1,15 @@
 module FluxxRequestFundingSource
+  SEARCH_ATTRIBUTES = [:request_id]
+
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :funding_source
     base.belongs_to :program
     base.belongs_to :initiative
     
-    base.insta_search
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES
+    end
     base.insta_export
     base.insta_multi
     base.insta_lock
