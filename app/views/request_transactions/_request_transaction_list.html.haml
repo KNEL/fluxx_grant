@@ -1,1 +1,10 @@
-%h1= model.amount_due
+= number_to_currency model.amount_due, :precision => 0
+= "(due #{model.due_at.mdy})" if model.due_at
+- if model.paid_at
+  <br />
+  = number_to_currency model.amount_paid, :precision => 0 if (model.amount_due != model.amount_paid)
+  ="Paid #{model.paid_at.mdy}"
+  
+= model.request.grant_id if model.request
+<br />
+= model.request.program_organization.name if model.request

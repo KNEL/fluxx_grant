@@ -25,6 +25,21 @@ module FluxxRequestReportsController
     base.insta_delete RequestReport do |insta|
       insta.template = 'request_report_form'
     end
+    base.insta_role RequestReport do |insta|
+      # Define who is allowd to perform which events
+      insta.add_event_roles RequestReport.submit_report_event, Program, Program.request_roles
+      insta.add_event_roles RequestReport.lead_approve_event, Program, [Program.program_officer_role_name, Program.program_director_role_name]
+      insta.add_event_roles RequestReport.lead_send_back_event, Program, [Program.program_director_role_name, Program.program_officer_role_name]
+      insta.add_event_roles RequestReport.grant_team_approve_event, Program, Program.grant_roles
+      insta.add_event_roles RequestReport.grant_team_send_back_event, Program, Program.grant_roles
+      insta.add_event_roles RequestReport.finance_approve_event, Program, Program.finance_roles
+      insta.add_event_roles RequestReport.finance_send_back_event, Program, Program.finance_roles
+
+      insta.extract_related_object do |model|
+        model.request.program if model.request
+      end
+    end
+    
     base.insta_related RequestReport do |insta|
       insta.add_related do |related|
         related.display_name = 'People'

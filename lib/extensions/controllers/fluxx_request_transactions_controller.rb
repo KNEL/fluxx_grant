@@ -25,6 +25,7 @@ module FluxxRequestTransactionsController
     base.insta_delete RequestTransaction do |insta|
       insta.template = 'request_transaction_form'
     end
+    # TODO ESH: do we need insta_role for request transactions??
     base.insta_related RequestTransaction do |insta|
       insta.add_related do |related|
         related.display_name = 'People'

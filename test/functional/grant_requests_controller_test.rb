@@ -111,7 +111,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     login_as_user_with_role Program.grants_administrator_role_name
     @request1.state = 'pending_po_approval'
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'po_approve'}
+    check_models_are_not_updated{put :update, :id => @request1.to_param, :event_action => 'po_approve'}
     assert_equal 'pending_po_approval', @request1.reload().state
     assert flash[:error]
   end
@@ -149,7 +149,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
   test "try to have PO approve an already approved request and fail" do
     @request1.state = 'pending_president_approval'
     @request1.save
-    check_models_are_updated{put :update, :id => @request1.to_param, :event_action => 'president_approve'}
+    check_models_are_not_updated{put :update, :id => @request1.to_param, :event_action => 'president_approve'}
     assert_equal 'pending_president_approval', @request1.reload().state
     assert flash[:error]
   end
@@ -425,6 +425,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
 
   test "should choose a request letter for a request that currently has none" do
+    program = Program.make
+    login_as_user_with_role Program.grants_administrator_role_name, program
     @request1.save
     award_letter = LetterTemplate.make :category => LetterTemplate.award_category
     ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
@@ -436,6 +438,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
   
   test "should not create new request letters for a request that currently has that letter template chosen" do
+    program = Program.make
+    login_as_user_with_role Program.grants_administrator_role_name, program
     @request1.save
     award_letter = LetterTemplate.make :category => LetterTemplate.award_category
     ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
@@ -447,6 +451,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
   
   test "should update the request letters for a request that currently has a different letter template chosen" do
+    program = Program.make
+    login_as_user_with_role Program.grants_administrator_role_name, program
     @request1.save
     award_letter = LetterTemplate.make :category => LetterTemplate.award_category
     ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
@@ -519,12 +525,14 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
   
   test "should not be allowed to edit if somebody else is editing" do
+    login_as_user_with_role Program.program_associate_role_name
     @request1.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
     get :edit, :id => @request1.to_param
     assert assigns(:not_editable)
   end
 
   test "should not be allowed to update if somebody else is editing" do
+    login_as_user_with_role Program.program_associate_role_name
     @request1.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
     put :update, :id => @request1.to_param, :organization => {}
     assert assigns(:not_editable)

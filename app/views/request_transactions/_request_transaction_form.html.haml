@@ -1,3 +1,6 @@
-= form.input :amount_due, :label => "Amount Due"
+= form.input :payment_type, {:label => 'Payment Type:', :as => :select, :collection => ['Check', 'Wire']}
+= form.input :paid_at, :label => 'Date Paid'
+= form.input :payment_confirmation_number, :label => 'Check/Confirmation Number:'
+= form.input :comment, :label => 'Comment:', :as => :text
 
 = form.commit_button
