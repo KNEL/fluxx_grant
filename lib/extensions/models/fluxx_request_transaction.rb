@@ -99,6 +99,10 @@ module FluxxRequestTransaction
       end
     end
 
+    def mark_paid
+      'mark_paid'
+    end
+
     def add_aasm
       aasm_column :state
       aasm_initial_state :tentatively_due
