@@ -322,7 +322,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
     assert_equal er_org, er_request.program_organization
     check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
-    assert flash[:error]
+    assert assigns(:approve_grant_details_error)
   end
 
   test "test approving a short durection ER trusted org request" do

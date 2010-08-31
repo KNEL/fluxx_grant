@@ -48,9 +48,10 @@ module FluxxGrantRequestsController
               form_url = controller.send("#{actual_local_model.class.name.underscore.downcase}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
               controller.send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details', nil, form_url
             rescue Exception => e
-              #p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
+              # p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
               controller.logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
               controller.flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s + '.'
+              controller.instance_variable_set "@approve_grant_details_error", true
               default_block.call
             end
             
