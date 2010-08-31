@@ -2,7 +2,7 @@ module FluxxRequestLetter
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :letter_template
-    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta], :protect => true})
+    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits], :protect => true})
 
     base.insta_search
     base.insta_export
