@@ -1,1 +1,30 @@
-%h1= model.name
+- request = nil unless defined?(:request)
+- unless request
+  - if params[:request_id]
+    - request = BlobStruct.new :id => params[:request_id], :class => Request
+
+%table.tabular{:cellspacing => 0}
+  %thead
+    %tr
+      %th
+        %span Linked Orgs
+        - if request && can_current_user_edit_create_requests?
+          .actions= link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button'), new_request_organization_path(:request_organization => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link Organization"
+  %tbody
+    - if !models || models.empty?
+      %tr
+        %td= "No links to organizations"
+    - else
+      - models.each do |model|
+        %tr
+          %td
+            %span
+              = model.organization.name
+              - if model.description
+                %div.relationship-description= model.description
+              - if can_current_user_edit_create_requests?
+                %span.temp= link_to image_tag("/fluxx_engine/theme/default/images/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'
+
+
+
+    

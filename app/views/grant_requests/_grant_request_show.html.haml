@@ -90,15 +90,10 @@
 = render :partial => "grant_requests/request_letters", :locals => { :model => @model}
 
 %h2
-  - if can_current_user_edit_create_requests?
-    .actions
-      = link_to 'link an org', new_request_organization_path(:request_organization => {:request_id => model.id}), :class => 'to-modal'
-      = link_to 'link a person', new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal'
+  Relationships
 
-    Relationships
-
-= render :partial => "grant_requests/organizations", :locals => { :model => @model}
-= render :partial => "grant_requests/users", :locals => { :model => @model}
+= render :partial => "request_organizations/list_request_organizations", :locals => { :model => @model}
+= render :partial => "request_users/list_request_users", :locals => { :model => @model}
 
 %h2= "#{model.is_grant? ? "Grant" : "Request"} Details"
 

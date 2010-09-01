@@ -1,1 +1,25 @@
-%h1= model.name
+- request = nil unless defined?(:request)
+- unless request
+  - if params[:request_id]
+    - request = BlobStruct.new :id => params[:request_id], :class => Request
+
+%table.tabular{:cellspacing => 0}
+  %thead
+    %tr
+      %th
+        %span Linked Users
+        - if request && can_current_user_edit_create_requests?
+          .actions= link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
+  %tbody
+    - if !models || models.empty?
+      %tr
+        %td= "No links to users"
+    - else
+      - models.each do |model|
+        %tr
+          %td
+            %span
+              = model.user.full_name
+              %div.relationship-description= model.description if model.description
+              - if can_current_user_edit_create_requests?
+                %span.temp= link_to image_tag("/fluxx_engine/theme/default/images/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'
