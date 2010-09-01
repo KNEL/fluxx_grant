@@ -1,1 +1,38 @@
-%h1= model.funding_source.name
+- request = nil unless defined?(:request)
+- unless request
+  - if params[:request_id]
+    - request = BlobStruct.new :id => params[:request_id], :class => Request
+%span
+  %h2
+    Funding Sources
+    = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => request.id}),
+        :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && can_current_user_edit_create_requests?)
+  %ol.funding-sources
+    - if !models || models.empty?
+      %li
+        %p= "No funding sources available"
+    - else
+      - total = 0
+      - models.each do |funding_source| 
+        - total += funding_source.funding_amount if funding_source.funding_amount
+        %li.funding-source
+          - if can_current_user_edit_create_requests?
+            %span.delete-button= link_to image_tag("/fluxx_engine/theme/default/images/icons/delete.png", :class => 'delete-button'), funding_source, :class => 'as-delete' if @edit_funding_sources_enabled
+        
+          Amount - 
+          - if @edit_funding_sources_enabled
+            = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal'
+          - else
+            = number_to_currency funding_source.funding_amount
+          <br />
+          Source -
+          = funding_source.funding_source.name if funding_source.funding_source
+          <br />
+          Initiatives - 
+          -  program_names = []
+          -  program_names << funding_source.program.name if funding_source.program
+          -  program_names << funding_source.initiative.name if funding_source.initiative
+          = program_names.join ', '
+          <br />
+      %li
+        %span{:class => "amount total"}= "#{number_to_currency total} Total Funding"

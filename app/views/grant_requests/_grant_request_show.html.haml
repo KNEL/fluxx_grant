@@ -86,7 +86,7 @@
     .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
 
 
-= render :partial => "grant_requests/funding_sources", :locals => { :model => @model}
+= render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => @model}
 = render :partial => "grant_requests/request_letters", :locals => { :model => @model}
 
 %h2

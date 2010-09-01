@@ -166,7 +166,7 @@ module FluxxRequest
               if children.empty?
                 program
               else
-                children
+                [program] + children
               end
             end.compact.flatten.map &:id
             # Have to consider that state may have been parsed before program_id
