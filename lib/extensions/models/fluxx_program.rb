@@ -67,6 +67,10 @@ module FluxxProgram
     def finance_roles
       [finance_administrator_role_name]
     end
+    
+    def all_role_names
+      request_roles + grant_roles + finance_roles
+    end
 
     def all_program_users
       RoleUser.includes(:user).where(:roleable_type => self.name).map{|ru| ru.user}
