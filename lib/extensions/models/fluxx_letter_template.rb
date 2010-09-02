@@ -1,7 +1,7 @@
 module FluxxLetterTemplate
   def self.included(base)
     base.has_many :request_letters
-    base.acts_as_audited :except => :delta, :protect => true
+    base.acts_as_audited :except => :delta
 
     base.insta_search
     base.insta_export

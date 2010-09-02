@@ -14,7 +14,7 @@ module FluxxRequestReport
     base.has_many :group_members, :as => :groupable
     base.has_many :groups, :through => :group_members
 
-    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits], :protect => true})
+    base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.insta_search
     base.insta_export do |insta|

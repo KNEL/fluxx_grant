@@ -59,10 +59,10 @@
 .pairs
   .key Main Contact:
   .value
-    - if model.grantee_org_owner
-      = model.grantee_org_owner.full_name
-    - if model.program && model.program_lead
-      = ", #{model.program.name} Program #{program_lead.full_name}"
+    - contacts = []
+    - contacts << model.grantee_org_owner.full_name if model.grantee_org_owner
+    - contacts << "#{model.program.name} Program #{model.program_lead.full_name}" if model.program && model.program_lead
+    = contacts.join ', '
 
 .pairs
   .key Program:

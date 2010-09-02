@@ -5,7 +5,7 @@ module FluxxRequestOrganization
     base.belongs_to :request
     base.belongs_to :organization
     base.after_commit :update_related_data
-    base.acts_as_audited :protect => true
+    base.acts_as_audited
 
     base.validates_presence_of :organization_id
     base.validates_presence_of :request_id

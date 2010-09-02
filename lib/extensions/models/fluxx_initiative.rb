@@ -1,7 +1,7 @@
 module FluxxInitiative
   def self.included(base)
     base.belongs_to :program
-    base.acts_as_audited :protect => true
+    base.acts_as_audited
 
     base.validates_presence_of     :program
     base.validates_presence_of     :name

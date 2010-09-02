@@ -1,6 +1,7 @@
 require 'fluxx_engine'
 
 namespace :fluxx_grant do
+  desc "add a all program roles to a user specified by user_id"
   task :add_all_program_roles => :environment do
     user_id = ENV['user_id']
     user = User.find user_id if user_id

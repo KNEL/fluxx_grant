@@ -1,6 +1,6 @@
 module FluxxProgram
   def self.included(base)
-    base.acts_as_audited :protect => true
+    base.acts_as_audited
 
     base.has_many :initiatives
     base.validates_presence_of     :name
