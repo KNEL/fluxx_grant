@@ -522,7 +522,8 @@ module FluxxRequest
 
         has "null", :type => :multi, :as => :org_owner_user_ids
         has "null", :type => :multi, :as => :favorite_user_ids
-        # has roles.roles_users.user(:id), :as => :user_ids
+        has "concat(program_lead_id, concat(',', concat(IFNULL(grantee_org_owner_id, ''), concat(',', concat(IFNULL(grantee_signatory_id, ''), concat(',', concat(IFNULL(fiscal_org_owner_id, ''), concat(',', IFNULL(fiscal_signatory_id, '')))))))))", :type => :multi, :as => :user_ids
+        
         has "null", :type => :multi, :as => :raw_request_org_ids
 
         has "null", :type => :multi, :as => :request_org_ids
@@ -562,7 +563,7 @@ module FluxxRequest
 
         has grantee_org_owner(:id), :as => :org_owner_user_ids
         has "null", :type => :multi, :as => :favorite_user_ids
-        # has "null", :type => :multi, :as => :user_ids
+        has "null", :type => :multi, :as => :user_ids
         has "null", :type => :multi, :as => :raw_request_org_ids
 
         has "null", :type => :multi, :as => :request_org_ids
@@ -602,7 +603,7 @@ module FluxxRequest
 
         has "null", :type => :multi, :as => :org_owner_user_ids
         has favorites.user(:id), :as => :favorite_user_ids
-        # has "null", :type => :multi, :as => :user_ids
+        has "null", :type => :multi, :as => :user_ids
         has request_organizations.organization(:id), :type => :multi, :as => :raw_request_org_ids
         has "GROUP_CONCAT(DISTINCT if(granted = 0, IFNULL(`organizations_request_organizations`.`id`, '0'), null) SEPARATOR ',')", :type => :multi, :as => :request_org_ids
         has "GROUP_CONCAT(DISTINCT if(granted = 1, IFNULL(`organizations_request_organizations`.`id`, '0'), null) SEPARATOR ',')", :type => :multi, :as => :grant_org_ids
@@ -636,13 +637,7 @@ module FluxxRequest
     def update_related_data
       Request.index_delta
       User.without_delta do
-        # TODO ESH: fix roles
-        # user_ids = roles.map do |role| 
-        #   role.roles_users.map do |ru| 
-        #     ru.user.id
-        #   end
-        # end.compact.flatten
-        User.update_all 'delta = 1', ['id in (?)', user_ids]
+        User.update_all 'delta = 1', ['id in (?)', related_users.map(&:id)]
         User.index_delta
       end
       Organization.without_delta do
@@ -825,6 +820,10 @@ module FluxxRequest
     def org_owner_user_ids
       grantee_org_owner ? grantee_org_owner.id : nil
     end
+    
+    def related_users
+      [program_lead, grantee_org_owner, grantee_signatory, fiscal_org_owner, fiscal_signatory].compact
+    end
 
     # Find out all the states a request of this type can pass through from the time it is new doing normal promotion
     def event_timeline
@@ -888,20 +887,3 @@ module FluxxRequest
     end
   end
 end
-
-# 
-# 1. What program roles should we include with grant_ri?  President/PA/etc... 
-    # I’m thinking the RI should include the same roles as EF, minus the Program Director and SVP. 
-    # From what I’ve seen, the PD and SVP are an extra level of hierarchy that most grantmakers don’t have. 
-    # That being said, what’s the easiest – adding PD for groups who do have one, or removing for groups who don’t?
-# 2. What should we populate in the new request form for:
-#   - primary contact: guessing this should be anybody from the primary/fiscal org Yes, correct.
-#   - primary signatory: do we want this? Yes, I’ve heard from others that this is often the case with grantees even outside EF. 
-#     People have remarked during demo’s that they like this feature.
-#   - program officer: which role/s should we use here?  Keep it the way we do now where program officer or higher program role for 
-#     the current program or rollup program? Yup, same way works well.
-# 3. What request workflow should we include with fluxx-oss for Grants/FIPS? (I’m wondering if we should just ditch FIPs for the RI, 
-#    and keep things simple to start – again, it depends on whether it’s easier to add or subtract during implementation. 
-#    Here’s the flow I think we should go with:
-# 
-# PA > PO > President > Grant Promotion > Granted > Closed
