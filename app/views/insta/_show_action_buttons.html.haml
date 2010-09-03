@@ -1,0 +1,5 @@
+- event_name, english_event_name = button_clause
+- if event_name.to_s == 'become_grant'
+  %li= link_to english_event_name, self.send("edit_#{@model_name}_path", {:approve_grant_details => true}), :class => 'to-self'
+- else
+  %li= link_to english_event_name, self.send("#{@model_name}_path", {:event_action => event_name}), :class => 'as-put'
