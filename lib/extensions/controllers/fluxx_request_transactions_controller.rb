@@ -52,7 +52,7 @@ module FluxxRequestTransactionsController
         related.extra_condition = {:deleted_at => 0}
         related.max_results = 20
         related.order = 'name asc'
-        related.display_template = '/organizations/related_organizations'
+        related.display_template = '/organizations/related_organization'
       end
       insta.add_related do |related|
         related.display_name = 'Requests'

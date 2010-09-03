@@ -57,7 +57,7 @@ module FluxxRequestReportsController
         related.extra_condition = {:deleted_at => 0}
         related.max_results = 20
         related.order = 'name asc'
-        related.display_template = '/organizations/related_organizations'
+        related.display_template = '/organizations/related_organization'
       end
       insta.add_related do |related|
         related.display_name = 'Requests'
@@ -71,7 +71,7 @@ module FluxxRequestReportsController
       insta.add_related do |related|
         related.display_name = 'Reports'
         related.related_class = RequestReport
-        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
+        related.search_id = (lambda {|rd| {:grant_ids => rd.request_id} })
         related.extra_condition = {:deleted_at => 0}
         related.max_results = 20
         related.order = 'due_at asc'

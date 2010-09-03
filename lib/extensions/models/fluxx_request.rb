@@ -522,7 +522,7 @@ module FluxxRequest
 
         has "null", :type => :multi, :as => :org_owner_user_ids
         has "null", :type => :multi, :as => :favorite_user_ids
-        has "concat(program_lead_id, concat(',', concat(IFNULL(grantee_org_owner_id, ''), concat(',', concat(IFNULL(grantee_signatory_id, ''), concat(',', concat(IFNULL(fiscal_org_owner_id, ''), concat(',', IFNULL(fiscal_signatory_id, '')))))))))", :type => :multi, :as => :user_ids
+        has "concat(program_lead_id, ',', IFNULL(grantee_org_owner_id, '0'), ',', IFNULL(grantee_signatory_id, '0'), ',', IFNULL(fiscal_org_owner_id, '0'), ',', IFNULL(fiscal_signatory_id, '0'))", :type => :multi, :as => :user_ids
         
         has "null", :type => :multi, :as => :raw_request_org_ids
 
