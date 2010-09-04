@@ -67,6 +67,8 @@ module FluxxGrantUser
         # has roles_users.any_request_type_role.any_request(:id), :as => :request_ids
         # has roles_users.grant_role.grant.program(:id), :as => :grant_program_ids
         # has roles_users.grant_role.grant.sub_program(:id), :as => :grant_initiative_ids
+        has "group_concat(ifnull((select group_concat(distinct(id) SEPARATOR ',') from requests where program_lead_id = users.id OR grantee_org_owner_id = users.id OR grantee_signatory_id = users.id OR fiscal_org_owner_id = users.id OR fiscal_signatory_id = users.id), 0) SEPARATOR ',')", :type => :multi, :as => :request_ids
+
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id
         has 'null', :type => :multi, :as => :last_name_ord

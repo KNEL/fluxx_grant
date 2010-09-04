@@ -21,7 +21,7 @@ module FluxxGrantedRequestsController
       insta.add_related do |related|
         related.display_name = 'People'
         related.related_class = User
-        related.search_id = :granted_request_id
+        related.search_id = :request_ids
         related.extra_condition = {:deleted_at => 0}
         related.max_results = 20
         related.order = 'last_name asc, first_name asc'

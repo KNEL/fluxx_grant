@@ -46,8 +46,12 @@ class FluxxGrantCreateRequests < ActiveRecord::Migration
     add_index :requests, :fiscal_organization_id
     add_index :requests, :program_id
     add_index :requests, :initiative_id
-    
-    
+    add_index :requests, :program_lead_id
+    add_index :requests, :fiscal_org_owner_id
+    add_index :requests, :grantee_signatory_id
+    add_index :requests, :fiscal_signatory_id
+    add_index :requests, :grantee_org_owner_id
+        
     execute "alter table requests add constraint requests_program_organization_id foreign key (program_organization_id) references organizations(id)" unless connection.adapter_name =~ /SQLite/i
     execute "alter table requests add constraint requests_fiscal_organization_id foreign key (fiscal_organization_id) references organizations(id)" unless connection.adapter_name =~ /SQLite/i
     execute "alter table requests add constraint requests_program_id foreign key (program_id) references programs(id)" unless connection.adapter_name =~ /SQLite/i
