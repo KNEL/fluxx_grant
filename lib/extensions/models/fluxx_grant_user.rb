@@ -9,6 +9,8 @@ module FluxxGrantUser
     base.has_many :grantee_signatory_requests, :class_name => 'Request', :foreign_key => :grantee_signatory_id
     base.has_many :fiscal_org_owner_requests, :class_name => 'Request', :foreign_key => :fiscal_org_owner_id
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
+    # TODO ESH: find a way to reference related requests based on a conditional join
+    # base.has_many :related_requests, :class_name => 'Request', :conditions => 
 
     base.send :include, ::FluxxUser
     
