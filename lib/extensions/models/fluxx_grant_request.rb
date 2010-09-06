@@ -7,6 +7,7 @@ module FluxxGrantRequest
     base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
     base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
     base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
+    base.has_many :model_documents, :foreign_key => :documentable_id, :conditions => {:documentable_type => base.name}
     
     base.validates_presence_of     :program_organization
     base.validates_presence_of     :program
