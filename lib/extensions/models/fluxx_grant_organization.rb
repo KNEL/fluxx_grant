@@ -165,6 +165,10 @@ module FluxxGrantOrganization
     def grant_initiative_ids
       grants.map{|grant| grant.initiative.id if grant.initiative}.flatten.compact
     end
+    
+    def related_org_ids
+      []
+    end
 
     def is_trusted?
       !grants.empty?
