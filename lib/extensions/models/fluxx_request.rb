@@ -635,25 +635,27 @@ module FluxxRequest
 
     # Force the sphinx indices to be updated
     def update_related_data
-      Request.index_delta
-      User.without_delta do
-        User.update_all 'delta = 1', ['id in (?)', related_users.map(&:id)]
-        User.index_delta
-      end
-      Organization.without_delta do
-        orgs = []
-        orgs << program_organization.id if program_organization
-        orgs << fiscal_organization.id if fiscal_organization
-        Organization.update_all 'delta = 1', ['id in (?)', orgs]
-        Organization.index_delta
-      end
-      RequestTransaction.without_delta do
-        RequestTransaction.update_all 'delta = 1', ['id in (?)', request_transactions.map(&:id)]
-        RequestTransaction.index_delta
-      end
-      RequestReport.without_delta do
-        RequestReport.update_all 'delta = 1', ['id in (?)', request_reports.map(&:id)]
-        RequestReport.index_delta
+      if Request.respond_to? :index_delta
+        Request.index_delta
+        User.without_delta do
+          User.update_all 'delta = 1', ['id in (?)', related_users.map(&:id)]
+          User.index_delta
+        end
+        Organization.without_delta do
+          orgs = []
+          orgs << program_organization.id if program_organization
+          orgs << fiscal_organization.id if fiscal_organization
+          Organization.update_all 'delta = 1', ['id in (?)', orgs]
+          Organization.index_delta
+        end
+        RequestTransaction.without_delta do
+          RequestTransaction.update_all 'delta = 1', ['id in (?)', request_transactions.map(&:id)]
+          RequestTransaction.index_delta
+        end
+        RequestReport.without_delta do
+          RequestReport.update_all 'delta = 1', ['id in (?)', request_reports.map(&:id)]
+          RequestReport.index_delta
+        end
       end
     end
 
