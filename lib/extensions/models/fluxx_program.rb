@@ -73,7 +73,7 @@ module FluxxProgram
     end
 
     def all_program_users
-      RoleUser.includes(:user).where(:roleable_type => self.name).map{|ru| ru.user}
+      User.joins(:role_users).where({:role_users => {:roleable_type => self.name}}).group("users.id").compact
     end
   end
 
