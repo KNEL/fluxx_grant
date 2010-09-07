@@ -1,5 +1,5 @@
 module FluxxGrantUser
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
+  SEARCH_ATTRIBUTES = [:program_ids, :grant_program_ids, :grant_initiative_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
   
   def self.included(base)
     base.has_many :request_users
@@ -9,6 +9,10 @@ module FluxxGrantUser
     base.has_many :grantee_signatory_requests, :class_name => 'Request', :foreign_key => :grantee_signatory_id
     base.has_many :fiscal_org_owner_requests, :class_name => 'Request', :foreign_key => :fiscal_org_owner_id
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
+    base.has_many :role_users_programs, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Program'}
+    base.has_many :role_programs, :class_name => 'Program', :through => :role_users_programs, :source => :user
+    
+    
     # TODO ESH: find a way to reference related requests based on a conditional join
     # base.has_many :related_requests, :class_name => 'Request', :conditions => 
 
@@ -63,10 +67,7 @@ module FluxxGrantUser
         # attributes
         has created_at, updated_at, deleted_at
 
-        # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
-        # has roles_users.any_request_type_role.any_request(:id), :as => :request_ids
-        # has roles_users.grant_role.grant.program(:id), :as => :grant_program_ids
-        # has roles_users.grant_role.grant.sub_program(:id), :as => :grant_initiative_ids
+        has role_users_programs.program(:id), :as => :program_ids
         has "group_concat(ifnull((select group_concat(distinct(id) SEPARATOR ',') from requests where program_lead_id = users.id OR grantee_org_owner_id = users.id OR grantee_signatory_id = users.id OR fiscal_org_owner_id = users.id OR fiscal_signatory_id = users.id), 0) SEPARATOR ',')", :type => :multi, :as => :request_ids
 
         has 'null', :type => :multi, :as => :favorite_user_ids
@@ -86,6 +87,7 @@ module FluxxGrantUser
         # attributes
         has created_at, updated_at, deleted_at
 
+        has 'null', :type => :multi, :as => :program_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids
@@ -112,6 +114,10 @@ module FluxxGrantUser
     
     def request_ids
       all_related_requests.map(&:id).uniq
+    end
+    
+    def program_ids
+      role_programs.map &:id
     end
 
     def grant_program_ids

@@ -88,7 +88,7 @@ module FluxxProgram
     end
 
     def load_users
-      UserRole.find_by_roleable self
+      User.joins(:role_users).where({:role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
     end
 
     def to_s
