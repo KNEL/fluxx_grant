@@ -26,7 +26,7 @@ module FluxxCommonRequestsController
       
         # If there is no promote or sendback event available in the workflow, do no let the user edit
         edit_enabled = (!(fluxx_request && fluxx_request.granted) && promotion_event) || 
-          (fluxx_request && fluxx_request.state == Request.granted_state.to_s) # && send("#{Request.become_grant_event.to_s}_allowed?"))
+          (fluxx_request && fluxx_request.state == Request.granted_state.to_s) && controller.has_role_for_event?(Request.become_grant_event, fluxx_request)
         edit_funding_sources_enabled = if !Program.finance_roles.select{|role_name| controller.current_user.has_role? role_name}.empty?
           true
         else
