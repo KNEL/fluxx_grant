@@ -33,19 +33,19 @@ module FluxxGrantUser
                       'work_city', 'work_state', 'work_country', 'work_postal_code', 'work_phone', 'work_fax', 'other_contact',
                       'assistant_name', 'assistant_email', 'blog_url', 'twitter_url', ['Birthday', :date], 'primary_title', 'primary_organization', 'time_zone']
       insta.sql_query = "select users.created_at, users.updated_at, salutation, first_name, last_name, users.email, personal_email, prefix, middle_initial, personal_phone, personal_mobile, personal_fax,
-                      personal_street_address, personal_street_address2, personal_city, country_states.name state_name,  countries.name country_name, personal_postal_code, 
+                      personal_street_address, personal_street_address2, personal_city, geo_states.name state_name,  geo_countries.name country_name, personal_postal_code, 
                       organizations.street_address work_street_address, organizations.street_address2 work_street_address2, organizations.city work_city,
-                      work_country_states.name work_state_name, work_countries.name work_country_name, organizations.postal_code work_postal_code,
+                      work_geo_states.name work_state_name, work_countries.name work_country_name, organizations.postal_code work_postal_code,
                       work_phone, work_fax, users.other_contact, 
                       assistant_name, assistant_email, users.blog_url, users.twitter_url, birth_at, 
                       user_organizations.title organization_title, organizations.name primary_organization, time_zone
                       from users 
-                      left outer join country_states on country_states.id = personal_country_state_id
-                      left outer join countries on countries.id = personal_country_id
+                      left outer join geo_states on geo_states.id = personal_geo_state_id
+                      left outer join geo_countries on geo_countries.id = personal_geo_country_id
                       left outer join user_organizations on user_organizations.id = primary_user_organization_id
                       left outer join organizations on organizations.id = user_organizations.organization_id
-                      left outer join country_states as work_country_states on work_country_states.id = organizations.country_state_id
-                      left outer join countries as work_countries on work_countries.id = organizations.country_id
+                      left outer join geo_states as work_geo_states on work_geo_states.id = organizations.geo_state_id
+                      left outer join geo_countries as work_countries on work_countries.id = organizations.geo_country_id
                       where users.id IN (?)"
     end
     

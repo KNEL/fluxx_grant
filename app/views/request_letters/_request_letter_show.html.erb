@@ -1,0 +1,109 @@
+<%-
+# Set up variables that are available within the template
+fluxx_request = model.request
+request_addressee_org = model.request.fiscal_organization || model.request.program_organization || Organization.new
+
+# base.belongs_to :program_lead, :class_name => 'User', :foreign_key => 'program_lead_id'
+# base.belongs_to :grantee_org_owner, :class_name => 'User', :foreign_key => 'grantee_org_owner_id'
+# base.belongs_to :grantee_signatory, :class_name => 'User', :foreign_key => 'grantee_signatory_id'
+# base.belongs_to :fiscal_org_owner, :class_name => 'User', :foreign_key => 'fiscal_org_owner_id'
+# base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
+
+project_primary_contact = model.request.grantee_org_owner || User.new
+project_primary_contact_title = if project_primary_contact
+  if project_primary_contact.primary_user_organization
+    project_primary_contact.primary_user_organization.title
+  end
+end || ''
+
+request_primary_contact = model.request.fiscal_org_owner || model.request.grantee_org_owner || User.new
+request_primary_contact_title = if request_primary_contact
+  if request_primary_contact.primary_user_organization
+    request_primary_contact.primary_user_organization.title
+  end
+end || ''
+
+signatory_contact = model.request.fiscal_signatory  || model.request.fiscal_org_owner || model.request.grantee_signatory ||  model.request.grantee_org_owner || User.new
+signatory_contact_title = if signatory_contact
+  if signatory_contact.primary_user_organization
+    signatory_contact.primary_user_organization.title
+  end
+end || ''
+
+sorted_request_transactions = fluxx_request.request_transactions.sort_by{|req| req.due_at || Time.at(0)}
+initial_payment = sorted_request_transactions.first || RequestTransaction.new 
+interim_payment = (sorted_request_transactions.size > 2) ? sorted_request_transactions[1] : nil
+final_payment = sorted_request_transactions.last || RequestTransaction.new
+initial_payment_in_currency = initial_payment.amount_due ? initial_payment.amount_due.to_currency_no_cents : ''
+interim_payment_in_currency = if interim_payment 
+  interim_payment.amount_due ? interim_payment.amount_due.to_currency_no_cents : ''
+end
+final_payment_in_currency = final_payment.amount_due ? final_payment.amount_due.to_currency_no_cents : ''
+
+sorted_request_reports = fluxx_request.letter_request_reports.sort_by{|rep| rep.due_at || Time.at(0)}
+initial_report = sorted_request_reports.first || RequestReport.new 
+final_report = if sorted_request_reports.size > 2
+  sorted_request_reports.last
+else
+  RequestReport.new
+end
+initial_report_due_at_full = initial_report.due_at ? initial_report.due_at.full : ''
+final_report_due_at_full = final_report.due_at ? final_report.due_at.full : ''
+
+# Strip off the period from the end of the project summary if it exists and make sure the first character is not capitalized
+request_project_summary = fluxx_request.project_summary || ''
+request_project_summary = request_project_summary.strip
+request_project_summary = request_project_summary.gsub /\.$/, ''
+request_project_summary = request_project_summary.first.downcase + request_project_summary[1..request_project_summary.size]
+
+al_proposal_and_budget_date, ga_proposal_and_budget_date = if (fluxx_request.ierf_proposed_end_at && fluxx_request.ierf_budget_end_at.nil?) || 
+   (fluxx_request.ierf_proposed_end_at && fluxx_request.ierf_budget_end_at && fluxx_request.ierf_proposed_end_at == fluxx_request.ierf_budget_end_at)
+  ["#{fluxx_request.ierf_proposed_end_at.full} proposal and budget",
+   "proposal document submitted to the Energy Foundation which incorporates a description of the project work to be provided, dated #{fluxx_request.ierf_proposed_end_at.full}, and 
+    project budget, dated #{fluxx_request.ierf_proposed_end_at.full}"]
+elsif fluxx_request.ierf_proposed_end_at && fluxx_request.ierf_budget_end_at
+  ["#{fluxx_request.ierf_proposed_end_at.full} proposal and #{fluxx_request.ierf_budget_end_at.full} budget",
+   "proposal document submitted to the Energy Foundation which incorporates a description of the project work to be provided, dated #{fluxx_request.ierf_proposed_end_at.full}, and 
+    project budget, dated #{fluxx_request.ierf_budget_end_at.full}"]
+else
+  ["proposal and budget",
+  "proposal document submitted to the Energy Foundation which incorporates a description of the project work to be provided, and 
+   project budget"]
+end
+
+payment_header_text = ''
+payment_num=0 
+model.request.request_transactions.sort_by{|req_trans| req_trans.due_at || Time.at(0)}.map do |payment| 
+  payment_in_currency = payment.amount_due ? payment.amount_due.to_currency_no_cents : ''
+  payment_header_text += "<tr><td>Payment #{payment_num + 1}:</td><td>#{payment_in_currency}</td></tr>"
+  payment_num += 1
+end
+
+
+payment_schedule_text = ''
+payment_num=0 
+model.request.request_transactions.sort_by{|req_trans| req_trans.due_at || Time.at(0)}.map do |payment| 
+  payment_in_currency = payment.amount_due ? payment.amount_due.to_currency_no_cents : ''
+    payment_schedule_text += "<tr><td valign=\"top\">Payment #{payment_num + 1}</td><td valign=\"top\">#{payment_in_currency}</td><td valign=\"top\"> "
+      if payment_num == 0
+        payment_schedule_text += " Upon the Energy Foundation staff's receipt of grant agreement and pre-grant inquiry confirmation signed by grantee "
+      elsif payment_num == model.request.request_transactions.size - 1
+        payment_schedule_text += " Upon receipt and approval by Energy Foundation staff of final narrative and financial reports, due #{final_report_due_at_full} "
+      else
+        payment_schedule_text += " Upon receipt and approval by Energy Foundation staff of interim narrative and interim reports, due #{initial_report_due_at_full} "
+      end
+    payment_schedule_text += "</td></tr>"
+ payment_num += 1
+end
+
+
+
+program_lead_contact = model.request.program_lead || User.new
+request_program = model.request.program || Program.new
+report_details = model.request.letter_request_reports.sort_by{|rep| rep.due_at || Time.at(0)}.map do |doc|
+    "<tr><td valign='top'></td><td valign='top'>#{doc.type_to_english} report due no later than:</td><td valign='top'>#{doc.due_at.full}</td></tr>\n"
+  end.join ' '
+letter_text = ERB.new(model.letter).result(binding)
+  -%>
+<%= raw letter_text %>
+<div class="fluxx-card-content"><div style="display: none" class="fluxx-card-show"></div></div>
