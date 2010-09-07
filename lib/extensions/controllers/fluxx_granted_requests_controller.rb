@@ -9,9 +9,13 @@ module FluxxGrantedRequestsController
       insta.suppress_model_anchor_tag = true
     end
     base.insta_show GrantRequest do |insta|
-      insta.add_workflow
       insta.template = 'grant_requests/grant_request_show'
       insta.add_workflow
+      insta.format do |format|
+        format.html do |controller_dsl, controller, outcome, default_block|
+          base.grant_request_show_format_html controller_dsl, controller, outcome, default_block
+        end
+      end
       insta.post do |controller_dsl, controller|
         base.set_enabled_variables controller_dsl, controller
       end

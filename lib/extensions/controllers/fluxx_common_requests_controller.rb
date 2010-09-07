@@ -7,6 +7,16 @@ module FluxxCommonRequestsController
   end
 
   module ModelClassMethods
+    
+    def grant_request_show_format_html controller_dsl, controller, outcome, default_block
+      if controller.params[:view_states]
+        local_model = controller.instance_variable_get '@model'
+        controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/view_states', :footer_template => 'insta/simple_footer'}
+      elsif controller.params[:show_funding_sources]
+      else
+        default_block.call
+      end
+    end
     def set_enabled_variables controller_dsl, controller
       fluxx_request = controller.instance_variable_get "@model"
       if fluxx_request

@@ -12,12 +12,7 @@ module FluxxGrantRequestsController
       insta.add_workflow
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
-          if controller.params[:view_states]
-            local_model = controller.instance_variable_get '@model'
-            fluxx_show_card local_model, {:template => 'grant_requests/view_states', :footer_template => 'insta/simple_footer'}
-          elsif controller.params[:show_funding_sources]
-          end
-          default_block.call
+          base.grant_request_show_format_html controller_dsl, controller, outcome, default_block
         end
       end
       insta.post do |controller_dsl, controller|
