@@ -636,25 +636,43 @@ module FluxxRequest
     # Force the sphinx indices to be updated
     def update_related_data
       if Request.respond_to? :index_delta
-        Request.index_delta
-        User.without_delta do
-          User.update_all 'delta = 1', ['id in (?)', related_users.map(&:id)]
-          User.index_delta
+        User.without_realtime do
+          us = related_users.map(&:id)
+          User.update_all 'delta = 1', ['id in (?)', us]
+          unless us.empty?
+            u = User.find(us.first)
+            u.delta = 1
+            u.save 
+          end
         end
-        Organization.without_delta do
+        Organization.without_realtime do
           orgs = []
           orgs << program_organization.id if program_organization
           orgs << fiscal_organization.id if fiscal_organization
           Organization.update_all 'delta = 1', ['id in (?)', orgs]
-          Organization.index_delta
+          unless orgs.empty?
+            o = Organization.find(orgs.first)
+            o.delta = 1
+            o.save 
+          end
         end
-        RequestTransaction.without_delta do
-          RequestTransaction.update_all 'delta = 1', ['id in (?)', request_transactions.map(&:id)]
-          RequestTransaction.index_delta
+        RequestTransaction.without_realtime do
+          rts = request_transactions.map(&:id)
+          RequestTransaction.update_all 'delta = 1', ['id in (?)', rts]
+          unless rts.empty?
+            rt = RequestTransaction.find(rts.first)
+            rt.delta = 1
+            rt.save 
+          end
         end
-        RequestReport.without_delta do
-          RequestReport.update_all 'delta = 1', ['id in (?)', request_reports.map(&:id)]
-          RequestReport.index_delta
+        RequestReport.without_realtime do
+          reps = request_reports.map(&:id)
+          RequestReport.update_all 'delta = 1', ['id in (?)', reps]
+          unless reps.empty?
+            rep = RequestReport.find(reps.first)
+            rep.delta = 1
+            rep.save 
+          end
         end
       end
     end

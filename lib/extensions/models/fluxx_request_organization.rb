@@ -29,14 +29,22 @@ module FluxxRequestOrganization
 
   module ModelInstanceMethods
     def update_related_data
-      Request.without_delta do
-        Request.update_all 'delta = 1', ['id in (?)', request_id]
+      Request.without_realtime do
+        if request_id
+          Request.update_all 'delta = 1', ['id in (?)', request_id]
+          req = Request.find(request_id)
+          req.delta = 1
+          req.save 
+        end
       end
-      Request.index_delta
-      Organization.without_delta do
-        Organization.update_all 'delta = 1', ['id in (?)', organization_id]
+      Organization.without_realtime do
+        if organization_id
+          Organization.update_all 'delta = 1', ['id in (?)', organization_id]
+          org = Organization.find(organization_id)
+          org.delta = 1
+          org.save 
+        end
       end
-      Organization.index_delta
     end
   end
 end

@@ -29,14 +29,22 @@ module FluxxRequestUser
 
   module ModelInstanceMethods
     def update_related_data
-      Request.without_delta do
-        Request.update_all 'delta = 1', ['id in (?)', request_id]
+      Request.without_realtime do
+        if request_id
+          Request.update_all 'delta = 1', ['id in (?)', request_id]
+          req = Request.find(request_id)
+          req.delta = 1
+          req.save 
+        end
       end
-      Request.index_delta
-      User.without_delta do
-        User.update_all 'delta = 1', ['id in (?)', user_id]
+      User.without_realtime do
+        if user_id
+          User.update_all 'delta = 1', ['id in (?)', user_id]
+          user = User.find(user_id)
+          user.delta = 1
+          user.save 
+        end
       end
-      User.index_delta
     end
   end
 end
