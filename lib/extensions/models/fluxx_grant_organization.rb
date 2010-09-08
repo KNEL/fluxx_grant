@@ -46,8 +46,8 @@ module FluxxGrantOrganization
     def add_sphinx
       define_index :organization_first do
         # fields
-        indexes name, :sortable => true
-        indexes acronym, :sortable => true
+        indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
@@ -68,8 +68,8 @@ module FluxxGrantOrganization
       end
 
       define_index :organization_second do
-        indexes name, :sortable => true
-        indexes acronym, :sortable => true
+        indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
@@ -89,8 +89,8 @@ module FluxxGrantOrganization
       end
 
       define_index :organization_third do
-        indexes name, :sortable => true
-        indexes acronym, :sortable => true
+        indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
@@ -110,8 +110,8 @@ module FluxxGrantOrganization
       end
 
       define_index :organization_fourth do
-        indexes name, :sortable => true
-        indexes acronym, :sortable => true
+        indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id

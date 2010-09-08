@@ -61,8 +61,10 @@ module FluxxGrantUser
     def add_sphinx
       define_index :user_first do
         # fields
-        indexes first_name, last_name, email, :sortable => true
-        indexes 'null', :type => :string, :as => :full_name, :sortable => true
+        indexes "lower(users.first_name)", :as => :first_name, :sortable => true
+        indexes "lower(users.last_name)", :as => :last_name, :sortable => true
+        indexes "lower(users.email)", :as => :email, :sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at
@@ -81,8 +83,10 @@ module FluxxGrantUser
 
       define_index :user_second do
         # fields
-        indexes first_name, last_name, email, :sortable => true
-        indexes "TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' ')))", :as => :full_name, :sortable => true
+        indexes "lower(users.first_name)", :as => :first_name, :sortable => true
+        indexes "lower(users.last_name)", :as => :last_name, :sortable => true
+        indexes "lower(users.email)", :as => :email, :sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at

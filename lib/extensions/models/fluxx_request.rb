@@ -498,9 +498,9 @@ module FluxxRequest
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
       define_index :request_first do
         # fields
-        indexes :fip_title
+        indexes "lower(requests.fip_title)", :as => :fip_title, :sortable => true
         indexes "CONCAT(IF(type = 'FipRequest', 'F-', 'R-'),base_request_id)", :sortable => true, :as => :request_id, :sortable => true
-        indexes :project_summary, :sortable => true
+        indexes "lower(requests.project_summary)", :as => :project_summary, :sortable => true
         indexes :id, :sortable => true
         indexes "CONCAT(IF(type = 'FipRequest', 'FG-', 'G-'),base_request_id)", :sortable => true, :as => :grant_id, :sortable => true
         indexes :type, :sortable => true
