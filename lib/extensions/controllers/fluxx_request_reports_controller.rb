@@ -60,7 +60,7 @@ module FluxxRequestReportsController
         related.display_template = '/organizations/related_organization'
       end
       insta.add_related do |related|
-        related.display_name = 'Requests'
+        related.display_name = 'Grants'
         related.related_class = GrantRequest
         related.search_id = (lambda {|rd| {:sphinx_internal_id => rd.request_id} })
         related.extra_condition = {:deleted_at => 0}
