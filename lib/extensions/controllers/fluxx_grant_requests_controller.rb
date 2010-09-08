@@ -69,6 +69,8 @@ module FluxxGrantRequestsController
             # redirect to the edit screen IF THE USER 
             actual_local_model = controller.instance_variable_get '@model'
             controller.redirect_to controller.send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
+          elsif controller.params[:event_action] == 'become_grant' && outcome == :success
+            controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
           else
             default_block.call
           end

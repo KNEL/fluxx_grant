@@ -1,0 +1,5 @@
+%div.fluxx-card-content
+  %div.fluxx-card-show
+    = flash_info
+    = flash_error
+    = link_to 'Open this grant in a new card.', grant_request_path(model), :class => 'new-detail', :dock_icon => '/images/ql-icons/48x48-grants.png', :title => 'Grant'

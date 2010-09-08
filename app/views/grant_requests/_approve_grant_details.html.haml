@@ -2,8 +2,8 @@
 = form.input :grant_agreement_at, :label => "Agreement Date", :id => (rand * 999999999).to_i
 = form.input :grant_begins_at, :label => "Grant Start Date", :id => (rand * 999999999).to_i
 
-- unless @model.type == 'FipRequest'
-  - if @model.state && Request.grant_states.include?(@model.state.to_sym)
+- unless model.type == 'FipRequest'
+  - if model.state && Request.grant_states.include?(model.state.to_sym)
     = form.input :funds_expended_amount, :label => 'Funds Expended'
     = form.input :funds_expended_at, :label => 'Funds Expended Date', :id => (rand * 999999999).to_i
 
@@ -16,7 +16,7 @@
     %h2
       Transactions
       = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#'
-    - unless @model.request_transactions.empty?
+    - unless model.request_transactions.empty?
       =form.semantic_fields_for :request_transactions do |req_trans|
         = render :partial => 'grant_requests/edit_request_transaction', :locals => {:req_trans => req_trans}
 
@@ -24,10 +24,10 @@
     %h2
       Reports
       = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#'
-    - unless @model.request_reports.empty?
+    - unless model.request_reports.empty?
       = form.semantic_fields_for :request_reports do |req_report|
         = render :partial => 'grant_requests/edit_request_report', :locals => {:req_report => req_report}
-          
+
 - # TODO ESH: need to find a way to do add new element form
 - #request_transaction_form = generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
 - #request_report_form = generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
