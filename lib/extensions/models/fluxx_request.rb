@@ -635,7 +635,7 @@ module FluxxRequest
 
     # Force the sphinx indices to be updated
     def update_related_data
-      if Request.respond_to? :index_delta
+      if Request.respond_to? :indexed_by_sphinx?
         User.without_realtime do
           us = related_users.map(&:id)
           User.update_all 'delta = 1', ['id in (?)', us]

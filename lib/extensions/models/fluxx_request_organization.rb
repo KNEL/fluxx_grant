@@ -29,20 +29,22 @@ module FluxxRequestOrganization
 
   module ModelInstanceMethods
     def update_related_data
-      Request.without_realtime do
-        if request_id
-          Request.update_all 'delta = 1', ['id in (?)', request_id]
-          req = Request.find(request_id)
-          req.delta = 1
-          req.save 
+      if Request.respond_to? :indexed_by_sphinx?
+        Request.without_realtime do
+          if request_id
+            Request.update_all 'delta = 1', ['id in (?)', request_id]
+            req = Request.find(request_id)
+            req.delta = 1
+            req.save 
+          end
         end
-      end
-      Organization.without_realtime do
-        if organization_id
-          Organization.update_all 'delta = 1', ['id in (?)', organization_id]
-          org = Organization.find(organization_id)
-          org.delta = 1
-          org.save 
+        Organization.without_realtime do
+          if organization_id
+            Organization.update_all 'delta = 1', ['id in (?)', organization_id]
+            org = Organization.find(organization_id)
+            org.delta = 1
+            org.save 
+          end
         end
       end
     end
