@@ -40,7 +40,7 @@ module FluxxGrantRequestsController
 
               # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
               local_model.instance_variable_set '@new_record', false
-              form_url = controller.send("#{actual_local_model.class.name.underscore.downcase}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
+              form_url = controller.send("#{actual_local_model.class.calculate_form_name.to_s}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
               controller.send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details', nil, form_url
             rescue Exception => e
               # p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
@@ -63,6 +63,17 @@ module FluxxGrantRequestsController
     base.insta_put GrantRequest do |insta|
       insta.template = 'grant_request_form'
       insta.add_workflow
+      insta.format do |format|
+        format.html do |controller_dsl, controller, outcome, default_block|
+          if controller.params[:event_action] == 'recommend_funding' && outcome == :success
+            # redirect to the edit screen IF THE USER 
+            actual_local_model = controller.instance_variable_get '@model'
+            controller.redirect_to controller.send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
+          else
+            default_block.call
+          end
+        end
+      end
     end
     base.insta_delete GrantRequest do |insta|
       insta.template = 'grant_request_form'
