@@ -273,13 +273,17 @@ module FluxxRequest
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
 
     # NOTE: for STI classes such as GrantRequest, the polymorphic associations must be replicated to get the correct class...
-    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
-    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
-    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
-    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
+    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => ['workflowable_type in (?)', Request.request_class_names]
+    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => ['favorable_type in (?)', Request.request_class_names]
+    base.has_many :notes, :foreign_key => :notable_id, :conditions => ['notable_type in (?)', Request.request_class_names]
+    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => ['groupable_type in (?)', Request.request_class_names]
   end
 
   module ModelClassMethods
+    def request_class_names
+      ['Request', 'GrantRequest']
+    end
+    
     # Translate the old state to the next state that will be completed
     # Useful for the funnel
     def self.old_state_complete_english_translation state_name
