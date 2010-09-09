@@ -21,7 +21,7 @@
         
           Amount - 
           - if @edit_funding_sources_enabled
-            = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal'
+            = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close'
           - else
             = number_to_currency funding_source.funding_amount
           <br />
