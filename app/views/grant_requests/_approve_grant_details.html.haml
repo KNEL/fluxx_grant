@@ -12,22 +12,18 @@
   = form.input :award_letter_type, :as => :select, :collection => LetterTemplate.award_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
   = form.input :grant_agreement_letter_type, :as => :select, :collection => LetterTemplate.grant_agreement_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
   
-  %div
+  %div.form-transactions
     %h2
       Transactions
-      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#'
+      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#', "data-template-param" => generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
     - unless model.request_transactions.empty?
       =form.semantic_fields_for :request_transactions do |req_trans|
         = render :partial => 'grant_requests/edit_request_transaction', :locals => {:req_trans => req_trans}
 
-  %div
+  %div.form-reports
     %h2
       Reports
-      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#'
+      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#', "data-template-param" => generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
     - unless model.request_reports.empty?
       = form.semantic_fields_for :request_reports do |req_report|
         = render :partial => 'grant_requests/edit_request_report', :locals => {:req_report => req_report}
-
-- # TODO ESH: need to find a way to do add new element form
-- #request_transaction_form = generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
-- #request_report_form = generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
