@@ -22,7 +22,7 @@
 .pairs
   .key Status:
   .value.with-more-info
-    = link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal', :title => 'View Workflow'
+    = link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal', :title => 'View Workflow','data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close'
 
 .pairs
   .key Request Submitted:

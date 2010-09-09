@@ -2,5 +2,5 @@
 - model.request_letters.sort_by{|rl| rl.letter_template.category if rl.letter_template }.each do |letter|
   <p>
   = link_to letter.description, letter, :target => '_blank'
-  = link_to image_tag('/fluxx_engine/theme/default/images/icons/page_edit.png'), edit_request_letter_path(letter), :class => 'to-modal', :title => "Edit #{letter.description}" if can_current_user_edit_create_requests?
+  = link_to image_tag('/fluxx_engine/theme/default/images/icons/page_edit.png'), edit_request_letter_path(letter), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Edit #{letter.description}" if can_current_user_edit_create_requests?
   </p>
