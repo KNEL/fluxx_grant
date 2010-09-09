@@ -15,7 +15,7 @@
   %div.form-transactions
     %h2
       Transactions
-      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_transactions fluxx_add_new_element_form', :onclick => ""), '#', "data-template-param" => generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
+      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png'), '#',  :class=> 'clone-template', "data-append-to" => ".form-transactions", "data-template" => generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
     - unless model.request_transactions.empty?
       =form.semantic_fields_for :request_transactions do |req_trans|
         = render :partial => 'grant_requests/edit_request_transaction', :locals => {:req_trans => req_trans}
@@ -23,7 +23,7 @@
   %div.form-reports
     %h2
       Reports
-      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button add_request_reports fluxx_add_new_element_form'), '#', "data-template-param" => generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
+      = link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png'), '#', :class=> 'clone-template', "data-append-to" => ".form-reports", "data-template" => generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
     - unless model.request_reports.empty?
       = form.semantic_fields_for :request_reports do |req_report|
         = render :partial => 'grant_requests/edit_request_report', :locals => {:req_report => req_report}

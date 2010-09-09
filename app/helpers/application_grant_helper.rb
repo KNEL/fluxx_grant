@@ -147,7 +147,7 @@ module ApplicationGrantHelper
     options[:partial] ||= method.to_s.singularize
     options[:form_builder_local] ||= :f  
 
-    form_builder.fields_for(method, options[:object], :child_index => 'NEW_RECORD') do |f|
+    form_builder.fields_for(method, options[:object], :child_index => '{{ record_index }}') do |f|
       render(:partial => options[:partial], :locals => { options[:form_builder_local] => f })
     end
   end
