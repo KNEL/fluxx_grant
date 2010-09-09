@@ -1,5 +1,5 @@
 module FluxxGrantOrganization
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
+  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
 
   def self.included(base)
     base.has_many :grants, :class_name => 'GrantRequest', :foreign_key => :program_organization_id, :conditions => {:granted => 1}
@@ -61,8 +61,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
         has satellite_orgs(:id), :as => :satellite_org_ids
-        has "CONCAT(organizations.id, CONCAT(',', GROUP_CONCAT(IFNULL(satellite_orgs_organizations.id, '0') SEPARATOR ','))) ", 
-          :as => :related_org_ids, :type => :multi
+        has "CONCAT(organizations.id, ',', IFNULL(organizations.parent_org_id, '0'))", :as => :related_org_ids, :type => :multi
 
         set_property :delta => true
       end
