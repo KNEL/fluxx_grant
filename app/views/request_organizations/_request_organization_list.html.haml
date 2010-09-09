@@ -19,7 +19,7 @@
         %tr
           %td
             %span
-              = model.organization.name
+              = model.organization.display_name
               - if model.description
                 %div.relationship-description= model.description
               - if can_current_user_edit_create_requests?

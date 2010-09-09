@@ -83,10 +83,10 @@ module ApplicationGrantHelper
       request.fip_title
     else
       org_name = if request.program_organization
-        request.program_organization.name
+        request.program_organization.display_name
       end
       fiscal_org_name = if include_fiscal && request.fiscal_organization && request.program_organization != request.fiscal_organization
-        "a project of #{request.fiscal_organization.name}"
+        "a project of #{request.fiscal_organization.display_name}"
       end
       [org_name, fiscal_org_name].compact.join ', '
     end
@@ -97,10 +97,10 @@ module ApplicationGrantHelper
      raw "<span class=\"minimize-detail-pull\">#{request.fip_title}</span> <br />"
     else
       org_name = if request.program_organization
-        request.program_organization.name
+        request.program_organization.display_name
       end || ''
       fiscal_org_name = if include_fiscal && request.fiscal_organization
-        ", a project of #{request.fiscal_organization.name}"
+        ", a project of #{request.fiscal_organization.display_name}"
       end || ''
       raw "<span class=\"minimize-detail-pull\">#{org_name + fiscal_org_name}</span> <br />"
     end

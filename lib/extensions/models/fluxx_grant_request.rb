@@ -111,10 +111,10 @@ module FluxxGrantRequest
 
     def org_name_text
       org_name = if program_organization
-        program_organization.name.strip if program_organization.name
+        program_organization.display_name.strip if program_organization.display_name
       end || ''
       fiscal_org_name = if fiscal_organization && program_organization != fiscal_organization
-        ", a project of #{fiscal_organization.name.strip if fiscal_organization.name}"
+        ", a project of #{fiscal_organization.display_name.strip if fiscal_organization.display_name}"
       end || ''
       org_name + fiscal_org_name
     end
