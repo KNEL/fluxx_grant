@@ -48,7 +48,7 @@ module FluxxGrantRequestsController
               controller.logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
               controller.flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s + '.'
               controller.instance_variable_set "@approve_grant_details_error", true
-              default_block.call
+              controller.redirect_to controller.url_for(actual_local_model)
             end
             
           else
@@ -66,6 +66,7 @@ module FluxxGrantRequestsController
       insta.add_workflow
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
+          p "ESH: 111 have params=#{controller.params.inspect}, outcome=#{outcome.inspect}"
           if controller.params[:event_action] == 'recommend_funding' && outcome == :success
             # redirect to the edit screen IF THE USER 
             actual_local_model = controller.instance_variable_get '@model'
