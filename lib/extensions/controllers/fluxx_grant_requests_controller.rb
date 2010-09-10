@@ -1,4 +1,5 @@
 module FluxxGrantRequestsController
+  ICON_STYLE = 'style-grant-requests'
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|
@@ -7,10 +8,11 @@ module FluxxGrantRequestsController
       insta.filter_title = "Grant Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
-      insta.icon_style = 'style-grant-requests'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_request_show'
+      insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
@@ -24,9 +26,11 @@ module FluxxGrantRequestsController
     base.add_grant_request_instal_role
     base.insta_new GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_edit GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.icon_style = ICON_STYLE
       # ESH: hmmm this is a bit ugly; look into a way to set the context to be the same as the controller's
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
@@ -61,9 +65,11 @@ module FluxxGrantRequestsController
     end
     base.insta_post GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_put GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
@@ -82,6 +88,7 @@ module FluxxGrantRequestsController
     end
     base.insta_delete GrantRequest do |insta|
       insta.template = 'grant_request_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|

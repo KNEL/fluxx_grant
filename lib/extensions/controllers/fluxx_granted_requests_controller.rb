@@ -1,4 +1,5 @@
 module FluxxGrantedRequestsController
+  ICON_STYLE = 'style-granted-requests'
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|
@@ -8,10 +9,11 @@ module FluxxGrantedRequestsController
       insta.search_conditions = {:granted => 1, :has_been_rejected => 0}
       insta.suppress_model_anchor_tag = true
       insta.order_clause = 'updated_at desc'
-      insta.icon_style = 'style-granted-requests'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_requests/grant_request_show'
+      insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|

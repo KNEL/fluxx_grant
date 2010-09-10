@@ -1,31 +1,38 @@
 module FluxxRequestReportsController
+  ICON_STYLE = 'style-reports'
   def self.included(base)
     base.insta_index RequestReport do |insta|
       insta.template = 'request_report_list'
       insta.filter_title = "Request Reports Filter"
       insta.filter_template = 'request_reports/request_report_filter'
       insta.order_clause = 'due_at desc'
-      insta.icon_style = 'style-reports'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_show RequestReport do |insta|
       insta.template = 'request_report_show'
+      insta.icon_style = ICON_STYLE
       insta.add_workflow
     end
     base.insta_new RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_edit RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_post RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_put RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.icon_style = ICON_STYLE
       insta.add_workflow
     end
     base.insta_delete RequestReport do |insta|
       insta.template = 'request_report_form'
+      insta.icon_style = ICON_STYLE
     end
     base.insta_role RequestReport do |insta|
       # Define who is allowd to perform which events
