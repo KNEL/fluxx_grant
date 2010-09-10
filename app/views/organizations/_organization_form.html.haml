@@ -1,5 +1,11 @@
 = form.input :parent_org_id, :as => :hidden
-= form.input :name, :label => "Name"
+- parent_org = if form.object.parent_org_id
+  - Organization.find form.object.parent_org_id rescue nil
+- if parent_org
+  - form.object.name = parent_org.name
+  = form.input :name, :label => "Name", :as => :hidden
+- else
+  = form.input :name, :label => "Name"
 = form.input :street_address, :label => "Street Address"
 = form.input :street_address2, :label => "Street Address 2"
 = form.input :geo_country, :label => 'Country:', :as => :select, :input_html => {:class => 'geo_country_select', 'data-related-child'.to_sym => '.geo-state-select'}, :collection => GeoCountry.all.map {|country| [country.name, country.id]}

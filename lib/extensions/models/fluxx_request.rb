@@ -76,11 +76,11 @@ module FluxxRequest
                          grant_begins_at, 
                          date_add(grant_begins_at, interval requests.duration_in_months MONTH) grant_ends_at,"
 
-          block2 = "ifnull(fiscal_organization_parent.name, program_organization.name), 
+          block2 = "program_organization.name, 
           program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
           program_org_country_states.name program_org_state_name, program_org_countries.name program_org_country_name, program_organization.postal_code program_org_postal_code,
           program_organization.url program_org_url,
-          ifnull(fiscal_organization_parent.name, fiscal_organization.name),
+          fiscal_organization.name,
           fiscal_organization.street_address fiscal_org_street_address, fiscal_organization.street_address2 fiscal_org_street_address2, fiscal_organization.city fiscal_org_city,
           fiscal_org_country_states.name fiscal_org_state_name, fiscal_org_countries.name fiscal_org_country_name, fiscal_organization.postal_code fiscal_org_postal_code,
           fiscal_organization.url fiscal_org_url,
@@ -117,9 +117,7 @@ module FluxxRequest
                          LEFT OUTER JOIN programs program ON program.id = requests.program_id
                          LEFT OUTER JOIN initiatives initiative ON initiative.id = requests.initiative_id
                          LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
-                         LEFT OUTER JOIN organizations program_organization_parent ON program_organization_parent.id = program_organization.parent_org_id
                          LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
-                         LEFT OUTER JOIN organizations fiscal_organization_parent ON fiscal_organization_parent.id = fiscal_organization.parent_org_id
                          LEFT OUTER JOIN request_funding_sources ON request_funding_sources.request_id = requests.id
                          LEFT OUTER JOIN funding_sources ON funding_sources.id = request_funding_sources.funding_source_id
                          left outer join geo_states as program_org_country_states on program_org_country_states.id = program_organization.geo_state_id
