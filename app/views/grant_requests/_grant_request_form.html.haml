@@ -6,8 +6,8 @@
 
 - program_users = []
 - program_users = form.object.program_organization.users if form.object.program_organization
-= form.input :grantee_org_owner, :label => 'Primary Contact', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-contact', 'data-cache'.to_sym => 'program_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'organization_id'}
-= form.input :grantee_signatory, :label => 'Primary Signatory', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-signatory', 'data-cache'.to_sym => 'program_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'organization_id'}
+= form.input :grantee_org_owner, :label => 'Primary Contact', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-contact', 'data-cache'.to_sym => 'program_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
+= form.input :grantee_signatory, :label => 'Primary Signatory', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-signatory', 'data-cache'.to_sym => 'program_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
 
 = form.input :fiscal_organization_lookup, :label => "Fiscal Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => 'fiscal_organization_lookup_select', 'data-related-child' => ".fiscal-org-sat-select"}, :value => (form.object.fiscal_organization ? form.object.fiscal_organization.display_name : '')
 - fiscal_organization_satellites = form.object.fiscal_organization ? form.object.fiscal_organization.satellites : []
@@ -15,8 +15,8 @@
 
 - fiscal_users = []
 - fiscal_users = form.object.fiscal_organization.users if form.object.fiscal_organization
-= form.input :fiscal_org_owner, :label => 'Fiscal Contact', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-contact', 'data-cache'.to_sym => 'fiscal_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'organization_id'}
-= form.input :fiscal_signatory, :label => 'Fiscal Signatory', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-signatory', 'data-cache'.to_sym => 'fiscal_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'organization_id'}
+= form.input :fiscal_org_owner, :label => 'Fiscal Contact', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-contact', 'data-cache'.to_sym => 'fiscal_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
+= form.input :fiscal_signatory, :label => 'Fiscal Signatory', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-signatory', 'data-cache'.to_sym => 'fiscal_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
 
 = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
 
