@@ -5,6 +5,7 @@ module FluxxRequestReportsController
       insta.filter_title = "Request Reports Filter"
       insta.filter_template = 'request_reports/request_report_filter'
       insta.order_clause = 'due_at desc'
+      insta.icon_style = 'style-reports'
     end
     base.insta_show RequestReport do |insta|
       insta.template = 'request_report_show'

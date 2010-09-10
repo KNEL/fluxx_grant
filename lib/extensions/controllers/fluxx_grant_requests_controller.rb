@@ -7,6 +7,7 @@ module FluxxGrantRequestsController
       insta.filter_title = "Grant Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
+      insta.icon_style = 'style-grant-requests'
     end
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_request_show'

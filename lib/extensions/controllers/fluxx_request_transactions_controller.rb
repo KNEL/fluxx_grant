@@ -5,6 +5,7 @@ module FluxxRequestTransactionsController
       insta.filter_title = "Request Transactions Filter"
       insta.filter_template = 'request_transactions/request_transaction_filter'
       insta.order_clause = 'due_at desc'
+      insta.icon_style = 'style-transactions'
     end
     base.insta_show RequestTransaction do |insta|
       insta.template = 'request_transaction_show'
