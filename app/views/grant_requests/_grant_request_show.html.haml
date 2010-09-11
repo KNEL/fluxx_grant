@@ -66,6 +66,10 @@
   .value= model.program.name if model.program
 
 .pairs
+  .key Lead Program Officer/Director:
+  .value= model.program_lead.full_name if model.program_lead
+
+.pairs
   .key Request Created By:
   .value= "#{model.created_by.full_name if model.created_by} (#{model.created_at.mdy if model.created_at})"
 .blank
