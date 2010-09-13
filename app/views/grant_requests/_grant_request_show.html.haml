@@ -66,7 +66,15 @@
   .value= model.program.name if model.program
 
 .pairs
+  .key Sub-Program:
+  .value= model.sub_program.name if model.sub_program
+
+.pairs
   .key Lead Program Officer/Director:
+  .value= model.program_lead.full_name if model.program_lead
+
+.pairs
+  .key Primary Signatory:
   .value= model.program_lead.full_name if model.program_lead
 
 .pairs
