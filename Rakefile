@@ -7,13 +7,6 @@ begin
     gem.email = "fluxx@acesfconsulting.com"
     gem.authors = ["Eric Hansen"]
     gem.files = Dir["{lib}/**/*", "{app}/**/*", "{config}/**/*"]
-    gem.add_dependency('fastercsv', '>= 1.5.3')
-    gem.add_dependency('formtastic-rails3', '>= 0.9.10.0')
-    gem.add_dependency('haml', '>= 3')
-#gem "will_paginate", :git => "http://github.com/mislav/will_paginate.git", :branch => "rails3"
-    gem.add_development_dependency('jsmin', '>= 1.0.1')
-    gem.add_development_dependency('thin', '>= 1.2.7')
-    gem.add_development_dependency('json', '>= 1.4.3')
   end
 rescue
   puts "Jeweler or dependency not available."
