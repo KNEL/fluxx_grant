@@ -8,6 +8,7 @@ begin
     gem.authors = ["Eric Hansen"]
     gem.files = Dir["{lib}/**/*", "{app}/**/*", "{config}/**/*"]
   end
+  Jeweler::GemcutterTasks.new
 rescue
   puts "Jeweler or dependency not available."
 end
