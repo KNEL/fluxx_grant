@@ -1,6 +1,6 @@
 .form-row
-  =req_trans.input :_destroy, :value => 0, :as => :hidden, :class => 'fluxx_delete_hidden_element_flag'
-  =req_trans.input :id, :as => :hidden, :class => 'fluxx_delete_hidden_element_id'
-  =req_trans.input :amount_due, :label => "Amount",  :aft => ('<a href="#" class="delete-parent" data-parent=".form-row"><img src="/fluxx_engine/theme/default/images/icons/delete.png" class="fluxx-delete-div icon" /></a>')
+  =req_trans.input :_destroy, :value => 0, :as => :hidden, :class => 'hidden-destroy'
+  =req_trans.input :id, :as => :hidden, :class => 'hidden-id'
+  =req_trans.input :amount_due, :label => "Amount",  :aft => ('<a href="#" class="delete-parent" data-parent=".form-row" data-hidden-destroy=".hidden-destroy" data-hidden-id=".hidden-id"><img src="/fluxx_engine/theme/default/images/icons/delete.png" class="fluxx-delete-div icon" /></a>')
   =req_trans.input :due_at, :label => "Due", :id => nil
   =req_trans.input :state, :as => :hidden

@@ -74,14 +74,18 @@ module FluxxGrantRequestsController
       insta.format do |format|
         format.html do |controller_dsl, controller, outcome, default_block|
           p "ESH: 111 have params=#{controller.params.inspect}, outcome=#{outcome.inspect}"
+          actual_local_model = controller.instance_variable_get '@model'
           if controller.params[:event_action] == 'recommend_funding' && outcome == :success
             # redirect to the edit screen IF THE USER 
-            actual_local_model = controller.instance_variable_get '@model'
             controller.redirect_to controller.send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
           elsif controller.params[:event_action] == 'become_grant' && outcome == :success
             controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
           else
-            default_block.call
+            if actual_local_model.granted?
+              controller.redirect_to controller.send("granted_request_path", actual_local_model)
+            else
+              default_block.call
+            end
           end
         end
       end

@@ -9,19 +9,138 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eric Hansen"]
-  s.date = %q{2010-08-03}
+  s.date = %q{2010-09-14}
   s.email = %q{fluxx@acesfconsulting.com}
   s.extra_rdoc_files = [
-    "README.rdoc",
+    "LICENSE",
      "README.textile"
   ]
   s.files = [
     "app/controllers/application_controller.rb",
-     "app/helpers/application_helper.rb",
+     "app/controllers/grant_requests_controller.rb",
+     "app/controllers/granted_requests_controller.rb",
+     "app/controllers/organizations_controller.rb",
+     "app/controllers/programs_controller.rb",
+     "app/controllers/request_funding_sources_controller.rb",
+     "app/controllers/request_letters_controller.rb",
+     "app/controllers/request_organizations_controller.rb",
+     "app/controllers/request_reports_controller.rb",
+     "app/controllers/request_transactions_controller.rb",
+     "app/controllers/request_users_controller.rb",
+     "app/controllers/users_controller.rb",
+     "app/helpers/application_grant_helper.rb",
+     "app/models/fip_request.rb",
+     "app/models/funding_source.rb",
+     "app/models/grant_request.rb",
+     "app/models/initiative.rb",
+     "app/models/letter_template.rb",
+     "app/models/organization.rb",
+     "app/models/program.rb",
+     "app/models/request.rb",
+     "app/models/request_funding_source.rb",
+     "app/models/request_geo_state.rb",
+     "app/models/request_letter.rb",
+     "app/models/request_organization.rb",
+     "app/models/request_report.rb",
+     "app/models/request_transaction.rb",
+     "app/models/request_user.rb",
+     "app/models/role_user.rb",
+     "app/models/user.rb",
+     "app/models/user_organization.rb",
+     "app/views/grant_requests/_approve_grant_details.html.haml",
+     "app/views/grant_requests/_edit_request_report.html.haml",
+     "app/views/grant_requests/_edit_request_transaction.html.haml",
+     "app/views/grant_requests/_grant_request_filter.html.haml",
+     "app/views/grant_requests/_grant_request_form.html.haml",
+     "app/views/grant_requests/_grant_request_list.html.haml",
+     "app/views/grant_requests/_grant_request_show.html.haml",
+     "app/views/grant_requests/_related_request.html.haml",
+     "app/views/grant_requests/_request_became_grant.html.haml",
+     "app/views/grant_requests/_request_letters.html.haml",
+     "app/views/grant_requests/_view_states.html.haml",
+     "app/views/granted_requests/_grant_request_list.html.haml",
+     "app/views/granted_requests/_granted_request_filter.html.haml",
+     "app/views/insta/_show_action_buttons.html.haml",
+     "app/views/letter_templates/al_china_er.html.erb",
+     "app/views/letter_templates/al_gos.html.erb",
+     "app/views/letter_templates/al_multiyear.html.erb",
+     "app/views/letter_templates/al_public_charity.html.erb",
+     "app/views/letter_templates/al_us_er.html.erb",
+     "app/views/letter_templates/ga_china_er.html.erb",
+     "app/views/letter_templates/ga_gos.html.erb",
+     "app/views/letter_templates/ga_multiyear.html.erb",
+     "app/views/letter_templates/ga_public_charity.html.erb",
+     "app/views/letter_templates/ga_us_er.html.erb",
+     "app/views/organizations/_organization_filter.html.haml",
+     "app/views/organizations/_organization_form.html.haml",
+     "app/views/organizations/_related_organization.html.haml",
+     "app/views/programs/_program_form.html.haml",
+     "app/views/programs/_program_list.html.haml",
+     "app/views/programs/_program_show.html.haml",
+     "app/views/request_funding_sources/_list_request_funding_sources.html.haml",
+     "app/views/request_funding_sources/_request_funding_source_form.html.haml",
+     "app/views/request_funding_sources/_request_funding_source_list.html.haml",
+     "app/views/request_funding_sources/_request_funding_source_show.html.haml",
+     "app/views/request_letters/_request_letter_form.html.haml",
+     "app/views/request_letters/_request_letter_list.html.haml",
+     "app/views/request_letters/_request_letter_show.html.erb",
+     "app/views/request_organizations/_list_request_organizations.html.haml",
+     "app/views/request_organizations/_request_organization_form.html.haml",
+     "app/views/request_organizations/_request_organization_list.html.haml",
+     "app/views/request_organizations/_request_organization_show.html.haml",
+     "app/views/request_reports/_list_item1.html.haml",
+     "app/views/request_reports/_related_documents.html.haml",
+     "app/views/request_reports/_request_report_filter.html.haml",
+     "app/views/request_reports/_request_report_form.html.haml",
+     "app/views/request_reports/_request_report_list.html.haml",
+     "app/views/request_reports/_request_report_show.html.haml",
+     "app/views/request_transactions/_related_request_transactions.html.haml",
+     "app/views/request_transactions/_request_transaction_filter.html.haml",
+     "app/views/request_transactions/_request_transaction_form.html.haml",
+     "app/views/request_transactions/_request_transaction_list.html.haml",
+     "app/views/request_transactions/_request_transaction_show.html.haml",
+     "app/views/request_users/_list_request_users.html.haml",
+     "app/views/request_users/_request_user_form.html.haml",
+     "app/views/request_users/_request_user_list.html.haml",
+     "app/views/request_users/_request_user_show.html.haml",
+     "app/views/role_users/_role_user_form.html.haml",
+     "app/views/users/_related_users.html.haml",
+     "app/views/users/_user_filter.html.haml",
      "config/routes.rb",
+     "lib/extensions/controllers/fluxx_common_requests_controller.rb",
+     "lib/extensions/controllers/fluxx_grant_organizations_controller.rb",
+     "lib/extensions/controllers/fluxx_grant_requests_controller.rb",
+     "lib/extensions/controllers/fluxx_grant_users_controller.rb",
+     "lib/extensions/controllers/fluxx_granted_requests_controller.rb",
+     "lib/extensions/controllers/fluxx_programs_controller.rb",
+     "lib/extensions/controllers/fluxx_request_funding_sources_controller.rb",
+     "lib/extensions/controllers/fluxx_request_letters_controller.rb",
+     "lib/extensions/controllers/fluxx_request_organizations_controller.rb",
+     "lib/extensions/controllers/fluxx_request_reports_controller.rb",
+     "lib/extensions/controllers/fluxx_request_transactions_controller.rb",
+     "lib/extensions/controllers/fluxx_request_users_controller.rb",
+     "lib/extensions/models/fluxx_fip_request.rb",
+     "lib/extensions/models/fluxx_funding_source.rb",
+     "lib/extensions/models/fluxx_grant_organization.rb",
+     "lib/extensions/models/fluxx_grant_request.rb",
+     "lib/extensions/models/fluxx_grant_role_user.rb",
+     "lib/extensions/models/fluxx_grant_user.rb",
+     "lib/extensions/models/fluxx_grant_user_organization.rb",
+     "lib/extensions/models/fluxx_initiative.rb",
+     "lib/extensions/models/fluxx_letter_template.rb",
+     "lib/extensions/models/fluxx_program.rb",
+     "lib/extensions/models/fluxx_request.rb",
+     "lib/extensions/models/fluxx_request_funding_source.rb",
+     "lib/extensions/models/fluxx_request_geo_state.rb",
+     "lib/extensions/models/fluxx_request_letter.rb",
+     "lib/extensions/models/fluxx_request_organization.rb",
+     "lib/extensions/models/fluxx_request_report.rb",
+     "lib/extensions/models/fluxx_request_transaction.rb",
+     "lib/extensions/models/fluxx_request_user.rb",
      "lib/fluxx_grant.rb",
      "lib/fluxx_grant/engine.rb",
      "lib/generators/fluxx_grant_migration/fluxx_grant_migration_generator.rb",
+     "lib/generators/fluxx_grant_migration/templates/add_grant_fields_to_organization.rb",
      "lib/generators/fluxx_grant_migration/templates/create_funding_sources.rb",
      "lib/generators/fluxx_grant_migration/templates/create_initiatives.rb",
      "lib/generators/fluxx_grant_migration/templates/create_letter_templates.rb",
@@ -35,6 +154,7 @@ Gem::Specification.new do |s|
      "lib/generators/fluxx_grant_migration/templates/create_request_users.rb",
      "lib/generators/fluxx_grant_migration/templates/create_requests.rb",
      "lib/generators/fluxx_grant_public/fluxx_grant_public_generator.rb",
+     "lib/generators/fluxx_grant_seed/fluxx_grant_seed_generator.rb",
      "lib/tasks.rb"
   ]
   s.rdoc_options = ["--charset=UTF-8"]
@@ -42,7 +162,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{Fluxx Grant Core}
   s.test_files = [
-    "test/dummy/app/controllers/application_controller.rb",
+    "test/blueprint.rb",
+     "test/dummy/app/controllers/application_controller.rb",
      "test/dummy/app/helpers/application_helper.rb",
      "test/dummy/config/application.rb",
      "test/dummy/config/boot.rb",
@@ -85,11 +206,36 @@ Gem::Specification.new do |s|
      "test/dummy/db/migrate/20100803152043_fluxx_grant_create_request_funding_sources.rb",
      "test/dummy/db/migrate/20100803152044_fluxx_grant_create_request_users.rb",
      "test/dummy/db/migrate/20100803152045_fluxx_grant_create_request_geo_states.rb",
+     "test/dummy/db/migrate/20100806151108_fluxx_grant_add_grant_fields_to_organization.rb",
+     "test/dummy/db/migrate/20100809090857_acts_as_audited_migration.rb",
+     "test/dummy/db/migrate/20100819101944_fluxx_crm_create_role_users.rb",
      "test/dummy/db/schema.rb",
+     "test/dummy/db/seeds.rb",
      "test/fluxx_grant_test.rb",
+     "test/functional/grant_requests_controller_test.rb",
+     "test/functional/granted_requests_controller_test.rb",
+     "test/functional/request_funding_sources_controller_test.rb",
+     "test/functional/request_letters_controller_test.rb",
+     "test/functional/request_organizations_controller_test.rb",
+     "test/functional/request_reports_controller_test.rb",
+     "test/functional/request_transactions_controller_test.rb",
+     "test/functional/request_users_controller_test.rb",
      "test/integration/navigation_test.rb",
      "test/support/integration_case.rb",
-     "test/test_helper.rb"
+     "test/test_helper.rb",
+     "test/unit/models/funding_source_test.rb",
+     "test/unit/models/grant_request_test.rb",
+     "test/unit/models/initiative_test.rb",
+     "test/unit/models/letter_template_test.rb",
+     "test/unit/models/organization_test.rb",
+     "test/unit/models/program_test.rb",
+     "test/unit/models/request_funding_source_test.rb",
+     "test/unit/models/request_geo_state_test.rb",
+     "test/unit/models/request_letter_test.rb",
+     "test/unit/models/request_organization_test.rb",
+     "test/unit/models/request_report_test.rb",
+     "test/unit/models/request_transaction_test.rb",
+     "test/unit/models/request_user_test.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -97,27 +243,9 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<fastercsv>, [">= 1.5.3"])
-      s.add_runtime_dependency(%q<formtastic-rails3>, [">= 0.9.10.0"])
-      s.add_runtime_dependency(%q<haml>, [">= 3"])
-      s.add_development_dependency(%q<jsmin>, [">= 1.0.1"])
-      s.add_development_dependency(%q<thin>, [">= 1.2.7"])
-      s.add_development_dependency(%q<json>, [">= 1.4.3"])
     else
-      s.add_dependency(%q<fastercsv>, [">= 1.5.3"])
-      s.add_dependency(%q<formtastic-rails3>, [">= 0.9.10.0"])
-      s.add_dependency(%q<haml>, [">= 3"])
-      s.add_dependency(%q<jsmin>, [">= 1.0.1"])
-      s.add_dependency(%q<thin>, [">= 1.2.7"])
-      s.add_dependency(%q<json>, [">= 1.4.3"])
     end
   else
-    s.add_dependency(%q<fastercsv>, [">= 1.5.3"])
-    s.add_dependency(%q<formtastic-rails3>, [">= 0.9.10.0"])
-    s.add_dependency(%q<haml>, [">= 3"])
-    s.add_dependency(%q<jsmin>, [">= 1.0.1"])
-    s.add_dependency(%q<thin>, [">= 1.2.7"])
-    s.add_dependency(%q<json>, [">= 1.4.3"])
   end
 end
 
