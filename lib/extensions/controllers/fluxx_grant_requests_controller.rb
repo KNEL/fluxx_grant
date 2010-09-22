@@ -97,20 +97,16 @@ module FluxxGrantRequestsController
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
-        related.related_class = User
-        related.search_id = :request_ids
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'last_name asc, first_name asc'
+        related.for_search do |model|
+          model.related_users
+        end
         related.display_template = '/users/related_users'
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
-        related.related_class = Organization
-        related.search_id = [:request_ids, :fiscal_request_ids, :org_request_ids]
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'name asc'
+        related.for_search do |model|
+          model.related_organizations
+        end
         related.display_template = '/organizations/related_organization'
       end
     end

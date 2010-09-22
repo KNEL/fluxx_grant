@@ -52,38 +52,30 @@ module FluxxRequestReportsController
     base.insta_related RequestReport do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
-        related.related_class = User
-        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'last_name asc, first_name asc'
+        related.for_search do |model|
+          model.related_users
+        end
         related.display_template = '/users/related_users'
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
-        related.related_class = Organization
-        related.search_id = (lambda {|rd| {:request_ids => rd.request_id} })
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'name asc'
+        related.for_search do |model|
+          model.related_organizations
+        end
         related.display_template = '/organizations/related_organization'
       end
       insta.add_related do |related|
         related.display_name = 'Grants'
-        related.related_class = GrantRequest
-        related.search_id = (lambda {|rd| {:sphinx_internal_id => rd.request_id} })
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'grant_agreement_at desc, request_received_at desc'
+        related.for_search do |model|
+          model.related_grants
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
         related.display_name = 'Reports'
-        related.related_class = RequestReport
-        related.search_id = (lambda {|rd| {:grant_ids => rd.request_id} })
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'due_at asc'
+        related.for_search do |model|
+          model.related_reports
+        end
         related.display_template = '/request_reports/related_documents'
       end
     end

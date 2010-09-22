@@ -22,29 +22,23 @@ module FluxxGrantUsersController
     base.insta_related User do |insta|
       insta.add_related do |related|
         related.display_name = 'Requests'
-        related.related_class = Request
-        related.search_id = [:user_ids, :request_user_ids]
-        related.extra_condition = {:granted => 0, :deleted_at => 0}
-        related.max_results = 20
-        related.order = 'grant_agreement_at desc, request_received_at desc'
+        related.for_search do |model|
+          model.related_requests
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
         related.display_name = 'Grants'
-        related.related_class = Request
-        related.search_id = [:user_ids, :request_user_ids]
-        related.extra_condition = {:granted => 1, :deleted_at => 0}
-        related.max_results = 20
-        related.order = 'grant_agreement_at desc, request_received_at desc'
+        related.for_search do |model|
+          model.related_grants
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
-        related.related_class = Organization
-        related.search_id = :user_ids
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'name asc'
+        related.for_search do |model|
+          model.related_organizations
+        end
         related.display_template = '/organizations/related_organization'
       end
     end

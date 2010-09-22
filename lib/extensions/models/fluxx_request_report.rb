@@ -387,6 +387,28 @@ module FluxxRequestReport
       end
     end
     
+    def related_users
+      if request
+        request.related_users
+      end || []
+    end
+    
+    def related_organizations
+      if request
+        request.related_organizations
+      end || []
+    end
+    
+    def related_grants
+      [request]
+    end
+    
+    def related_reports
+      if request
+        request.related_request_reports - [self]
+      end || []
+    end
+
     def is_approved?
       state == 'approved' && approved_at
     end

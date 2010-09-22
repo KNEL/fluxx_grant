@@ -176,5 +176,27 @@ module FluxxRequestTransaction
     def amount_due= new_amount
       write_attribute(:amount_due, filter_amount(new_amount))
     end
+    
+    def related_users
+      if request
+        request.related_users
+      end || []
+    end
+    
+    def related_organizations
+      if request
+        request.related_organizations
+      end || []
+    end
+    
+    def related_grants
+      [request]
+    end
+    
+    def related_transactions
+      if request
+        request.related_request_transactions - [self]
+      end || []
+    end
   end
 end

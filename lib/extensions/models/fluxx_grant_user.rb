@@ -109,15 +109,35 @@ module FluxxGrantUser
   end
 
   module ModelInstanceMethods
-    
-    
-    # TODO ESH: find a way of making this more efficient
     def all_related_requests
-      program_lead_requests + grantee_org_owner_requests + grantee_signatory_requests + fiscal_org_owner_requests + fiscal_signatory_requests
+      Request.where(:id => request_ids).all
     end
     
     def request_ids
-      all_related_requests.map(&:id).uniq
+      Request.select(:id).where(:deleted_at => nil).where(['program_lead_id = ? OR fiscal_org_owner_id = ? OR grantee_signatory_id = ? OR fiscal_signatory_id = ? OR grantee_org_owner_id = ?', self.id, self.id, self.id, self.id, self.id]).map &:id
+    end
+    
+    def related_requests look_for_granted=false, limit_amount=20
+      granted_param = look_for_granted ? 1 : 0
+      Request.find_by_sql ["SELECT requests.* 
+        FROM requests 
+        WHERE deleted_at IS NULL AND id IN (?)  AND granted = ?
+        UNION
+        SELECT requests.*
+        FROM requests, request_users
+        WHERE deleted_at IS NULL AND requests.id = request_users.request_id AND request_users.user_id = ? AND granted = ?
+        GROUP BY requests.id
+        ORDER BY grant_agreement_at desc, request_received_at desc
+        limit ?
+        ", request_ids, granted_param, self.id, granted_param, limit_amount]
+    end
+    
+    def related_grants limit_amount=20
+      related_requests true, limit_amount
+    end
+    
+    def related_organizations limit_amount=20
+      organizations.order('name asc').limit(limit_amount)
     end
     
     def program_ids

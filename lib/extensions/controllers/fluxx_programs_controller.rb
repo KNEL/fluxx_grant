@@ -23,17 +23,6 @@ module FluxxProgramsController
     base.insta_delete Program do |insta|
       insta.template = 'program_form'
     end
-    base.insta_related Program do |insta|
-      insta.add_related do |related|
-        related.display_name = 'People'
-        related.related_class = User
-        related.search_id = :program_id
-        related.extra_condition = {:deleted_at => 0}
-        related.max_results = 20
-        related.order = 'last_name asc, first_name asc'
-        related.display_template = '/users/related_users'
-      end
-    end
     
     base.extend(ModelClassMethods)
     base.class_eval do

@@ -846,7 +846,19 @@ module FluxxRequest
     end
     
     def related_users
-      [program_lead, grantee_org_owner, grantee_signatory, fiscal_org_owner, fiscal_signatory].compact
+      (request_users + [program_lead, grantee_org_owner, grantee_signatory, fiscal_org_owner, fiscal_signatory]).compact.reject{|u| u.deleted_at}.sort_by{|u| [u.last_name, u.first_name]}
+    end
+
+    def related_organizations
+      (request_organizations + [program_organization, fiscal_organization]).compact.sort_by{|o| o.name}.reject{|o| o.deleted_at}
+    end
+    
+    def related_request_transactions limit_amount=20
+      request_transactions.where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
+    end
+
+    def related_request_reports limit_amount=20
+      request_reports.where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
     end
 
     # Find out all the states a request of this type can pass through from the time it is new doing normal promotion

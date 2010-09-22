@@ -168,6 +168,38 @@ module FluxxGrantOrganization
     def related_org_ids
       []
     end
+    
+    def related_requests look_for_granted=false, limit_amount=20
+      granted_param = look_for_granted ? 1 : 0
+      Request.find_by_sql(["SELECT requests.* 
+        FROM requests 
+        WHERE deleted_at IS NULL AND (program_organization_id = ? or fiscal_organization_id = ?) AND granted = ?
+        UNION
+      SELECT requests.* 
+        FROM requests, request_organizations 
+        WHERE deleted_at IS NULL AND requests.id = request_organizations.request_id AND request_organizations.organization_id = ?
+      GROUP BY requests.id 
+      ORDER BY grant_agreement_at DESC, request_received_at DESC
+      LIMIT ?", self.id, self.id, granted_param, self.id, limit_amount])
+    end
+    
+    def related_grants limit_amount=20
+      related_requests true, limit_amount
+    end
+    
+    def related_transactions limit_amount=20
+      grants = related_grants limit_amount
+      RequestTransaction.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
+    end
+    
+    def related_reports limit_amount=20
+      grants = related_grants limit_amount
+      RequestReport.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
+    end
+    
+    def related_users limit_amount=20
+      users.where(:deleted_at => nil).order('last_name asc, first_name asc').limit(limit_amount)
+    end
 
     def is_trusted?
       !grants.empty?
