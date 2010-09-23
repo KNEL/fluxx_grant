@@ -88,7 +88,7 @@ module FluxxRequestTransaction
 
         # attributes
         has created_at, updated_at, deleted_at, due_at, paid_at, amount_paid, amount_due
-        set_property :delta => true
+        set_property :delta => :delayed
         has :state, :type => :string, :crc => true, :as => :filter_state
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has grant(:id), :as => :grant_ids

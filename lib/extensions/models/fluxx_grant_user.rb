@@ -78,7 +78,7 @@ module FluxxGrantUser
         has 'null', :type => :multi, :as => :first_name_ord
         has request_users.request(:id), :type => :multi, :as => :user_request_ids
         has 'null', :type => :multi, :as => :group_ids
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :user_second do
@@ -103,7 +103,7 @@ module FluxxGrantUser
         (ORD(LOWER(SUBSTRING(users.first_name,3,1))) * 256) + (ORD(LOWER(SUBSTRING(users.first_name,4,1)))))', :type => :multi, :as => :first_name_ord
         has 'null', :type => :multi, :as => :user_request_ids
         has group_members.group(:id), :type => :multi, :as => :group_ids
-        set_property :delta => true
+        set_property :delta => :delayed
       end
     end
   end

@@ -4,7 +4,7 @@ module FluxxRequestOrganization
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :organization
-    base.after_commit :update_related_data
+    # base.after_commit :update_related_data
     base.acts_as_audited
 
     base.validates_presence_of :organization_id

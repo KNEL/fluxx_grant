@@ -26,7 +26,7 @@ module FluxxRequest
     base.after_save :process_before_save_blocks
     base.before_save :resolve_letter_type_changes
     
-    base.after_commit :update_related_data
+    # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
     base.send :attr_accessor, :grant_agreement_letter_type
@@ -537,7 +537,7 @@ module FluxxRequest
 
         has "null", :type => :multi, :as => :group_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :request_second do
@@ -577,7 +577,7 @@ module FluxxRequest
 
         has "null", :type => :multi, :as => :group_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :request_third do
@@ -616,7 +616,7 @@ module FluxxRequest
 
         has group_members.group(:id), :type => :multi, :as => :group_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
     end
   end

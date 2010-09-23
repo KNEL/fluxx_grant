@@ -5,7 +5,7 @@ module FluxxRequestUser
     base.belongs_to :request
     base.belongs_to :user
     base.acts_as_audited
-    base.after_commit :update_related_data
+    # base.after_commit :update_related_data
 
     base.validates_presence_of :user_id
     base.validates_presence_of :request_id

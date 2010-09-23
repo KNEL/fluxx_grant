@@ -167,7 +167,7 @@ module FluxxRequestReport
 
         # attributes
         has created_at, updated_at, deleted_at, due_at 
-        set_property :delta => true
+        set_property :delta => :delayed
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
         has grant.initiative(:id), :as => :grant_initiative_ids
@@ -190,7 +190,7 @@ module FluxxRequestReport
 
         # attributes
         has created_at, updated_at, deleted_at, due_at
-        set_property :delta => true
+        set_property :delta => :delayed
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_initiative_ids

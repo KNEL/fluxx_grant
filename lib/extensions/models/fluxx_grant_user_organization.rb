@@ -2,7 +2,7 @@ module FluxxGrantUserOrganization
   def self.included(base)
     base.belongs_to :program, :class_name => 'Program', :foreign_key => :roleable_id  # So we can do a sphinx index
     base.send :include, ::FluxxUserOrganization
-    base.after_commit :update_related_data
+    # base.after_commit :update_related_data
     
     base.extend(ModelClassMethods)
     base.class_eval do

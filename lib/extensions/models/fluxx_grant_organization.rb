@@ -63,7 +63,7 @@ module FluxxGrantOrganization
         has satellite_orgs(:id), :as => :satellite_org_ids
         has "CONCAT(organizations.id, ',', IFNULL(organizations.parent_org_id, '0'))", :as => :related_org_ids, :type => :multi
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :organization_second do
@@ -84,7 +84,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :organization_third do
@@ -105,7 +105,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
 
       define_index :organization_fourth do
@@ -126,7 +126,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
 
-        set_property :delta => true
+        set_property :delta => :delayed
       end
     end
   end
