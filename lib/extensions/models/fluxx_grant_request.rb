@@ -18,9 +18,6 @@ module FluxxGrantRequest
     base.validates_associated      :program_organization
     base.validates_associated      :program
 
-    # AASM doesn't deal with inheritance of active record models quite the way we need here.  Grab Request's state machine as a starting point and modify.
-    # AASM::StateMachine[GrantRequest] = AASM::StateMachine[Request].clone
-    
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

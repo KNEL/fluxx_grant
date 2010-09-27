@@ -452,6 +452,7 @@ ActiveRecord::Schema.define(:version => 20100819101944) do
     t.datetime "locked_until"
     t.datetime "deleted_at"
     t.boolean  "delta",                             :default => true,  :null => false
+    t.integer  "fip_type_id"
     t.integer  "program_lead_id"
     t.integer  "fiscal_org_owner_id"
     t.integer  "grantee_signatory_id"

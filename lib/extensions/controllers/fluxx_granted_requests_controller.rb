@@ -1,5 +1,7 @@
 module FluxxGrantedRequestsController
   ICON_STYLE = 'style-granted-requests'
+  
+  # Note that the granted requests controller is necessary to show a different look and feel for the index (filtering by granted), and for the show, which should have different related data
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
     base.insta_index GrantRequest do |insta|

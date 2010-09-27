@@ -1,3 +1,4 @@
+# File to share functionality among grant/fip/granted request controllers
 module FluxxCommonRequestsController
   def self.included(base)
     base.extend(ModelClassMethods)
@@ -17,6 +18,52 @@ module FluxxCommonRequestsController
         default_block.call
       end
     end
+    
+    def grant_request_edit_format_html controller_dsl, controller, outcome, default_block
+      if controller.params[:approve_grant_details]
+        actual_local_model = controller.instance_variable_get '@model'
+        # Need to clone when we run generate grant details or the changes will be persisted; trick rails into thinking this is a new request
+        local_model = actual_local_model.clone
+        # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
+        local_model.id = actual_local_model.id
+        controller.instance_variable_set '@model', local_model
+        begin
+          local_model.generate_grant_details
+
+          # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
+          local_model.instance_variable_set '@new_record', false
+          form_url = controller.send("#{actual_local_model.class.calculate_form_name.to_s}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
+          controller.send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details', nil, form_url
+        rescue Exception => e
+          # p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
+          controller.logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
+          controller.flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s + '.'
+          controller.instance_variable_set "@approve_grant_details_error", true
+          controller.redirect_to controller.url_for(actual_local_model)
+        end
+        
+      else
+        default_block.call
+      end
+    end
+    
+    def grant_request_update_format_html controller_dsl, controller, outcome, default_block
+      p "ESH: 111 have params=#{controller.params.inspect}, outcome=#{outcome.inspect}"
+      actual_local_model = controller.instance_variable_get '@model'
+      if controller.params[:event_action] == 'recommend_funding' && outcome == :success
+        # redirect to the edit screen IF THE USER 
+        controller.redirect_to controller.send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
+      elsif controller.params[:event_action] == 'become_grant' && outcome == :success
+        controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
+      else
+        if actual_local_model.granted?
+          controller.redirect_to controller.send("granted_request_path", actual_local_model)
+        else
+          default_block.call
+        end
+      end
+    end
+    
     def set_enabled_variables controller_dsl, controller
       fluxx_request = controller.instance_variable_get "@model"
       if fluxx_request

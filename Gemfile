@@ -15,6 +15,8 @@ gem 'machinist', '>=1.0.6'
 gem 'faker', '>=0.3.1'
 gem 'rcov'
 gem 'thinking-sphinx', '2.0.0.rc1', :require => 'thinking_sphinx'
+gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git'
+gem 'ts-delayed-delta', '>=1.1.0'
 gem 'paperclip'
 gem 'devise', '>=1.1.2'
 

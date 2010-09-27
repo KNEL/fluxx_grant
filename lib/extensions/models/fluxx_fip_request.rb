@@ -7,12 +7,9 @@ module FluxxFipRequest
     base.validates_presence_of     :program
     base.validates_presence_of     :project_summary
     base.validates_presence_of     :amount_requested
-    base.validates_presence_of     :amount_recommended
+    base.validates_presence_of     :amount_recommended, :if => :state_after_pre_recommended_chain
     base.validates_associated      :program
 
-    # AASM doesn't deal with inheritance of active record models quite the way we need here.  Grab Request's state machine as a starting point and modify.
-    # AASM::StateMachine[FipRequest] = AASM::StateMachine[Request].clone
-    
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

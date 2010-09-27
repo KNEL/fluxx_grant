@@ -1,7 +1,7 @@
 require 'test_helper'
 
-class GrantRequestsControllerTest < ActionController::TestCase
-  
+class FipRequestsControllerTest < ActionController::TestCase
+
   def check_models_are_updated
     assert_difference('WorkflowEvent.count') do
       yield
@@ -41,8 +41,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
   # end
 
   test "try to reject a request" do
-     [(GrantRequest.approval_chain + GrantRequest.sent_back_states).first].each do |cur_state|
-      @controller = GrantRequestsController.new
+     [(FipRequest.approval_chain + FipRequest.sent_back_states).first].each do |cur_state|
+      @controller = FipRequestsController.new
       Program.request_roles.each do |role_name|
         @request1.state = cur_state.to_s
         @request1.save
@@ -238,177 +238,47 @@ class GrantRequestsControllerTest < ActionController::TestCase
     assert flash[:info]
   end
   
-  test "test that approve a greater than 1 year duration request for a non-profit to become a grant adds 3 request documents and creates the grant ID" do
-    assert_nil @request1.grant_id
-    login_as_user_with_role Program.grants_administrator_role_name
-    @request1.state = 'pending_grant_promotion'
-    @request1.duration_in_months = 18
-    @request1.amount_recommended = 45000
-    @request1.save
-    assert_nil @request1.grant_id
-    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    @request1 = assigns(:model)
-    assert_equal 5, @request1.request_reports.size
-    assert @request1.request_reports.first.report_type == RequestReport.interim_budget_type_name
-    assert @request1.request_reports[1].report_type == RequestReport.interim_narrative_type_name
-    assert @request1.request_reports[2].report_type == RequestReport.final_budget_type_name
-    assert @request1.request_reports[3].report_type == RequestReport.final_narrative_type_name
-    assert @request1.grant_id
-  end
-  
-  test "test that approve a less than 1 year duration request for a new non-profit to become a grant for a new organization adds 3 request documents and creates the grant ID" do
-    login_as_user_with_role Program.grants_administrator_role_name
-    @request1.state = 'pending_grant_promotion'
-    @request1.duration_in_months = 11
-    @request1.amount_recommended = 45000
-    @request1.save
-    assert !@request1.grant_id
-    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    @request1 = assigns(:model)
-    assert_equal 5, @request1.request_reports.size
-    assert @request1.request_reports.first.report_type == RequestReport.interim_budget_type_name
-    assert @request1.request_reports[1].report_type == RequestReport.interim_narrative_type_name
-    assert @request1.request_reports[2].report_type == RequestReport.final_budget_type_name
-    assert @request1.request_reports[3].report_type == RequestReport.final_narrative_type_name
-    assert @request1.request_reports.last.report_type == RequestReport.eval_type_name
-
-    assert @request1.grant_id
-  end
-  
-  test "test that approve a less than 1 year duration request to become a grant for an existing organization adds 2 request documents and creates the grant ID" do
-    login_as_user_with_role Program.grants_administrator_role_name
-
-    # Setup an extra grant
-    @request2 = GrantRequest.make :state => 'granted', :program => @program, :program_organization => @org, :amount_recommended => 45000, :duration_in_months => 18, :granted => 1
-    assert_equal 1, @org.grants.size
-
-    @request1.state = 'pending_grant_promotion'
-    @request1.duration_in_months = 11
-    @request1.amount_recommended = 45000
-    @request1.save
-    assert !@request1.grant_id
-    check_models_are_not_updated{put :edit, :id => @request1.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    @request1 = assigns(:model)
-    assert @request1.grant_agreement_at
-    assert_equal @org, @request1.program_organization
-    assert_equal 3, @request1.request_reports.size
-    assert @request1.request_reports[2].report_type == RequestReport.eval_type_name
-    assert_equal 1, @request1.request_transactions.size
-    assert_equal @request1.amount_recommended, @request1.request_transactions.first.amount_due
-    
-    assert @request1.grant_id
-  end
-  
-  test "test approving a short durection ER untrusted org request" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
-    er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 11
-    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    er_request = assigns(:model)
-    assert er_request.grant_agreement_at
-    assert_equal 5, er_request.request_reports.size
-    assert_equal 3, er_request.request_transactions.size
-  end
-  
-  test "test approving a long duration ER untrusted org request" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
-    er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
-    assert_equal er_org, er_request.program_organization
-    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
-    assert assigns(:approve_grant_details_error)
-  end
-
-  test "test approving a short durection ER trusted org request" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
-    er_grant = GrantRequest.make :state => 'granted', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18, :granted => true
-    er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 11
-    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    er_request = assigns(:model)
-    assert er_request.grant_agreement_at
-    assert_equal 3, er_request.request_reports.size
-    assert_equal 2, er_request.request_transactions.size
-  end
-  
-  test "test advancing a long duration ER trusted org request in the grant workflow" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
-    er_grant = GrantRequest.make :state => 'granted', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18, :granted => 1
-    er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
-    assert er_request.has_tax_class?
-    
-    check_models_are_not_updated{put :edit, :id => er_request.to_param, :approve_grant_details => true}
-    assert_template :partial => '_approve_grant_details'
-    er_request = assigns(:model)
-    assert er_request.grant_agreement_at
-    assert_equal 1, er_org.grants.size
-    assert_equal 5, er_request.request_reports.size
-    assert_equal 3, er_request.request_transactions.size
-  end
-  
-  test "test approving a long duration ER trusted org request" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    er_org = Organization.make :tax_class => bp_attrs[:er_tax_status]
-    er_grant = GrantRequest.make :state => 'granted', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18, :granted => true
-    er_request = GrantRequest.make :state => 'pending_grant_promotion', :program => program, :program_organization => er_org, :amount_recommended => 45000, :duration_in_months => 18
-    assert er_request.has_tax_class?
-    assert_equal er_org, er_request.program_organization
-    check_models_are_updated{put :update, :id => er_request.to_param, :event_action => 'become_grant', :grant_request => {:grant_agreement_at => Time.now}}
-    assert_equal 'granted', er_request.reload().state
-  end
-  
   test "should get index for multiple pages of contents" do
-    30.times {GrantRequest.make :program => @program, :program_organization => @org, :base_request_id => nil}
+    30.times {FipRequest.make :program => @program, :program_organization => @org, :base_request_id => nil}
     get :index
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
   
   test "should get index" do
     get :index
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
   
   test "should get index with program_id" do
     get :index, :program_id => [@program.id]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
   
   test "should get index with funding_agreement_from_date" do
     get :index, :funding_agreement_from_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
 
   test "should get index with funding_agreement_to_date" do
     get :index, :funding_agreement_to_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
 
   test "should get CSV non-grants index" do
     get :index, :granted => [0], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
   
   test "should get CSV grants index" do
     get :index, :granted => [1], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:fip_requests)
   end
 
   test "should get new" do
@@ -417,69 +287,24 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
 
   test "should create request" do
-    assert_difference('GrantRequest.count') do
-      post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
+    assert_difference('FipRequest.count') do
+      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
     end
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to grant_request_path(assigns(:grant_request))
+    # assert_redirected_to fip_request_path(assigns(:fip_request))
   end
 
-  test "should choose a request letter for a request that currently has none" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    assert_difference('RequestLetter.count', 2) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter.id, :grant_agreement_letter_type => ga_letter.id }
-      @request1.reload.request_letters.each do |rl|
-      end
-    end
-  end
-  
-  test "should not create new request letters for a request that currently has that letter template chosen" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    RequestLetter.create :request => @request1, :letter_template => award_letter
-    RequestLetter.create :request => @request1, :letter_template => ga_letter
-    assert_difference('RequestLetter.count', 0) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter.id, :grant_agreement_letter_type => ga_letter.id }
-    end
-  end
-  
-  test "should update the request letters for a request that currently has a different letter template chosen" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    award_letter2 = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter2 = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    RequestLetter.create :request => @request1, :letter_template => award_letter
-    RequestLetter.create :request => @request1, :letter_template => ga_letter
-    assert_difference('RequestLetter.count', 0) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter2.id, :grant_agreement_letter_type => ga_letter2.id }
-    end
-    
-    @request1.reload.grant_agreement_letter_type
-    assert_equal award_letter2.id, @request1.reload.load_award_letter_type
-    assert_equal ga_letter2.id, @request1.reload.load_grant_agreement_letter_type
-  end
-  
   test "should create role grantee org owner user" do
     assert_difference('Request.count') do
-      post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
+      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
     end
-    request = assigns(:grant_request)
+    request = assigns(:fip_request)
     assert_not_nil request
     assert_not_nil request.reload.grantee_org_owner
     assert_equal @user1.id, request.grantee_org_owner.id
 
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to grant_request_path(assigns(:grant_request))
+    # assert_redirected_to fip_request_path(assigns(:fip_request))
   end
 
   test "should show request" do
@@ -510,14 +335,14 @@ class GrantRequestsControllerTest < ActionController::TestCase
   end
 
   test "should update request" do
-    put :update, :id => @request1.to_param, :grant_request => { }
-    assert_redirected_to grant_request_path
+    put :update, :id => @request1.to_param, :fip_request => { }
+    assert_redirected_to fip_request_path
   end
 
   test "should destroy request" do
     delete :destroy, :id => @request1.to_param
     assert_not_nil @request1.reload().deleted_at 
-    assert_redirected_to grant_request_path
+    assert_redirected_to fip_request_path
   end
   
   test "test filter display" do
