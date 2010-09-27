@@ -2,7 +2,7 @@ module FluxxGrantRequestsController
   ICON_STYLE = 'style-grant-requests'
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
-    base.insta_index GrantRequest do |insta|
+    base.insta_index Request do |insta|
       insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_request_list'
       insta.filter_title = "Grant Requests Filter"

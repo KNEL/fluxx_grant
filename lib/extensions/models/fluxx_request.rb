@@ -541,7 +541,7 @@ module FluxxRequest
       end
 
       define_index :request_second do
-        indexes :fip_title
+        indexes "lower(requests.fip_title)", :as => :fip_title, :sortable => true
         indexes 'null', :sortable => true, :as => :request_id, :sortable => true
         indexes :project_summary, :sortable => true
         indexes :id, :sortable => true
@@ -581,7 +581,7 @@ module FluxxRequest
       end
 
       define_index :request_third do
-        indexes :fip_title
+        indexes "lower(requests.fip_title)", :as => :fip_title, :sortable => true
         indexes 'null', :sortable => true, :as => :request_id, :sortable => true
         indexes :project_summary, :sortable => true
         indexes :id, :sortable => true

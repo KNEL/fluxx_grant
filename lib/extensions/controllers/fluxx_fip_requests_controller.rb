@@ -2,7 +2,7 @@ module FluxxFipRequestsController
   ICON_STYLE = 'style-fip-requests'
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
-    base.insta_index FipRequest do |insta|
+    base.insta_index Request do |insta|
       insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_requests/grant_request_list'
       insta.filter_title = "Fip Requests Filter"

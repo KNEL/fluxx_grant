@@ -4,7 +4,7 @@ module FluxxGrantedRequestsController
   # Note that the granted requests controller is necessary to show a different look and feel for the index (filtering by granted), and for the show, which should have different related data
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
-    base.insta_index GrantRequest do |insta|
+    base.insta_index Request do |insta|
       insta.template = 'granted_requests/grant_request_list'
       insta.filter_title = "Granted Requests Filter"
       insta.filter_template = 'granted_requests/granted_request_filter'
