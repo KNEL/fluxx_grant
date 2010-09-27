@@ -35,21 +35,21 @@ module FluxxRequestReport
     base.insta_favorite
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids]
-      insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, value|
+      insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, name, value|
           if value.to_s.is_numeric?
             due_date_check = Time.now + value.to_i.days
             search_with_attributes[:due_at] = (0..due_date_check.to_i)
             search_with_attributes[:has_been_approved] = false
           end || {}
         end),
-        :overdue_by_days => (lambda do |search_with_attributes, value|
+        :overdue_by_days => (lambda do |search_with_attributes, name, value|
           if value.to_s.is_numeric?
             due_date_check = Time.now - value.to_i.days
             search_with_attributes[:due_at] = (0..due_date_check.to_i)
             search_with_attributes[:has_been_approved] = false
           end || {}
         end),
-        :grant_program_ids => (lambda do |search_with_attributes, val|
+        :grant_program_ids => (lambda do |search_with_attributes, name, val|
           program_id_strings = val.each{|v| v.to_s.strip}
           programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
           program_ids = programs.map do |program| 

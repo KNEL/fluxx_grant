@@ -47,6 +47,9 @@
   .pairs
     .key Grant Start Date:
     .value= model.grant_begins_at.mdy if model.grant_begins_at
+  .pairs
+    .key Grant End Date:
+    .value= model.grant_ends_at.mdy if model.grant_ends_at
 
 .pairs
   - if model.is_a? GrantRequest

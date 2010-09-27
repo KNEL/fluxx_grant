@@ -74,7 +74,7 @@ module FluxxRequest
                          (select sum(amount_due) from request_transactions rt where rt.request_id = requests.id) total_amount_due,
                          requests.grant_agreement_at, 
                          grant_begins_at, 
-                         date_add(grant_begins_at, interval requests.duration_in_months MONTH) grant_ends_at,"
+                         date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY) grant_ends_at,"
 
           block2 = "program_organization.name, 
           program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
@@ -135,10 +135,12 @@ module FluxxRequest
 
     base.insta_multi
     base.insta_lock
+    
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :funding_agreement_from_date, :funding_agreement_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]
+
       insta.derived_filters = {
-          :has_been_rejected => (lambda do |search_with_attributes, val|
+          :has_been_rejected => (lambda do |search_with_attributes, name, val|
             if val == '1'
               search_with_attributes.delete :has_been_rejected
             else
@@ -146,7 +148,7 @@ module FluxxRequest
             end
           end),
 
-          :filter_state => (lambda do |search_with_attributes, val|
+          :filter_state => (lambda do |search_with_attributes, name, val|
             states = val.split(',').map{|v| v.strip}
             states << 'pending_secondary_pd_approval' if states.include?('pending_pd_approval')
 
@@ -158,7 +160,7 @@ module FluxxRequest
             search_with_attributes[:filter_state] = states.map{|val|val.to_crc32} if states && !states.empty?
           end),
 
-          :program_id => (lambda do |search_with_attributes, val|
+          :program_id => (lambda do |search_with_attributes, name, val|
             program_id_strings = val.split(',').map{|v| v.to_s.strip}
             programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
             program_ids = programs.map do |program| 
@@ -178,7 +180,7 @@ module FluxxRequest
               end
             end
           end),
-          :greater_amount_recommended => (lambda do |search_with_attributes, val|
+          :greater_amount_recommended => (lambda do |search_with_attributes, name, val|
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = (val.to_i..(search_with_attributes[:amount_recommended].end))
             else
@@ -186,7 +188,7 @@ module FluxxRequest
             end
             search_with_attributes
           end),
-          :lesser_amount_recommended => (lambda do |search_with_attributes, val|
+          :lesser_amount_recommended => (lambda do |search_with_attributes, name, val|
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = ((search_with_attributes[:amount_recommended].begin)..val.to_i)
             else
@@ -194,30 +196,25 @@ module FluxxRequest
             end
             search_with_attributes
           end),
-          :funding_agreement_from_date => (lambda do |search_with_attributes, val|
-            if (Time.parse(val) rescue nil)
-              start_at = Time.parse(val)
-              search_with_attributes[:has_been_approved] = false
-              if search_with_attributes[:grant_agreement_at] && search_with_attributes[:grant_agreement_at].end < FAR_IN_THE_FUTURE
-                search_with_attributes[:grant_agreement_at] = (start_at.to_i..(search_with_attributes[:grant_agreement_at].end))
-              else
-                search_with_attributes[:grant_agreement_at] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
-              end
-              search_with_attributes
-            end || {}
+          :request_from_date => (lambda do |search_with_attributes, name, val|
+            case params[:date_range_selector]
+            when 'funding_agreement':
+              prepare_from_date search_with_attributes, val, :grant_agreement_at
+            when 'grant_begins':
+              prepare_from_date search_with_attributes, val, :grant_begins_at
+            when 'grant_ends':
+              prepare_from_date search_with_attributes, val, :grant_ends_at
+            end
           end),
-          :funding_agreement_to_date => (lambda do |search_with_attributes, val|
-            if (Time.parse(val) rescue nil)
-              search_with_attributes[:has_been_approved] = false
-              end_at = Time.parse(val)
-              {:grant_agreement_at => (0..end_at.to_i), :has_been_approved => false}
-              if search_with_attributes[:grant_agreement_at] && search_with_attributes[:grant_agreement_at].begin > 0
-                search_with_attributes[:grant_agreement_at] = ((search_with_attributes[:grant_agreement_at].begin)..end_at.to_i)
-              else
-                search_with_attributes[:grant_agreement_at] = (0..end_at.to_i)
-              end
-              search_with_attributes
-            end || {}
+          :request_to_date => (lambda do |search_with_attributes, name, val|
+            case params[:date_range_selector]
+            when 'funding_agreement':
+              prepare_to_date search_with_attributes, val, :grant_agreement_at
+            when 'grant_begins':
+              prepare_to_date search_with_attributes, val, :grant_begins_at
+            when 'grant_ends':
+              prepare_to_date search_with_attributes, val, :grant_ends_at
+            end
           end)
         }
       
@@ -511,13 +508,14 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "if(granted = 0, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
           :as => :related_request_organization_ids, :type => :multi
         has "if(granted = 1, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
           :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
+        has "null", :as => :grant_ends_at, :type => :datetime
         has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -554,11 +552,12 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
+        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
         has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -594,11 +593,12 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :request_received_at, :grant_agreement_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
+        has "null", :as => :grant_ends_at, :type => :datetime
         has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -619,11 +619,35 @@ module FluxxRequest
         set_property :delta => :delayed
       end
     end
+    
+    def prepare_from_date search_with_attributes, name, val
+      if (Time.parse(val) rescue nil)
+        start_at = Time.parse(val)
+        if search_with_attributes[name] && search_with_attributes[name].end < FAR_IN_THE_FUTURE
+          search_with_attributes[name] = (start_at.to_i..(search_with_attributes[name].end))
+        else
+          search_with_attributes[name] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
+        end
+        search_with_attributes
+      end || {}
+    end
+    
+    def prepare_to_date search_with_attributes, name, val
+      if (Time.parse(val) rescue nil)
+        end_at = Time.parse(val)
+        if search_with_attributes[name] && search_with_attributes[name].begin > 0
+          search_with_attributes[name] = ((search_with_attributes[name].begin)..end_at.to_i)
+        else
+          search_with_attributes[name] = (0..end_at.to_i)
+        end
+        search_with_attributes
+      end || {}
+    end
   end
 
   module ModelInstanceMethods
     def grant_ends_at
-      duration_in_months ? (grant_begins_at + duration_in_months.month - 1.day) : grant_begins_at
+      (duration_in_months && grant_begins_at) ? (grant_begins_at + duration_in_months.month - 1.day) : grant_begins_at
     end
 
     def process_before_save_blocks
