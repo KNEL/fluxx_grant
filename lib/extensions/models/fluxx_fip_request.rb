@@ -3,6 +3,7 @@ module FluxxFipRequest
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.validates_presence_of     :fip_title
+    base.validates_presence_of     :fip_type
     base.validates_presence_of     :fip_projected_end_at
     base.validates_presence_of     :program
     base.validates_presence_of     :project_summary
