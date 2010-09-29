@@ -197,7 +197,7 @@ module FluxxRequest
             search_with_attributes
           end),
           :request_from_date => (lambda do |search_with_attributes, name, val|
-            case params[:date_range_selector]
+            case search_with_attributes[:date_range_selector]
             when 'funding_agreement':
               prepare_from_date search_with_attributes, val, :grant_agreement_at
             when 'grant_begins':
@@ -207,7 +207,7 @@ module FluxxRequest
             end
           end),
           :request_to_date => (lambda do |search_with_attributes, name, val|
-            case params[:date_range_selector]
+            case search_with_attributes[:date_range_selector]
             when 'funding_agreement':
               prepare_to_date search_with_attributes, val, :grant_agreement_at
             when 'grant_begins':
@@ -283,7 +283,7 @@ module FluxxRequest
     
     # Translate the old state to the next state that will be completed
     # Useful for the funnel
-    def self.old_state_complete_english_translation state_name
+    def old_state_complete_english_translation state_name
       case state_name.to_s
       when 'new':
         'Submitted -> Final Proposal'
