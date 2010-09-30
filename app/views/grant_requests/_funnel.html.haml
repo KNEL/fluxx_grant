@@ -7,6 +7,8 @@
   %p Note that requests may be in varying states and thus affect the average.
 
 - total_days = @funnel.map{|m| m[:avg_time_lag]}.sum/1.day
+- total_days = 1.day if total_days == 0
+
 .funnel
   - @funnel.each_index do |i|
     - fun_map = @funnel[i]

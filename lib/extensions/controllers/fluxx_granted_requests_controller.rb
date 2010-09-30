@@ -12,6 +12,11 @@ module FluxxGrantedRequestsController
       insta.suppress_model_anchor_tag = true
       insta.order_clause = 'updated_at desc'
       insta.icon_style = ICON_STYLE
+      insta.format do |format|
+        format.html do |controller_dsl, controller, outcome, default_block|
+          base.grant_request_index_format_html controller_dsl, controller, outcome, default_block
+        end
+      end
     end
     base.insta_show GrantRequest do |insta|
       insta.template = 'grant_requests/grant_request_show'
