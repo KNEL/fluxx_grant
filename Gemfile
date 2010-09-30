@@ -24,6 +24,7 @@ gem "aasm", '2.2.0'
 gem 'acts_as_audited_rails3', '>=1.1.1.5'
 gem 'paperclip'
 gem 'mysql'
+gem 'compass'
 
 
 if RUBY_VERSION < '1.9'

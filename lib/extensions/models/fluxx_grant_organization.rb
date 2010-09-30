@@ -197,10 +197,6 @@ module FluxxGrantOrganization
       RequestReport.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
     end
     
-    def related_users limit_amount=20
-      users.where(:deleted_at => nil).order('last_name asc, first_name asc').limit(limit_amount)
-    end
-
     def is_trusted?
       !grants.empty?
     end
