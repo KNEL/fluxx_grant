@@ -26,7 +26,7 @@ module FluxxGrantedRequestsController
         base.set_enabled_variables controller_dsl, controller
       end
     end
-    base.add_grant_request_instal_role
+    base.add_grant_request_install_role
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'

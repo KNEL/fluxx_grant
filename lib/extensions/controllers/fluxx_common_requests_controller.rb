@@ -9,11 +9,46 @@ module FluxxCommonRequestsController
 
   module ModelClassMethods
     
+    def funnel_allowed_states
+      Request.pre_recommended_chain + Request.approval_chain + Request.sent_back_states + [Request.granted_state]
+    end
+    
+    def grant_request_index_format_html controller_dsl, controller, outcome, default_block
+      if controller.params[:view_funnel]
+        local_models = controller.instance_variable_get '@models'
+        funnel_map = WorkflowEvent.workflow_funnel local_models.map(&:id), funnel_allowed_states, Request.sent_back_state_mapping_to_workflow, controller.request.format.csv?
+        funnel = funnel_allowed_states.map {|state| funnel_map[:workflow_results][state.to_s]}.compact
+        controller.instance_variable_set '@funnel_map', funnel_map
+        controller.instance_variable_set '@funnel', funnel
+        # TODO ESH: make sure we do skip_favorites
+        controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/funnel', :footer_template => 'grant_requests/funnel_footer'}
+      else
+        default_block.call
+      end
+    end
+    
+    def grant_request_index_format_csv controller_dsl, controller, outcome, default_block
+      if controller.params[:view_funnel]
+        local_models = controller.instance_variable_get '@models'
+        funnel_map = WorkflowEvent.workflow_funnel local_models.map(&:id), funnel_allowed_states, Request.sent_back_state_mapping_to_workflow, controller.request.format.csv?
+        filename = 'fluxx_funnel_' + Time.now.strftime("%m%d%y") + '.csv'
+
+        controller.stream_csv( filename ) do |csv|
+          csv << ['workflowable_type', 'old_created_at', 'old_state', 'new_created_at', 'new_state', 'days', 'request_id']
+          funnel_map[:swe_diffs].each do |swe_diff|
+            csv << [swe_diff[:workflowable_type], swe_diff[:old_created_at], swe_diff[:old_state],
+              swe_diff[:new_created_at], swe_diff[:new_state], swe_diff[:days], swe_diff[:request_id]]
+          end
+        end
+      else
+        default_block.call
+      end
+    end
+    
     def grant_request_show_format_html controller_dsl, controller, outcome, default_block
       if controller.params[:view_states]
         local_model = controller.instance_variable_get '@model'
         controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/view_states', :footer_template => 'insta/simple_footer'}
-      elsif controller.params[:show_funding_sources]
       else
         default_block.call
       end
@@ -48,7 +83,6 @@ module FluxxCommonRequestsController
     end
     
     def grant_request_update_format_html controller_dsl, controller, outcome, default_block
-      p "ESH: 111 have params=#{controller.params.inspect}, outcome=#{outcome.inspect}"
       actual_local_model = controller.instance_variable_get '@model'
       if controller.params[:event_action] == 'recommend_funding' && outcome == :success
         # redirect to the edit screen IF THE USER 
@@ -96,8 +130,8 @@ module FluxxCommonRequestsController
     end
     
     
-    def add_grant_request_instal_role
-      insta_role GrantRequest do |insta|
+    def add_grant_request_install_role
+      insta_role Request do |insta|
         # Define who is allowd to perform which events
         insta.add_event_roles 'reject', Program, Program.request_roles
         insta.add_event_roles 'un_reject', Program, Program.request_roles

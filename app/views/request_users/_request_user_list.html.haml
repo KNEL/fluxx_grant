@@ -9,7 +9,7 @@
       %th
         %span Linked Users
         - if request && can_current_user_edit_create_requests?
-          .actions= link_to image_tag('/fluxx_engine/theme/default/images/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
+          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
   %tbody
     - if !models || models.empty?
       %tr
@@ -22,4 +22,4 @@
               = model.user.full_name
               %div.relationship-description= model.description if model.description
               - if can_current_user_edit_create_requests?
-                %span.temp= link_to image_tag("/fluxx_engine/theme/default/images/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'
+                %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'

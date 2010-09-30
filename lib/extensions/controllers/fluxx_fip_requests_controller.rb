@@ -23,7 +23,7 @@ module FluxxFipRequestsController
         base.set_enabled_variables controller_dsl, controller
       end
     end
-    base.add_grant_request_instal_role
+    base.add_grant_request_install_role
     base.insta_new FipRequest do |insta|
       insta.template = 'fip_requests/fip_request_form'
       insta.icon_style = ICON_STYLE

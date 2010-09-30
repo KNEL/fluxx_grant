@@ -1,0 +1,6 @@
+%li= link_to raw('&#9617;'), '#', :class => 'open-listing-actions', :title => 'Open/Close Listing Actions Tab'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/table.png', :alt => "CSV"), url_for(:format => :csv), :class => 'area-data'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/page_white_excel.png', :alt => "Excel"), url_for(:format => :xls), :class => 'area-data'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/arrow_join.png', :alt => "Conversion Funnel"), url_for(:view_funnel => 1), :class => 'new-detail', 'data-insert' => 'after'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/arrow_refresh.png', :alt => 'Refresh Card'), '#', :class => 'refresh-card'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/cog_edit.png', :alt => 'Open Filters'), '#', :class => 'open-filters'
