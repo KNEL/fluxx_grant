@@ -278,9 +278,14 @@ module FluxxRequest
 
   module ModelClassMethods
     def request_class_names
-      ['Request', 'GrantRequest']
+      ['Request', 'GrantRequest', 'FipRequest']
     end
     
+    def translate_delta_type granted=false
+      # Note ESH: we need to not differentiate between FipRequest and GrantRequest so that they can show mixed up within the same card
+      'Request' + (granted ? 'Granted' : 'NotYetGranted')
+    end
+
     # Translate the old state to the next state that will be completed
     # Useful for the funnel
     def old_state_complete_english_translation state_name
@@ -483,11 +488,6 @@ module FluxxRequest
       aasm_event :cancel_grant do
         transitions :from => :granted, :to => :canceled
       end
-    end
-    
-    def translate_delta_type granted=false
-      # Note ESH: we need to not differentiate between FipRequest and GrantRequest so that they can show mixed up within the same card
-      'Request' + (granted ? 'Granted' : 'NotYetGranted')
     end
     
     def add_sphinx
@@ -903,10 +903,10 @@ module FluxxRequest
     end
 
     # Make the delta type 
-    def delta_type
+    def realtime_classname
       Request.translate_delta_type self.granted
     end
-
+    
     def add_president_approval_date
       self.grant_approved_at = Time.now
     end
