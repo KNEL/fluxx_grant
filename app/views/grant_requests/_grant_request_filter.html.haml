@@ -7,7 +7,7 @@
 = form.input :created_by_id, :as => :select, :required => false, :collection => Program.all_program_users.sort_by{|user| user.full_name.downcase}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
 = form.input :funding_source_ids, :label => "Funding Source", :as => :select, :required => false, :collection => FundingSource.all.sort_by{|source| source.name}.map {|source|[source.name, source.id]}, :input_html => {:class => 'add-another'}
 Amount Recommended:
-= form.input :greater_amount_recommended, :label => 'Greater Than:', :required => false
+= form.input :greater_amount_recommended, :label => 'Greater Than:', :required => false :as => :Datetime
 = form.input :lesser_amount_recommended, :label => 'Less Than:', :required => false
 = form.input :has_been_rejected, :label => 'Include Rejected Requests', :required => false, :as => :boolean, :checked_value => 1, :unchecked_value => ''
 = form.input :favorite_user_ids, :label => 'Marked as Favorite', :required => false, :as => :boolean, :checked_value => (current_user ? current_user.id : nil), :unchecked_value => ''
