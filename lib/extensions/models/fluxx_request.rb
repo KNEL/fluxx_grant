@@ -870,11 +870,11 @@ module FluxxRequest
     end
     
     def related_users
-      (request_users + [program_lead, grantee_org_owner, grantee_signatory, fiscal_org_owner, fiscal_signatory]).compact.reject{|u| u.deleted_at}.sort_by{|u| [u.last_name, u.first_name]}
+      (request_users.map{|ru| ru.user} + [program_lead, grantee_org_owner, grantee_signatory, fiscal_org_owner, fiscal_signatory]).compact.reject{|u| u.deleted_at}.sort_by{|u| [u.last_name, u.first_name]}
     end
 
     def related_organizations
-      (request_organizations + [program_organization, fiscal_organization]).compact.sort_by{|o| o.name}.reject{|o| o.deleted_at}
+      (request_organizations.map{|ro| ro.organization} + [program_organization, fiscal_organization]).compact.sort_by{|o| o.name}.reject{|o| o.deleted_at}
     end
     
     def related_request_transactions limit_amount=20
