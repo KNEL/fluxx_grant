@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eric Hansen"]
-  s.date = %q{2010-09-16}
+  s.date = %q{2010-10-11}
   s.email = %q{fluxx@acesfconsulting.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     "app/controllers/application_controller.rb",
+    "app/controllers/fip_requests_controller.rb",
     "app/controllers/grant_requests_controller.rb",
     "app/controllers/granted_requests_controller.rb",
     "app/controllers/organizations_controller.rb",
@@ -47,9 +48,16 @@ Gem::Specification.new do |s|
     "app/models/role_user.rb",
     "app/models/user.rb",
     "app/models/user_organization.rb",
+    "app/models/workflow_event.rb",
+    "app/stylesheets/theme/default/funnel.sass",
+    "app/stylesheets/theme/default/style.sass",
+    "app/views/fip_requests/_fip_request_filter.html.haml",
+    "app/views/fip_requests/_fip_request_form.html.haml",
     "app/views/grant_requests/_approve_grant_details.html.haml",
     "app/views/grant_requests/_edit_request_report.html.haml",
     "app/views/grant_requests/_edit_request_transaction.html.haml",
+    "app/views/grant_requests/_funnel.html.haml",
+    "app/views/grant_requests/_funnel_footer.html.haml",
     "app/views/grant_requests/_grant_request_filter.html.haml",
     "app/views/grant_requests/_grant_request_form.html.haml",
     "app/views/grant_requests/_grant_request_list.html.haml",
@@ -60,6 +68,7 @@ Gem::Specification.new do |s|
     "app/views/grant_requests/_view_states.html.haml",
     "app/views/granted_requests/_grant_request_list.html.haml",
     "app/views/granted_requests/_granted_request_filter.html.haml",
+    "app/views/insta/_list_actions.html.haml",
     "app/views/insta/_show_action_buttons.html.haml",
     "app/views/letter_templates/al_china_er.html.erb",
     "app/views/letter_templates/al_gos.html.erb",
@@ -108,6 +117,7 @@ Gem::Specification.new do |s|
     "app/views/users/_user_filter.html.haml",
     "config/routes.rb",
     "lib/extensions/controllers/fluxx_common_requests_controller.rb",
+    "lib/extensions/controllers/fluxx_fip_requests_controller.rb",
     "lib/extensions/controllers/fluxx_grant_organizations_controller.rb",
     "lib/extensions/controllers/fluxx_grant_requests_controller.rb",
     "lib/extensions/controllers/fluxx_grant_users_controller.rb",
@@ -126,6 +136,7 @@ Gem::Specification.new do |s|
     "lib/extensions/models/fluxx_grant_role_user.rb",
     "lib/extensions/models/fluxx_grant_user.rb",
     "lib/extensions/models/fluxx_grant_user_organization.rb",
+    "lib/extensions/models/fluxx_grant_workflow_event.rb",
     "lib/extensions/models/fluxx_initiative.rb",
     "lib/extensions/models/fluxx_letter_template.rb",
     "lib/extensions/models/fluxx_program.rb",
@@ -211,6 +222,7 @@ Gem::Specification.new do |s|
     "test/dummy/db/schema.rb",
     "test/dummy/db/seeds.rb",
     "test/fluxx_grant_test.rb",
+    "test/functional/fip_requests_controller_test.rb",
     "test/functional/grant_requests_controller_test.rb",
     "test/functional/granted_requests_controller_test.rb",
     "test/functional/request_funding_sources_controller_test.rb",
@@ -249,7 +261,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<formtastic>, ["~> 1.1.0"])
       s.add_runtime_dependency(%q<haml>, [">= 3"])
       s.add_runtime_dependency(%q<will_paginate>, ["~> 3.0.pre2"])
-      s.add_runtime_dependency(%q<fluxx_engine>, [">= 0.0.6"])
+      s.add_runtime_dependency(%q<fluxx_engine>, [">= 0.0.7"])
       s.add_runtime_dependency(%q<fluxx_crm>, [">= 0.0.4"])
       s.add_runtime_dependency(%q<jsmin>, [">= 1.0.1"])
       s.add_runtime_dependency(%q<thin>, [">= 1.2.7"])
@@ -257,12 +269,14 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<faker>, [">= 0.3.1"])
       s.add_runtime_dependency(%q<rcov>, [">= 0"])
       s.add_runtime_dependency(%q<thinking-sphinx>, ["= 2.0.0.rc1"])
+      s.add_runtime_dependency(%q<delayed_job>, [">= 0"])
+      s.add_runtime_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
       s.add_runtime_dependency(%q<paperclip>, [">= 0"])
-      s.add_runtime_dependency(%q<devise>, [">= 1.1.2"])
       s.add_runtime_dependency(%q<aasm>, ["= 2.2.0"])
       s.add_runtime_dependency(%q<acts_as_audited_rails3>, [">= 1.1.1.5"])
       s.add_runtime_dependency(%q<paperclip>, [">= 0"])
       s.add_runtime_dependency(%q<mysql>, [">= 0"])
+      s.add_runtime_dependency(%q<compass>, [">= 0"])
       s.add_runtime_dependency(%q<ruby-debug>, [">= 0.10.3"])
     else
       s.add_dependency(%q<rails>, ["= 3.0.0"])
@@ -272,7 +286,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<formtastic>, ["~> 1.1.0"])
       s.add_dependency(%q<haml>, [">= 3"])
       s.add_dependency(%q<will_paginate>, ["~> 3.0.pre2"])
-      s.add_dependency(%q<fluxx_engine>, [">= 0.0.6"])
+      s.add_dependency(%q<fluxx_engine>, [">= 0.0.7"])
       s.add_dependency(%q<fluxx_crm>, [">= 0.0.4"])
       s.add_dependency(%q<jsmin>, [">= 1.0.1"])
       s.add_dependency(%q<thin>, [">= 1.2.7"])
@@ -280,12 +294,14 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<faker>, [">= 0.3.1"])
       s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<thinking-sphinx>, ["= 2.0.0.rc1"])
+      s.add_dependency(%q<delayed_job>, [">= 0"])
+      s.add_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
       s.add_dependency(%q<paperclip>, [">= 0"])
-      s.add_dependency(%q<devise>, [">= 1.1.2"])
       s.add_dependency(%q<aasm>, ["= 2.2.0"])
       s.add_dependency(%q<acts_as_audited_rails3>, [">= 1.1.1.5"])
       s.add_dependency(%q<paperclip>, [">= 0"])
       s.add_dependency(%q<mysql>, [">= 0"])
+      s.add_dependency(%q<compass>, [">= 0"])
       s.add_dependency(%q<ruby-debug>, [">= 0.10.3"])
     end
   else
@@ -296,7 +312,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<formtastic>, ["~> 1.1.0"])
     s.add_dependency(%q<haml>, [">= 3"])
     s.add_dependency(%q<will_paginate>, ["~> 3.0.pre2"])
-    s.add_dependency(%q<fluxx_engine>, [">= 0.0.6"])
+    s.add_dependency(%q<fluxx_engine>, [">= 0.0.7"])
     s.add_dependency(%q<fluxx_crm>, [">= 0.0.4"])
     s.add_dependency(%q<jsmin>, [">= 1.0.1"])
     s.add_dependency(%q<thin>, [">= 1.2.7"])
@@ -304,12 +320,14 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<faker>, [">= 0.3.1"])
     s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<thinking-sphinx>, ["= 2.0.0.rc1"])
+    s.add_dependency(%q<delayed_job>, [">= 0"])
+    s.add_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
     s.add_dependency(%q<paperclip>, [">= 0"])
-    s.add_dependency(%q<devise>, [">= 1.1.2"])
     s.add_dependency(%q<aasm>, ["= 2.2.0"])
     s.add_dependency(%q<acts_as_audited_rails3>, [">= 1.1.1.5"])
     s.add_dependency(%q<paperclip>, [">= 0"])
     s.add_dependency(%q<mysql>, [">= 0"])
+    s.add_dependency(%q<compass>, [">= 0"])
     s.add_dependency(%q<ruby-debug>, [">= 0.10.3"])
   end
 end
