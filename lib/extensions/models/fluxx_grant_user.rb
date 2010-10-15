@@ -10,6 +10,7 @@ module FluxxGrantUser
     base.has_many :fiscal_org_owner_requests, :class_name => 'Request', :foreign_key => :fiscal_org_owner_id
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
     base.has_many :role_users_programs, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Program'}
+    base.has_many :role_users_initiatives, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Initiative'}
     base.has_many :role_programs, :class_name => 'Program', :through => :role_users_programs, :source => :user
     
     
@@ -69,8 +70,8 @@ module FluxxGrantUser
         # attributes
         has created_at, updated_at, deleted_at
 
-        has role_users_programs.program(:id), :as => :program_ids
-        has "group_concat(ifnull((select group_concat(distinct(id) SEPARATOR ',') from requests where program_lead_id = users.id OR grantee_org_owner_id = users.id OR grantee_signatory_id = users.id OR fiscal_org_owner_id = users.id OR fiscal_signatory_id = users.id), 0) SEPARATOR ',')", :type => :multi, :as => :request_ids
+        has role_users_programs.program(:id), :as => :grant_program_ids
+        has role_users_initiatives.initiative(:id), :as => :grant_initiative_ids
 
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id
@@ -91,10 +92,9 @@ module FluxxGrantUser
         # attributes
         has created_at, updated_at, deleted_at
 
-        has 'null', :type => :multi, :as => :program_ids
-        has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
+
         has favorites.user(:id), :as => :favorite_user_ids
         has user_organizations.organization(:id), :as => :organization_id
         has '((ORD(LOWER(SUBSTRING(users.last_name,1,1))) * 16777216) + (ORD(LOWER(SUBSTRING(users.last_name,2,1))) * 65536) +
