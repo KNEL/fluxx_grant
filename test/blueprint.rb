@@ -79,6 +79,9 @@ end
 
 FipRequest.blueprint do
   fip_title Sham.sentence
+  fip_type do
+    bp_attrs[:fip_type_contract]
+  end
   fip_projected_end_at (-10).days.ago.to_s(:db)
   project_summary do
     Sham.sentence
@@ -184,6 +187,10 @@ def setup_org_tax_classes
   end
 end
 
+def setup_fip_types
+  bp_attrs[:fip_type_contract] = MultiElementValue.make :multi_element_group_id => bp_attrs[:fip_type_group].id, :value => 'Contract'
+end
+
 def setup_multi_element_groups
   unless bp_attrs[:executed_setup_multi_element_groups]
     bp_attrs[:executed_setup_multi_element_groups] = true
@@ -200,7 +207,7 @@ def setup_multi_element_groups
     MultiElementGroup.make :target_class_name => 'Request', :name => 'china_means', :description => 'MeansChina'
     MultiElementGroup.make :target_class_name => 'RequestFundingSource', :name => 'authorities', :description => 'BoardAuthority'
     MultiElementGroup.make :target_class_name => 'User', :name => 'user_salutations', :description => 'UserSalutation'
-    MultiElementGroup.make :target_class_name => 'Request', :name => 'fip_types', :description => 'Fip Types'
+    bp_attrs[:fip_type_group] = MultiElementGroup.make :target_class_name => 'Request', :name => 'fip_types', :description => 'Fip Types'
     Request.add_multi_elements
     RequestFundingSource.add_multi_elements
     User.add_multi_elements

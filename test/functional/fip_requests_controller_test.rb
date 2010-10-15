@@ -242,43 +242,43 @@ class FipRequestsControllerTest < ActionController::TestCase
     30.times {FipRequest.make :program => @program, :program_organization => @org, :base_request_id => nil}
     get :index
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index" do
     get :index
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index with program_id" do
     get :index, :program_id => [@program.id]
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index with funding_agreement_from_date" do
     get :index, :funding_agreement_from_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get index with funding_agreement_to_date" do
     get :index, :funding_agreement_to_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get CSV non-grants index" do
     get :index, :granted => [0], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get CSV grants index" do
     get :index, :granted => [1], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:fip_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get new" do
@@ -288,7 +288,8 @@ class FipRequestsControllerTest < ActionController::TestCase
 
   test "should create request" do
     assert_difference('FipRequest.count') do
-      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
+      
+      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_type => bp_attrs[:fip_type_contract], :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
     end
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
     # assert_redirected_to fip_request_path(assigns(:fip_request))
@@ -296,7 +297,7 @@ class FipRequestsControllerTest < ActionController::TestCase
 
   test "should create role grantee org owner user" do
     assert_difference('Request.count') do
-      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
+      post :create, :fip_request => { :fip_title => Sham.sentence, :fip_type => bp_attrs[:fip_type_contract], :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
     end
     request = assigns(:fip_request)
     assert_not_nil request

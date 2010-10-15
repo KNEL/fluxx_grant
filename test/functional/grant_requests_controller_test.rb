@@ -17,7 +17,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
   def setup
     @org = Organization.make
     @program = Program.make
-    @request1 = FipRequest.make :program => @program, :program_organization => @org, :base_request_id => nil
+    @request1 = GrantRequest.make :program => @program, :program_organization => @org, :base_request_id => nil
     @user1 = User.make
     @user1.has_role! Program.program_officer_role_name, @program
     login_as @user1
@@ -372,43 +372,43 @@ class GrantRequestsControllerTest < ActionController::TestCase
     30.times {GrantRequest.make :program => @program, :program_organization => @org, :base_request_id => nil}
     get :index
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index" do
     get :index
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index with program_id" do
     get :index, :program_id => [@program.id]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get index with funding_agreement_from_date" do
     get :index, :funding_agreement_from_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get index with funding_agreement_to_date" do
     get :index, :funding_agreement_to_date => [Time.now.mdy]
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get CSV non-grants index" do
     get :index, :granted => [0], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
   
   test "should get CSV grants index" do
     get :index, :granted => [1], :format => 'csv'
     assert_response :success
-    assert_not_nil assigns(:grant_requests)
+    assert_not_nil assigns(:requests)
   end
 
   test "should get new" do

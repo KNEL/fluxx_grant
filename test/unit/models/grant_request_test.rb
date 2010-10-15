@@ -125,7 +125,8 @@ class GrantRequestTest < ActiveSupport::TestCase
     assert_difference('Request.count') do
       temp_req = GrantRequest.make
     end
-    grant_request_rts = RealtimeUpdate.where(['id > ?', max_realtime_id]).where(:model_class => GrantRequest.name, :action => 'create').all
+    after_max_realtime_id = RealtimeUpdate.maximum :id
+    grant_request_rts = RealtimeUpdate.where(['id > ?', max_realtime_id]).where(:type_name => GrantRequest.name, :action => 'create').all
     assert_equal 1, grant_request_rts.size
     assert_equal temp_req.id, grant_request_rts.first.model_id
     model_delta = RealtimeUpdate.find :last

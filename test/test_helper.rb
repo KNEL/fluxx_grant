@@ -71,6 +71,7 @@ class ActiveSupport::TestCase
       setup_multi_element_groups
       setup_letter_templates
       setup_org_tax_classes
+      setup_fip_types
     end
     super
   end
@@ -89,7 +90,7 @@ class ActiveSupport::TestCase
 end
 
 class ActionController::TestCase
-  include Devise::TestHelpers
+  #include Devise::TestHelpers
 end
 
 # Do not audit log during tests
