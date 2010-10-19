@@ -4,3 +4,4 @@ test/dummy/db/development.sqlite3
 test/dummy/log
 tmtags
 .bundle
+test/dummy/config/database.yml
