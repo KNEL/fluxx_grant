@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fluxx_grant}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eric Hansen"]
-  s.date = %q{2010-10-11}
+  s.date = %q{2010-10-19}
   s.email = %q{fluxx@acesfconsulting.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
     "app/controllers/granted_requests_controller.rb",
     "app/controllers/organizations_controller.rb",
     "app/controllers/programs_controller.rb",
+    "app/controllers/request_evaluation_metrics_controller.rb",
     "app/controllers/request_funding_sources_controller.rb",
     "app/controllers/request_letters_controller.rb",
     "app/controllers/request_organizations_controller.rb",
@@ -38,6 +39,7 @@ Gem::Specification.new do |s|
     "app/models/organization.rb",
     "app/models/program.rb",
     "app/models/request.rb",
+    "app/models/request_evaluation_metric.rb",
     "app/models/request_funding_source.rb",
     "app/models/request_geo_state.rb",
     "app/models/request_letter.rb",
@@ -56,12 +58,14 @@ Gem::Specification.new do |s|
     "app/views/grant_requests/_approve_grant_details.html.haml",
     "app/views/grant_requests/_edit_request_report.html.haml",
     "app/views/grant_requests/_edit_request_transaction.html.haml",
+    "app/views/grant_requests/_fiscal_org.html.haml",
     "app/views/grant_requests/_funnel.html.haml",
     "app/views/grant_requests/_funnel_footer.html.haml",
     "app/views/grant_requests/_grant_request_filter.html.haml",
     "app/views/grant_requests/_grant_request_form.html.haml",
     "app/views/grant_requests/_grant_request_list.html.haml",
     "app/views/grant_requests/_grant_request_show.html.haml",
+    "app/views/grant_requests/_program_org.html.haml",
     "app/views/grant_requests/_related_request.html.haml",
     "app/views/grant_requests/_request_became_grant.html.haml",
     "app/views/grant_requests/_request_letters.html.haml",
@@ -86,6 +90,10 @@ Gem::Specification.new do |s|
     "app/views/programs/_program_form.html.haml",
     "app/views/programs/_program_list.html.haml",
     "app/views/programs/_program_show.html.haml",
+    "app/views/request_evaluation_metrics/_list_request_evaluation_metrics.html.haml",
+    "app/views/request_evaluation_metrics/_request_evaluation_metrics_form.html.haml",
+    "app/views/request_evaluation_metrics/_request_evaluation_metrics_list.html.haml",
+    "app/views/request_evaluation_metrics/_request_evaluation_metrics_show.html.haml",
     "app/views/request_funding_sources/_list_request_funding_sources.html.haml",
     "app/views/request_funding_sources/_request_funding_source_form.html.haml",
     "app/views/request_funding_sources/_request_funding_source_list.html.haml",
@@ -115,6 +123,7 @@ Gem::Specification.new do |s|
     "app/views/role_users/_role_user_form.html.haml",
     "app/views/users/_related_users.html.haml",
     "app/views/users/_user_filter.html.haml",
+    "app/views/users/_user_form_header.html.haml",
     "config/routes.rb",
     "lib/extensions/controllers/fluxx_common_requests_controller.rb",
     "lib/extensions/controllers/fluxx_fip_requests_controller.rb",
@@ -123,6 +132,7 @@ Gem::Specification.new do |s|
     "lib/extensions/controllers/fluxx_grant_users_controller.rb",
     "lib/extensions/controllers/fluxx_granted_requests_controller.rb",
     "lib/extensions/controllers/fluxx_programs_controller.rb",
+    "lib/extensions/controllers/fluxx_request_evaluation_metrics_controller.rb",
     "lib/extensions/controllers/fluxx_request_funding_sources_controller.rb",
     "lib/extensions/controllers/fluxx_request_letters_controller.rb",
     "lib/extensions/controllers/fluxx_request_organizations_controller.rb",
@@ -141,6 +151,7 @@ Gem::Specification.new do |s|
     "lib/extensions/models/fluxx_letter_template.rb",
     "lib/extensions/models/fluxx_program.rb",
     "lib/extensions/models/fluxx_request.rb",
+    "lib/extensions/models/fluxx_request_evaluation_metric.rb",
     "lib/extensions/models/fluxx_request_funding_source.rb",
     "lib/extensions/models/fluxx_request_geo_state.rb",
     "lib/extensions/models/fluxx_request_letter.rb",
@@ -156,6 +167,7 @@ Gem::Specification.new do |s|
     "lib/generators/fluxx_grant_migration/templates/create_initiatives.rb",
     "lib/generators/fluxx_grant_migration/templates/create_letter_templates.rb",
     "lib/generators/fluxx_grant_migration/templates/create_programs.rb",
+    "lib/generators/fluxx_grant_migration/templates/create_request_evaluation_metrics.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_funding_sources.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_geo_states.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_letters.rb",
@@ -219,18 +231,23 @@ Gem::Specification.new do |s|
     "test/dummy/db/migrate/20100806151108_fluxx_grant_add_grant_fields_to_organization.rb",
     "test/dummy/db/migrate/20100809090857_acts_as_audited_migration.rb",
     "test/dummy/db/migrate/20100819101944_fluxx_crm_create_role_users.rb",
+    "test/dummy/db/migrate/20101018233010_fluxx_crm_create_geo_regions.rb",
+    "test/dummy/db/migrate/20101018233011_fluxx_crm_create_documents.rb",
+    "test/dummy/db/migrate/20101018233051_fluxx_grant_create_request_evaluation_metrics.rb",
     "test/dummy/db/schema.rb",
     "test/dummy/db/seeds.rb",
     "test/fluxx_grant_test.rb",
     "test/functional/fip_requests_controller_test.rb",
     "test/functional/grant_requests_controller_test.rb",
     "test/functional/granted_requests_controller_test.rb",
+    "test/functional/request_evaluation_metrics_controller_test.rb",
     "test/functional/request_funding_sources_controller_test.rb",
     "test/functional/request_letters_controller_test.rb",
     "test/functional/request_organizations_controller_test.rb",
     "test/functional/request_reports_controller_test.rb",
     "test/functional/request_transactions_controller_test.rb",
     "test/functional/request_users_controller_test.rb",
+    "test/functional/users_controller_test.rb",
     "test/integration/navigation_test.rb",
     "test/support/integration_case.rb",
     "test/test_helper.rb",
