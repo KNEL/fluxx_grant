@@ -117,7 +117,15 @@ RequestFundingSource.blueprint do
   request {GrantRequest.make}
 end
 
+RequestEvaluationMetric.blueprint do
+  request {GrantRequest.make}
+  description Sham.words
+  comment Sham.words
+  achieved false
+end
+
 RequestTransaction.blueprint do
+  request {GrantRequest.make}
 end
 
 LetterTemplate.blueprint do

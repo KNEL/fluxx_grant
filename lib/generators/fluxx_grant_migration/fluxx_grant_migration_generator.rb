@@ -45,6 +45,8 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     sleep 1
     handle_migration 'add_grant_fields_to_organization.rb', 'db/migrate/fluxx_grant_add_grant_fields_to_organization.rb'
     sleep 1
+    handle_migration 'create_request_evaluation_metrics.rb', 'db/migrate/fluxx_grant_create_request_evaluation_metrics.rb'
+    sleep 1
   end
   
   private

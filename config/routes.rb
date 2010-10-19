@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :request_funding_sources
+  resources :request_evaluation_metrics
   resources :request_transactions
   resources :grant_requests
   resources :fip_requests
