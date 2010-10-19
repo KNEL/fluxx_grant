@@ -5,3 +5,4 @@ test/dummy/log
 tmtags
 .bundle
 test/dummy/config/database.yml
+pkg
