@@ -25,7 +25,7 @@ module FluxxFipRequestsController
           base.grant_request_show_format_html controller_dsl, controller, outcome, default_block
         end
       end
-      insta.post do |controller_dsl, controller|
+      insta.post do |controller_dsl, controller, model|
         base.set_enabled_variables controller_dsl, controller
       end
     end

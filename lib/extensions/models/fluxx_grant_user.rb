@@ -13,6 +13,8 @@ module FluxxGrantUser
     base.has_many :role_users_initiatives, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Initiative'}
     base.has_many :role_programs, :class_name => 'Program', :through => :role_users_programs, :source => :user
     
+    base.send :attr_accessor, :temp_organization_title
+    base.send :attr_accessor, :temp_organization_id
     
     # TODO ESH: find a way to reference related requests based on a conditional join
     # base.has_many :related_requests, :class_name => 'Request', :conditions => 
