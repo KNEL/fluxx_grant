@@ -943,7 +943,7 @@ module FluxxRequest
     end
     
     def state_after_pre_recommended_chain
-      !((Request.pre_recommended_chain + Request.rejected_states).include?(state.to_sym))
+      state && !((Request.pre_recommended_chain + Request.rejected_states).include?(state.to_sym))
     end
   end
 end
