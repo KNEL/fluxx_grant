@@ -204,14 +204,14 @@ module FluxxGrantOrganization
     def is_er?
       tax_class_value = self.hq_tax_class ? self.hq_tax_class.value : ''
       case tax_class_value
-      when '509a1': false
-      when '509a2': false
-      when '509a3': false
-      when 'Private Foundation': true
-      when '501c4': true
-      when '501c6': true
-      when 'non-US': true
-      when 'Non-Exempt': true
+      when '509a1' then false
+      when '509a2' then false
+      when '509a3' then false
+      when 'Private Foundation' then true
+      when '501c4' then true
+      when '501c6' then true
+      when 'non-US' then true
+      when 'Non-Exempt' then true
       else
         raise "Invalid tax_class: '#{tax_class_value}'" 
       end

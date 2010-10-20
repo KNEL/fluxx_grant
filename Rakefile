@@ -6,7 +6,7 @@ begin
     gem.summary = "Fluxx Grant Core"
     gem.email = "fluxx@acesfconsulting.com"
     gem.authors = ["Eric Hansen"]
-    gem.files = Dir["{lib}/**/*", "{app}/**/*", "{config}/**/*"]
+    gem.files = Dir["{lib}/**/*", "{app}/**/*", "{config}/**/*", "{public}/**/*"]
   end
   Jeweler::GemcutterTasks.new
 rescue
@@ -36,21 +36,6 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-spec = Gem::Specification.new do |s|
-  s.name = "fluxx_grant"
-  s.summary = "Insert FluxxGrant summary."
-  s.description = "Insert FluxxGrant description."
-  s.files =  FileList["[A-Z]*", "lib/**/*"]
-  s.version = "0.0.1"
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-end
-
-desc "Install the gem #{spec.name}-#{spec.version}.gem"
-task :install do
-  system("gem install pkg/#{spec.name}-#{spec.version}.gem --no-ri --no-rdoc")
-end
 require 'rcov/rcovtask'
 
 desc "Create a cross-referenced code coverage report."

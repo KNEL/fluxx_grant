@@ -198,21 +198,21 @@ module FluxxRequest
           end),
           :request_from_date => (lambda do |search_with_attributes, name, val|
             case search_with_attributes[:date_range_selector]
-            when 'funding_agreement':
+            when 'funding_agreement' then
               prepare_from_date search_with_attributes, val, :grant_agreement_at
-            when 'grant_begins':
+            when 'grant_begins' then
               prepare_from_date search_with_attributes, val, :grant_begins_at
-            when 'grant_ends':
+            when 'grant_ends' then
               prepare_from_date search_with_attributes, val, :grant_ends_at
             end
           end),
           :request_to_date => (lambda do |search_with_attributes, name, val|
             case search_with_attributes[:date_range_selector]
-            when 'funding_agreement':
+            when 'funding_agreement' then
               prepare_to_date search_with_attributes, val, :grant_agreement_at
-            when 'grant_begins':
+            when 'grant_begins' then
               prepare_to_date search_with_attributes, val, :grant_begins_at
-            when 'grant_ends':
+            when 'grant_ends' then
               prepare_to_date search_with_attributes, val, :grant_ends_at
             end
           end)
@@ -290,21 +290,21 @@ module FluxxRequest
     # Useful for the funnel
     def old_state_complete_english_translation state_name
       case state_name.to_s
-      when 'new':
+      when 'new' then
         'Submitted -> Final Proposal'
-      when 'funding_recommended':
+      when 'funding_recommended' then
         'Final Proposal -> IERF Complete'
-      when 'pending_grant_team_approval':
+      when 'pending_grant_team_approval' then
         'Grants Approved'
-      when 'pending_po_approval':
+      when 'pending_po_approval' then
         'PO Approved'
-      when 'pending_svp_approval':
+      when 'pending_svp_approval' then
         'SVP Approved'
-      when 'pending_president_approval':
+      when 'pending_president_approval' then
         'President Approval'
-      when 'pending_grant_promotion':
+      when 'pending_grant_promotion' then
         'Promoted to Grant'
-      when 'granted':
+      when 'granted' then
         'Closed'
       else
         state_name.to_s

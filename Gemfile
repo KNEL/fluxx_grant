@@ -3,7 +3,9 @@ source "http://gemcutter.org"
 gem 'rails', '3.0.0'
 gem "capybara", "0.3.7"
 gem "sqlite3-ruby", :require => "sqlite3"
-gem 'fastercsv', '>= 1.5.3'
+if RUBY_VERSION < '1.9'
+  gem 'fastercsv', '>= 1.5.3'
+end
 gem 'formtastic', '~> 1.1.0'
 gem 'haml', '>= 3'
 gem "will_paginate", "~> 3.0.pre2"
