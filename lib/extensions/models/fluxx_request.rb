@@ -149,7 +149,7 @@ module FluxxRequest
           end),
 
           :filter_state => (lambda do |search_with_attributes, name, val|
-            states = val.split(',').map{|v| v.strip}
+            states = val
             states << 'pending_secondary_pd_approval' if states.include?('pending_pd_approval')
 
             if states.include?('pending_secondary_pd_approval') && search_with_attributes[:program_id]
@@ -161,7 +161,7 @@ module FluxxRequest
           end),
 
           :program_id => (lambda do |search_with_attributes, name, val|
-            program_id_strings = val.split(',').map{|v| v.to_s.strip}
+            program_id_strings = val
             programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
             program_ids = programs.map do |program| 
               children = program.children_programs
