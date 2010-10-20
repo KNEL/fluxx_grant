@@ -5,8 +5,6 @@
 
 = render :partial => "grant_requests/program",  :locals => { :model => model, :form => form }
 
-= form.input :initiative, :label => "Initiative", :as => :select, :collection => Initiative.all.map{|initiative| [initiative.name, initiative.id]}
-
 = form.input :project_summary, :label => "Project Summary", :as => :text
 
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model} unless model.state_in(GrantRequest.new_states)

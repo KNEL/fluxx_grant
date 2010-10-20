@@ -1,12 +1,12 @@
+- labels ||= {}
 - form.object.program_organization_lookup = (form.object.program_organization ? form.object.program_organization.display_name : '')
-- form.object.fiscal_organization_lookup = (form.object.fiscal_organization ? form.object.fiscal_organization.display_name : '')
-= form.input :program_organization_lookup, :label => "Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => 'program_organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
+= form.input :program_organization_lookup, :label => labels[:org_name_label] || 'Organization', :as => :autocomplete, :autocomplete_url => organizations_path(:format => :json, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => 'program_organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
 - program_organization_satellites = form.object.program_organization ? form.object.program_organization.satellites : []
-= form.input :program_organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1', 'data-related-child' => '.program-org-contact,.program-org-signatory'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
+= form.input :program_organization, :label => labels[:org_sat_label] || 'Location', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'json'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1', 'data-related-child' => '.program-org-contact,.program-org-signatory'}, :collection => program_organization_satellites.map {|org| [org.name, org.id]}
 
 - program_users = []
 - program_users = form.object.program_organization.users if form.object.program_organization
-= form.input :grantee_org_owner, :label => 'Primary Contact', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-contact', 'data-cache'.to_sym => 'program_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
+= form.input :grantee_org_owner, :label => labels[:grantee_org_owner_label] || 'Primary Contact', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-contact', 'data-cache'.to_sym => 'program_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
 - # TODO ESH: need to:
 - #  1. hide this link until the org has been selected
 - #  2. have a way for this link to grab the selected org ID when the user clicks it (or when it's selected)
@@ -15,6 +15,6 @@
 - #  5. do we want to pass in an organization_title of some sort?
 - # = link_to 'add new', new_user_path(:user => {:temp_organization_id => (form.object.program_organization ? form.object.program_organization.id : nil), :temp_organization_title => 'Lead'})
 
-= form.input :grantee_signatory, :label => 'Primary Signatory', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-signatory', 'data-cache'.to_sym => 'program_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
+= form.input :grantee_signatory, :label => labels[:grantee_signatory_label] || 'Primary Signatory', :as => :select, :collection => program_users, :input_html => {:class => 'program-org-signatory', 'data-cache'.to_sym => 'program_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'json'), 'data-param'.to_sym => 'related_organization_id'}
 = link_to 'add new', new_user_path(:organization_id => (form.object.program_organization ? form.object.program_organization.id : nil))
 - # TODO ESH: need to put an add new link here, see above
