@@ -117,7 +117,7 @@ module FluxxCommonRequestsController
         delete_events = fluxx_request.current_allowed_events(Request.promotion_events + Request.grant_events + Request.send_back_events)
         allowed_delete_events = controller.event_allowed?(delete_events, fluxx_request)
         delete_enabled = allowed_delete_events && !allowed_delete_events.empty?
-        if controller.current_user.has_role?('admin', User) || controller.current_user.has_role?('data_cleanup', User)
+        if controller.current_user.has_role?('admin') || controller.current_user.has_role?('data_cleanup')
           edit_enabled = true
           edit_funding_sources_enabled = true
           delete_enabled = true
