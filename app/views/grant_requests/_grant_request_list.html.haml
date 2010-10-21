@@ -2,6 +2,6 @@
   %h1= model.fip_title
 - else
   %h1= model.org_name_text
-%span= [dollars_format(model.granted? ? model.amount_recommended : model.amount_requested), mdy_date_format(model.request_received_at), model.program.name].compact.join(' | ')
+%span= [dollars_format(model.granted? ? model.amount_recommended : model.amount_requested), mdy_date_format(model.request_received_at), (model.program ? model.program.name : '')].compact.join(' | ')
 %div= model.grant_or_request_id
 %p= model.project_summary
