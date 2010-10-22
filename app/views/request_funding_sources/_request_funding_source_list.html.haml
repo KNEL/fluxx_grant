@@ -6,7 +6,7 @@
   %h2
     Funding Sources
     = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => request.id}),
-        :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && can_current_user_edit_create_requests?)
+        :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && current_user.has_create_for_model?(RequestFundingSource))
   %ol.funding-sources
     - if !models || models.empty?
       %li
@@ -16,7 +16,7 @@
       - models.each do |funding_source| 
         - total += funding_source.funding_amount if funding_source.funding_amount
         %li.funding-source
-          - if can_current_user_edit_create_requests?
+          - if current_user.has_delete_for_model?(funding_source)
             %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), funding_source, :class => 'as-delete' if @edit_funding_sources_enabled
         
           Amount - 

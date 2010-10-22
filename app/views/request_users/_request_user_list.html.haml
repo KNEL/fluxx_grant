@@ -8,7 +8,7 @@
     %tr
       %th
         %span Linked Users
-        - if request && can_current_user_edit_create_requests?
+        - if request && current_user.has_create_for_model?(RequestUser)
           .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
   %tbody
     - if !models || models.empty?
@@ -21,5 +21,5 @@
             %span
               = model.user.full_name
               %div.relationship-description= model.description if model.description
-              - if can_current_user_edit_create_requests?
+              - if current_user.has_delete_for_model?(model)
                 %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'

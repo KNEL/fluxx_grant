@@ -1,56 +1,4 @@
 module ApplicationGrantHelper
-  # View ACL  
-  def can_current_user_view_users?
-    # TODO ESH: check against role
-    true
-  end
-
-  def can_current_user_view_organizations?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_view_requests?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_view_reports?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_view_transactions?
-    # TODO ESH: check against role
-    true
-  end
-
-  # Edit/Update/Delete ACL  
-  def can_current_user_edit_create_users?
-    # TODO ESH: check against role
-    true
-  end
-
-  def can_current_user_edit_create_organizations?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_edit_create_requests?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_edit_create_reports?
-    # TODO ESH: check against role
-    true
-  end
-  
-  def can_current_user_edit_create_transactions?
-    # TODO ESH: check against role
-    true
-  end
-  
   def dollars_format amount
     number_to_currency amount, :precision => 0
   end
@@ -62,7 +10,6 @@ module ApplicationGrantHelper
   def show_path_for_model model, options={}
     send("#{model.class.name.tableize.pluralize.downcase}_path", options)
   end
-  
   
   def render_grant_id request
     if request.is_grant? 

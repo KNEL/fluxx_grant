@@ -1,6 +1,7 @@
 # Supplements FluxxUsersController in fluxx_crm
 module FluxxGrantUsersController
   def self.included(base)
+    base.send :include, FluxxUsersController
     base.insta_index User do |insta|
       insta.filter_title = "Users Filter"
       insta.filter_template = 'users/user_filter'
