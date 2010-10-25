@@ -97,12 +97,14 @@ UserProfileRule.create :user_profile => board_profile, :role_name => 'view_repor
 UserProfileRule.create :user_profile => board_profile, :role_name => 'view_transaction'
 
 # define consultant
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_organization'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_request'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_grant'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_report'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_transaction'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_all'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_user', :allowed => false
 UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request_transaction'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request_transaction'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request_funding_source'
+UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request_funding_source'
 
 # define grantee
 UserProfileRule.create :user_profile => grantee_profile, :role_name => 'create_own_request'
