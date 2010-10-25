@@ -3,6 +3,7 @@ module FluxxRequestEvaluationMetric
 
   def self.included(base)
     base.belongs_to :request
+    base.validates_presence_of :description
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
