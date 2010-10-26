@@ -1,12 +1,1 @@
-- labels ||= {}
-- form.object.fiscal_organization_lookup = (form.object.fiscal_organization ? form.object.fiscal_organization.display_name : '')
-= form.input :fiscal_organization_lookup, :label => labels[:fiscal_org_name_label] || "Fiscal Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :autocomplete, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => 'fiscal_organization_lookup_select', 'data-related-child' => ".fiscal-org-sat-select"}, :value => (form.object.fiscal_organization ? form.object.fiscal_organization.display_name : '')
-- fiscal_organization_satellites = form.object.fiscal_organization ? form.object.fiscal_organization.satellites : []
-= form.input :fiscal_organization, :label => labels[:fiscal_org_sat_label] || 'Location', :as => :select, :input_html => {:class => 'fiscal-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1', 'data-related-child' => '.fiscal-org-contact,.fiscal-org-signatory'}, :collection => fiscal_organization_satellites.map {|org| [org.name, org.id]}
-
-- fiscal_users = []
-- fiscal_users = form.object.fiscal_organization.users if form.object.fiscal_organization
-= form.input :fiscal_org_owner, :label => labels[:fiscal_org_owner_label] || 'Fiscal Contact', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-contact', 'data-cache'.to_sym => 'fiscal_contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-param'.to_sym => 'related_organization_id'}
-- # TODO ESH: need to put an add new link here, see notes in _program_org partial
-= form.input :fiscal_signatory, :label => labels[:fiscal_signatory_label] || 'Fiscal Signatory', :as => :select, :collection => fiscal_users, :input_html => {:class => 'fiscal-org-signatory', 'data-cache'.to_sym => 'fiscal_signatory_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-param'.to_sym => 'related_organization_id'}
-- # TODO ESH: need to put an add new link here, see notes in _program_org partial
+= render :partial => "grant_requests/org_lookup", :locals => { :model => model, :form => form, :org_lookup_name => :fiscal_organization_lookup, :org_name => :fiscal_organization, :org_owner => :fiscal_org_owner, :org_signatory => :fiscal_signatory, :labels => {} }
