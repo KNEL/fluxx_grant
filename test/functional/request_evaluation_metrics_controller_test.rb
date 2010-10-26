@@ -15,7 +15,7 @@ class RequestEvaluationMetricsControllerTest < ActionController::TestCase
   
   test "should create request evaluation metric" do
     assert_difference('RequestEvaluationMetric.count') do
-      post :create, :request_evaluation_metric => {:request_id => @request1.id}
+      post :create, :request_evaluation_metric => {:request_id => @request1.id, :description => Sham.sentence}
     end
 
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
