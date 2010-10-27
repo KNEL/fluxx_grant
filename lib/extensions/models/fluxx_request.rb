@@ -1,4 +1,28 @@
 module FluxxRequest
+  def self.prepare_from_date search_with_attributes, name, val
+    if (Time.parse(val) rescue nil)
+      start_at = Time.parse(val)
+      if search_with_attributes[name] && search_with_attributes[name].end < FAR_IN_THE_FUTURE
+        search_with_attributes[name] = (start_at.to_i..(search_with_attributes[name].end))
+      else
+        search_with_attributes[name] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
+      end
+      search_with_attributes
+    end || {}
+  end
+  
+  def self.prepare_to_date search_with_attributes, name, val
+    if (Time.parse(val) rescue nil)
+      end_at = Time.parse(val)
+      if search_with_attributes[name] && search_with_attributes[name].begin > 0
+        search_with_attributes[name] = ((search_with_attributes[name].begin)..end_at.to_i)
+      else
+        search_with_attributes[name] = (0..end_at.to_i)
+      end
+      search_with_attributes
+    end || {}
+  end
+  
   SEARCH_ATTRIBUTES = [:program_id, :initiative_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
@@ -141,7 +165,7 @@ module FluxxRequest
       insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]
 
       insta.derived_filters = {
-          :has_been_rejected => (lambda do |search_with_attributes, name, val|
+          :has_been_rejected => (lambda do |search_with_attributes, request_params, name, val|
             if val == '1'
               search_with_attributes.delete :has_been_rejected
             else
@@ -149,7 +173,7 @@ module FluxxRequest
             end
           end),
 
-          :filter_state => (lambda do |search_with_attributes, name, val|
+          :filter_state => (lambda do |search_with_attributes, request_params, name, val|
             states = val
             states << 'pending_secondary_pd_approval' if states.include?('pending_pd_approval')
 
@@ -161,7 +185,7 @@ module FluxxRequest
             search_with_attributes[:filter_state] = states.map{|val|val.to_crc32} if states && !states.empty?
           end),
 
-          :program_id => (lambda do |search_with_attributes, name, val|
+          :program_id => (lambda do |search_with_attributes, request_params, name, val|
             program_id_strings = val
             programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
             program_ids = programs.map do |program| 
@@ -181,7 +205,7 @@ module FluxxRequest
               end
             end
           end),
-          :greater_amount_recommended => (lambda do |search_with_attributes, name, val|
+          :greater_amount_recommended => (lambda do |search_with_attributes, request_params, name, val|
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = (val.to_i..(search_with_attributes[:amount_recommended].end))
             else
@@ -189,7 +213,7 @@ module FluxxRequest
             end
             search_with_attributes
           end),
-          :lesser_amount_recommended => (lambda do |search_with_attributes, name, val|
+          :lesser_amount_recommended => (lambda do |search_with_attributes, request_params, name, val|
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = ((search_with_attributes[:amount_recommended].begin)..val.to_i)
             else
@@ -197,24 +221,24 @@ module FluxxRequest
             end
             search_with_attributes
           end),
-          :request_from_date => (lambda do |search_with_attributes, name, val|
-            case search_with_attributes[:date_range_selector]
+          :request_from_date => (lambda do |search_with_attributes, request_params, name, val|
+            case request_params[:request][:date_range_selector]
             when 'funding_agreement' then
-              prepare_from_date search_with_attributes, val, :grant_agreement_at
+              prepare_from_date search_with_attributes, :grant_agreement_at, val
             when 'grant_begins' then
-              prepare_from_date search_with_attributes, val, :grant_begins_at
+              prepare_from_date search_with_attributes, :grant_begins_at, val
             when 'grant_ends' then
-              prepare_from_date search_with_attributes, val, :grant_ends_at
+              prepare_from_date search_with_attributes, :grant_ends_at, val
             end
           end),
-          :request_to_date => (lambda do |search_with_attributes, name, val|
-            case search_with_attributes[:date_range_selector]
+          :request_to_date => (lambda do |search_with_attributes, request_params, name, val|
+            case request_params[:request][:date_range_selector]
             when 'funding_agreement' then
-              prepare_to_date search_with_attributes, val, :grant_agreement_at
+              prepare_to_date search_with_attributes, :grant_agreement_at, val
             when 'grant_begins' then
-              prepare_to_date search_with_attributes, val, :grant_begins_at
+              prepare_to_date search_with_attributes, :grant_begins_at, val
             when 'grant_ends' then
-              prepare_to_date search_with_attributes, val, :grant_ends_at
+              prepare_to_date search_with_attributes, :grant_ends_at, val
             end
           end)
         }
@@ -619,30 +643,6 @@ module FluxxRequest
 
         set_property :delta => :delayed
       end
-    end
-    
-    def prepare_from_date search_with_attributes, name, val
-      if (Time.parse(val) rescue nil)
-        start_at = Time.parse(val)
-        if search_with_attributes[name] && search_with_attributes[name].end < FAR_IN_THE_FUTURE
-          search_with_attributes[name] = (start_at.to_i..(search_with_attributes[name].end))
-        else
-          search_with_attributes[name] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
-        end
-        search_with_attributes
-      end || {}
-    end
-    
-    def prepare_to_date search_with_attributes, name, val
-      if (Time.parse(val) rescue nil)
-        end_at = Time.parse(val)
-        if search_with_attributes[name] && search_with_attributes[name].begin > 0
-          search_with_attributes[name] = ((search_with_attributes[name].begin)..end_at.to_i)
-        else
-          search_with_attributes[name] = (0..end_at.to_i)
-        end
-        search_with_attributes
-      end || {}
     end
   end
 
