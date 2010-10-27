@@ -64,8 +64,13 @@ module FluxxRequestTransaction
     end
     
     base.insta_workflow do |insta|
-      insta.states_to_english = {:actually_due => 'Actually Due',:tentatively_due => 'Tentatively Due', :paid => 'Paid', :new => 'New'}
-      insta.events_to_english = {:mark_actually_due => 'Mark Due', :mark_paid => 'Pay'}
+      insta.add_state_to_english :actually_due, 'Actually Due'
+      insta.add_state_to_english :tentatively_due, 'Tentatively Due'
+      insta.add_state_to_english :paid, 'Paid'
+      insta.add_state_to_english :new, 'New'
+      
+      insta.add_event_to_english :mark_actually_due, 'Mark Due'
+      insta.add_event_to_english :mark_paid, 'Pay'      
     end
 
     base.extend(ModelClassMethods)
