@@ -7,6 +7,8 @@ namespace :fluxx_grant do
     user = User.find user_id if user_id
     if user
       user.has_role! 'admin'
+      user.user_profile = UserProfile.find_by_name 'employee'
+      user.save
       Program.all.each do |program|
         (Program.request_roles + Program.grant_roles + Program.finance_roles).each do |role|
           user.has_role! role, program
