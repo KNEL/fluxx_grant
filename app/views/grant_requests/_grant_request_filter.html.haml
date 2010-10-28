@@ -1,11 +1,11 @@
-= form.input :program_id, :label => 'Program', :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :initiative_id, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :program_id, :label => 'Program', :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :initiative_id, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 
 = form.input :filter_type, :label => 'Request Type', :required => false, :as => :select, :collection => [['Grants', GrantRequest.name], ['Fips', FipRequest.name]], :input_html => {:class => 'add-another'}
 = form.input :filter_state, :label => 'Status:', :required => false, :as => :select, :collection => (((GrantRequest.pre_recommended_chain) + GrantRequest.approval_chain + GrantRequest.sent_back_states + GrantRequest.rejected_states).map{|state|[Request.state_to_english_translation(state), state]}), :input_html => {:class => 'add-another'}
-= form.input :lead_user_ids, :label => 'PO/Lead', :required => false, :as => :select, :collection => Program.all_program_users.sort_by{|user| user.full_name.downcase}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
-= form.input :created_by_id, :as => :select, :required => false, :collection => Program.all_program_users.sort_by{|user| user.full_name.downcase}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
-= form.input :funding_source_ids, :label => "Funding Source", :as => :select, :required => false, :collection => FundingSource.all.sort_by{|source| source.name}.map {|source|[source.name, source.id]}, :input_html => {:class => 'add-another'}
+= form.input :lead_user_ids, :label => 'PO/Lead', :required => false, :as => :select, :collection => Program.all_program_users.sort_by{|user| user.full_name ? user.full_name.downcase : ''}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
+= form.input :created_by_id, :as => :select, :required => false, :collection => Program.all_program_users.sort_by{|user| user.full_name ? user.full_name.downcase : ''}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
+= form.input :funding_source_ids, :label => "Funding Source", :as => :select, :required => false, :collection => FundingSource.all.sort_by{|source| source.name || ''}.map {|source|[source.name, source.id]}, :input_html => {:class => 'add-another'}
 Amount Recommended:
 = form.input :greater_amount_recommended, :label => 'Greater Than:', :required => false
 = form.input :lesser_amount_recommended, :label => 'Less Than:', :required => false

@@ -30,7 +30,7 @@ signatory_contact_title = if signatory_contact
   end
 end || ''
 
-sorted_request_transactions = fluxx_request.request_transactions.sort_by{|req| req.due_at || Time.at(0)}
+sorted_request_transactions = fluxx_request.request_transactions.sort_by{|req| req.due_at ? req.due_at : Time.at(0)}
 initial_payment = sorted_request_transactions.first || RequestTransaction.new 
 interim_payment = (sorted_request_transactions.size > 2) ? sorted_request_transactions[1] : nil
 final_payment = sorted_request_transactions.last || RequestTransaction.new
@@ -40,7 +40,7 @@ interim_payment_in_currency = if interim_payment
 end
 final_payment_in_currency = final_payment.amount_due ? final_payment.amount_due.to_currency_no_cents : ''
 
-sorted_request_reports = fluxx_request.letter_request_reports.sort_by{|rep| rep.due_at || Time.at(0)}
+sorted_request_reports = fluxx_request.letter_request_reports.sort_by{|rep| rep.due_at ? rep.due_at : Time.at(0)}
 initial_report = sorted_request_reports.first || RequestReport.new 
 final_report = if sorted_request_reports.size > 2
   sorted_request_reports.last
@@ -73,7 +73,7 @@ end
 
 payment_header_text = ''
 payment_num=0 
-model.request.request_transactions.sort_by{|req_trans| req_trans.due_at || Time.at(0)}.map do |payment| 
+model.request.request_transactions.sort_by{|req_trans| req_trans.due_at ? req_trans.due_at : Time.at(0)}.map do |payment| 
   payment_in_currency = payment.amount_due ? payment.amount_due.to_currency_no_cents : ''
   payment_header_text += "<tr><td>Payment #{payment_num + 1}:</td><td>#{payment_in_currency}</td></tr>"
   payment_num += 1
@@ -82,7 +82,7 @@ end
 
 payment_schedule_text = ''
 payment_num=0 
-model.request.request_transactions.sort_by{|req_trans| req_trans.due_at || Time.at(0)}.map do |payment| 
+model.request.request_transactions.sort_by{|req_trans| req_trans.due_at ? req_trans.due_at : Time.at(0)}.map do |payment| 
   payment_in_currency = payment.amount_due ? payment.amount_due.to_currency_no_cents : ''
     payment_schedule_text += "<tr><td valign=\"top\">Payment #{payment_num + 1}</td><td valign=\"top\">#{payment_in_currency}</td><td valign=\"top\"> "
       if payment_num == 0
@@ -100,7 +100,7 @@ end
 
 program_lead_contact = model.request.program_lead || User.new
 request_program = model.request.program || Program.new
-report_details = model.request.letter_request_reports.sort_by{|rep| rep.due_at || Time.at(0)}.map do |doc|
+report_details = model.request.letter_request_reports.sort_by{|rep| rep.due_at ? rep.due_at : Time.at(0)}.map do |doc|
     "<tr><td valign='top'></td><td valign='top'>#{doc.type_to_english} report due no later than:</td><td valign='top'>#{doc.due_at.full}</td></tr>\n"
   end.join ' '
 letter_text = ERB.new(model.letter).result(binding)
