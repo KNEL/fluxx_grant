@@ -7,7 +7,7 @@ class FluxxEngineCreateMultiElementGroups < ActiveRecord::Migration
       t.integer :dependent_multi_element_group_id
       t.string :description
     end
-    add_constraint 'multi_element_groups', 'multi_element_groups_dependent_grp_id', 'dependent_multi_element_group_id', 'requests', 'multi_element_groups'
+    add_constraint 'multi_element_groups', 'multi_element_groups_dependent_grp_id', 'dependent_multi_element_group_id', 'multi_element_groups', 'id'
   end
 
   def self.down
