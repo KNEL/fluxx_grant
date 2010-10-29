@@ -128,6 +128,9 @@
   .key= "#{plural_by_list model.usa_means, 'Means', 'Means'}:"
   .value= model.usa_means.map(&:value).join(', ')
 
+.pairs
+  .key= "#{plural_by_list model.china_means, 'Type', 'Types'} of Organization:"
+  .value= model.china_means.map(&:value).join(', ')
 
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
 
