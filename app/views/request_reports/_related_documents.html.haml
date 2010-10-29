@@ -1,4 +1,11 @@
-%span.fluxx-card-content-metadata-section-title= render :partial => "request_reports/list_item1", :locals => { :model => model, :due => false }
+%span.fluxx-card-content-metadata-section-title
+  = model.type_to_english
+  <br/>
+  - if model.approved_at
+    = "Approved #{model.approved_at.mdy}"
+  - elsif model.state != RequestReport.new_state
+    = "Status: #{model.state_to_english} "
+    = "(#{model.updated_at.mdy})" if model.updated_at
 %span.fluxx-card-content-metadata-section-info
   = model.request.grant_id if model.request
   <br/>
