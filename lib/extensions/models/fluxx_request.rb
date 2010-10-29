@@ -253,32 +253,32 @@ module FluxxRequest
     end
     
     base.insta_workflow do |insta|
-      insta.states_to_english = {:new => 'New Request',
-        :pending_grant_team_approval => 'Pending Grant Team Approval',
-        :pending_po_approval => 'Pending PO Approval',
-        :pending_president_approval => 'Pending President Approval',
-        :rejected => 'Rejected',
-        :funding_recommended => 'Funding Recommended',
-        :pending_grant_promotion => 'Pending Grant/FIP Promotion',
-        :sent_back_to_pa => 'Sent back to PA',
-        :sent_back_to_po => 'Sent back to PO',
-        :granted => 'Granted',
-        :closed => 'Closed',
-        :canceled => 'Canceled'}
+      insta.add_state_to_english :new, 'New Request'
+      insta.add_state_to_english :pending_grant_team_approval, 'Pending Grant Team Approval'
+      insta.add_state_to_english :pending_po_approval, 'Pending PO Approval'
+      insta.add_state_to_english :pending_president_approval, 'Pending President Approval'
+      insta.add_state_to_english :rejected, 'Rejected'
+      insta.add_state_to_english :funding_recommended, 'Funding Recommended'
+      insta.add_state_to_english :pending_grant_promotion, 'Pending Grant/FIP Promotion'
+      insta.add_state_to_english :sent_back_to_pa, 'Sent back to PA'
+      insta.add_state_to_english :sent_back_to_po, 'Sent back to PO'
+      insta.add_state_to_english :granted, 'Granted'
+      insta.add_state_to_english :closed, 'Closed'
+      insta.add_state_to_english :canceled, 'Canceled'
       
-      insta.events_to_english = {:recommend_funding => 'Recommend Funding',
-        :complete_ierf => 'Mark IERF Completed',
-        :grant_team_approve => 'Approve',
-        :po_approve =>  'Approve',
-        :president_approve => 'Approve',
-        :grant_team_send_back =>  'Send Back',
-        :po_send_back => 'Send Back',
-        :president_send_back => 'Send Back',
-        :reject =>  'Reject',
-        :un_reject => 'Un-Reject',
-        :become_grant => 'Promote to Grant',
-        :close_grant => 'Close',
-        :cancel_grant => 'Cancel'}
+      insta.add_event_to_english :recommend_funding, 'Recommend Funding'
+      insta.add_event_to_english :complete_ierf, 'Mark IERF Completed'
+      insta.add_event_to_english :grant_team_approve, 'Approve'
+      insta.add_event_to_english :po_approve,  'Approve'
+      insta.add_event_to_english :president_approve, 'Approve'
+      insta.add_event_to_english :grant_team_send_back,  'Send Back'
+      insta.add_event_to_english :po_send_back, 'Send Back'
+      insta.add_event_to_english :president_send_back, 'Send Back'
+      insta.add_event_to_english :reject,  'Reject'
+      insta.add_event_to_english :un_reject, 'Un-Reject'
+      insta.add_event_to_english :become_grant, 'Promote to Grant'
+      insta.add_event_to_english :close_grant, 'Close'
+      insta.add_event_to_english :cancel_grant, 'Cancel'        
     end
 
     base.extend(ModelClassMethods)
