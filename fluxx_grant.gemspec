@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fluxx_grant}
-  s.version = "0.0.10"
+  s.version = "0.0.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eric Hansen"]
@@ -141,6 +141,7 @@ Gem::Specification.new do |s|
      "lib/extensions/controllers/fluxx_request_reports_controller.rb",
      "lib/extensions/controllers/fluxx_request_transactions_controller.rb",
      "lib/extensions/controllers/fluxx_request_users_controller.rb",
+     "lib/extensions/hgrant_rack.rb",
      "lib/extensions/models/fluxx_fip_request.rb",
      "lib/extensions/models/fluxx_funding_source.rb",
      "lib/extensions/models/fluxx_grant_organization.rb",
