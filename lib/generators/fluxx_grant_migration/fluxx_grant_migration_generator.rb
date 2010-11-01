@@ -47,6 +47,9 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     sleep 1
     handle_migration 'create_request_evaluation_metrics.rb', 'db/migrate/fluxx_grant_create_request_evaluation_metrics.rb'
     sleep 1
+    handle_migration 'create_project_request.rb', 'db/migrate/fluxx_grant_create_project_request.rb'
+    sleep 1
+    
   end
   
   private

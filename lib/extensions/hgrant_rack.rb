@@ -4,7 +4,6 @@ module Rack
       @app = app
     end
     def call env
-      p "ESH: HgrantRack in initialize have PATH_INFO=#{env["PATH_INFO"]}"
       if env["PATH_INFO"] =~ /^\/hgrantrss/
         @request_ids = ::Request.search_for_ids '', :with => {:grant => 1}, :limit => 1000, :order => 'id desc'
         @requests = ::Request.find_by_sql ["select requests.*, 
@@ -21,7 +20,6 @@ module Rack
           left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
           WHERE requests.id in (?)
         ", @request_ids]
-        p "ESH: 111 finished making call"
         [200, {"Content-Type" => "application/rss+xml"}, ::RenderHgrantsRssResponse.new(@requests)]
       else
         @app.call env
