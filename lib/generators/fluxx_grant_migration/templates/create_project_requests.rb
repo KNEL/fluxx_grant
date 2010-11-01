@@ -1,4 +1,4 @@
-class FluxxCrmCreateProjectRequests < ActiveRecord::Migration
+class FluxxGrantCreateProjectRequests < ActiveRecord::Migration
   def self.up
     create_table :project_requests do |t|
       t.timestamps
