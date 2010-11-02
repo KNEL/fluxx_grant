@@ -217,7 +217,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "documentable_id",        :null => false
     t.datetime "locked_until"
     t.integer  "locked_by_id"
-    t.integer  "model_document_type_id", :null => false
+    t.integer  "model_document_type_id"
   end
 
   add_index "model_documents", ["model_document_type_id"], :name => "model_documents_model_document_type_id"
@@ -246,8 +246,10 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.string   "description"
     t.string   "value"
     t.integer  "multi_element_group_id"
+    t.integer  "dependent_multi_element_value_id"
   end
 
+  add_index "multi_element_values", ["dependent_multi_element_value_id"], :name => "multi_element_values_dependent_value_id"
   add_index "multi_element_values", ["multi_element_group_id"], :name => "index_multi_element_values_on_multi_element_group_id"
 
   create_table "notes", :force => true do |t|
@@ -300,7 +302,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
   add_index "organizations", ["geo_country_id"], :name => "organizations_geo_country_id"
   add_index "organizations", ["geo_state_id"], :name => "organizations_geo_state_id"
-  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"767"}
+  add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>"255"}
   add_index "organizations", ["parent_org_id"], :name => "index_organizations_on_parent_org_id"
   add_index "organizations", ["updated_by_id"], :name => "organizations_updated_by_id"
 
@@ -328,6 +330,9 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.datetime "due_at"
     t.integer  "item_order"
     t.integer  "assigned_user_id"
+    t.datetime "deleted_at"
+    t.datetime "locked_until"
+    t.integer  "locked_by_id"
   end
 
   add_index "project_list_items", ["assigned_user_id"], :name => "project_list_items_assigned_user_id"
@@ -344,6 +349,9 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "project_id"
     t.integer  "list_order"
     t.integer  "list_type_id"
+    t.datetime "deleted_at"
+    t.datetime "locked_until"
+    t.integer  "locked_by_id"
   end
 
   add_index "project_lists", ["created_by_id"], :name => "project_lists_created_by_id"
@@ -733,6 +741,9 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.string   "model_type"
     t.integer  "wiki_order"
     t.text     "note"
+    t.datetime "deleted_at"
+    t.datetime "locked_until"
+    t.integer  "locked_by_id"
   end
 
   add_index "wiki_documents", ["created_by_id"], :name => "wiki_documents_created_by_id"

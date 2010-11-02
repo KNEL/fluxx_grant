@@ -43,7 +43,7 @@ end
 User.blueprint do
   first_name Sham.first_name
   last_name Sham.last_name
-  login Sham.login
+  login(Sham.login + 'abcdef')
   email Sham.email
   created_at 5.days.ago.to_s(:db)
   state 'active'
@@ -169,6 +169,37 @@ end
 RequestUser.blueprint do
   request {GrantRequest.make}
   user
+end
+
+Project.blueprint do
+  title Sham.sentence
+  description Sham.sentence
+end
+
+ProjectList.blueprint do
+  title Sham.sentence
+  list_order 1
+end
+
+ProjectUser.blueprint do
+end
+
+ProjectOrganization.blueprint do
+end
+
+ProjectRequest.blueprint do
+end
+
+ProjectListItem.blueprint do
+  name Sham.word
+  list_item_text Sham.sentence
+  due_at Time.now
+  item_order 1
+end
+
+WikiDocument.blueprint do
+  wiki_order 1
+  note Sham.sentence
 end
 
 def setup_letter_templates
