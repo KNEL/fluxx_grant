@@ -137,6 +137,8 @@ module FluxxRequest
            multi_element_group_id = meg_tax_class.id and program_organization.tax_class_id = mev_tax_class.id) org_tax_class,
           replace(group_concat(funding_sources.name, ', '), ', ', '') funding_source_name,
           requests.created_at, requests.updated_at, 
+          owner_users.first_name, owner_users.last_name, owner_users.email,
+          signatory_users.first_name, signatory_users.last_name, signatory_users.email,
           project_summary
                          FROM requests
                          LEFT OUTER JOIN programs program ON program.id = requests.program_id
@@ -149,6 +151,8 @@ module FluxxRequest
                          left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
                          left outer join geo_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.geo_state_id
                          left outer join geo_countries as fiscal_org_countries on fiscal_org_countries.id = fiscal_organization.geo_country_id
+                         left outer join users as owner_users on requests.program_lead_id = owner_users.id
+                         left outer join users as signatory_users on requests.grantee_signatory_id = signatory_users.id
                          WHERE requests.id IN (?) GROUP BY requests.id"
          if with_clause[:granted]==1 || (with_clause[:granted].is_a?(Array) && with_clause[:granted].include?(1))
            block1 + grant_block + block2

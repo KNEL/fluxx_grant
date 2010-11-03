@@ -2,7 +2,7 @@ module FluxxGrantProject
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :title]
 
   def self.included(base)
-    base.send :include, ::FluxxUser
+    base.send :include, ::FluxxProject
 
     base.has_many :project_requests
     
@@ -33,7 +33,6 @@ module FluxxGrantProject
     base.class_eval do
       include ModelInstanceMethods
     end
-
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
 
@@ -41,7 +40,6 @@ module FluxxGrantProject
     def add_sphinx
       define_index :project_first do
         # fields
-        indexes :title, :sortable => true
         indexes "lower(projects.title)", :as => :title, :sortable => true
         indexes "lower(projects.description)", :as => :description, :sortable => true
 

@@ -23,4 +23,4 @@
               - if model.description
                 %div.relationship-description= model.description
               - if current_user.has_delete_for_model?(model)
-                %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete'
+                %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete', 'data-on-success' => 'refreshCaller'

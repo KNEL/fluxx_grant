@@ -1,9 +1,6 @@
 = form.input :request_id, :as => :hidden
 
-- form.object.organization_lookup = (form.object.organization ? form.object.organization.display_name : '')
-= form.input :organization_lookup, :label => "Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :autocomplete, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => 'organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
-- organization_satellites = form.object.organization ? form.object.organization.satellites : []
-= form.input :organization, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1'}, :collection => organization_satellites.map {|org| [org.name, org.id]}
+= render :partial => "organizations/single_org_lookup", :locals => { :model => model, :form => form }
 
 = form.input :description, :as => :text
 

@@ -17,7 +17,7 @@
         - total += funding_source.funding_amount if funding_source.funding_amount
         %li.funding-source
           - if current_user.has_delete_for_model?(funding_source)
-            %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), funding_source, :class => 'as-delete' if @edit_funding_sources_enabled
+            %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), funding_source, :class => 'as-delete', 'data-on-success' => 'refreshCaller' if @edit_funding_sources_enabled
         
           Amount - 
           - if @edit_funding_sources_enabled

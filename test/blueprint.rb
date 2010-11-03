@@ -199,6 +199,7 @@ end
 
 WikiDocument.blueprint do
   wiki_order 1
+  title Sham.word
   note Sham.sentence
 end
 

@@ -10,4 +10,5 @@ Rails.application.routes.draw do
   resources :request_organizations
   resources :programs
   resources :request_reports
+  resources :project_requests
 end
