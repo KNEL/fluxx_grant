@@ -648,6 +648,10 @@ module FluxxRequest
         set_property :delta => :delayed
       end
     end
+    
+    def document_title_name
+      'Request'
+    end
   end
 
   module ModelInstanceMethods

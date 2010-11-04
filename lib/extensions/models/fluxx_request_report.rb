@@ -329,6 +329,10 @@ module FluxxRequestReport
         state_name.to_s
       end
     end
+    
+    def document_title_name
+      'Report'
+    end
   end
 
   module ModelInstanceMethods
