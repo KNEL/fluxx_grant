@@ -23,7 +23,7 @@ module Rack
         [200, {"Content-Type" => "application/rss+xml"}, ::RenderHgrantsRssResponse.new(@requests)]
       else
         response, headers, content = @app.call env
-        p "ESH: zzzzzz have response=#{response.inspect}, headers=#{headers.inspect}"
+        ActiveRecord::Base.logger.debug "ESH: zzzzzz have response=#{response.inspect}, headers=#{headers.inspect}"
         [response, headers, content]
       end
     end
