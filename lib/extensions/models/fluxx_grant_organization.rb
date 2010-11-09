@@ -2,6 +2,8 @@ module FluxxGrantOrganization
   SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
 
   def self.included(base)
+    base.send :include, ::FluxxOrganization
+    
     base.has_many :grants, :class_name => 'GrantRequest', :foreign_key => :program_organization_id, :conditions => {:granted => 1}
     base.has_many :grant_requests, :class_name => 'Request', :foreign_key => :program_organization_id
     base.has_many :fiscal_requests, :class_name => 'Request', :foreign_key => :fiscal_organization_id
