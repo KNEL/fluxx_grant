@@ -10,7 +10,10 @@
 
     = form.input :project_summary, :label => "Project Summary", :as => :text
 
-    = render :partial => "model_documents/list_model_documents", :locals => { :model => model} unless model.state_in(GrantRequest.new_states)
+    - unless model.state_in(GrantRequest.new_states)
+      = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
+      - if model.program_organization
+        = render :partial => "model_documents/list_model_documents", :locals => { :model => model.program_organization}
     = render(:partial => "grant_requests/approve_grant_details", :locals => { :model => model, :form => form}) if model.state_in(Request.grant_states)
 
     - unless model.state_in GrantRequest.new_states
