@@ -28,35 +28,9 @@ module FluxxGrantRequest
   end
 
   module ModelInstanceMethods
-    # This will generate (but not persist to DB) all the transactions, etc. necessary to make the grant go through
-    def generate_grant_details
-      generate_grant_dates
-
-      new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
-      # Interim Reports
-      if duration_in_months > 12
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_budget_type_name)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_narrative_type_name)
-      elsif new_grantee
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + (grant_ends_at - grant_begins_at) / 2).next_business_day, :report_type => RequestReport.interim_budget_type_name)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + (grant_ends_at - grant_begins_at) / 2).next_business_day, :report_type => RequestReport.interim_narrative_type_name)
-      end
-      interim_request_document = request_reports.last
-
-      # Final Reports
-      if self.is_er?
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_budget_type_name)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_narrative_type_name)
-      else
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_budget_type_name)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_narrative_type_name)
-      end
-      final_request_document = request_reports.last
-
-      # Eval Reports
-      eval_request_document = RequestReport.new(:request => self, :due_at => (final_request_document.due_at + 1.month).next_business_day, :report_type => RequestReport.eval_type_name)
-      request_reports << eval_request_document
-
+    def generate_grant_transactions
+      interim_request_document = request_reports.select{|rep| rep.is_interim_type?}.last
+      final_request_document = request_reports.select{|rep| rep.is_final_type?}.last
       if self.is_er?
         if program_organization.grants.size > 0 # Is there another grant that already exists
           # Transactions for ER trusted orgs
@@ -98,7 +72,40 @@ module FluxxGrantRequest
             :due_at => grant_agreement_at, :state => 'actually_due')
         end
       end
+    end
+    
+    def generate_grant_reports
+      new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
+      # Interim Reports
+      if duration_in_months > 12
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_budget_type_name)
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_narrative_type_name)
+      elsif new_grantee
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + (grant_ends_at - grant_begins_at) / 2).next_business_day, :report_type => RequestReport.interim_budget_type_name)
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + (grant_ends_at - grant_begins_at) / 2).next_business_day, :report_type => RequestReport.interim_narrative_type_name)
+      end
+      interim_request_document = request_reports.last
 
+      # Final Reports
+      if self.is_er?
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_budget_type_name)
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_narrative_type_name)
+      else
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_budget_type_name)
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_narrative_type_name)
+      end
+      final_request_document = request_reports.last
+
+      # Eval Reports
+      eval_request_document = RequestReport.new(:request => self, :due_at => (final_request_document.due_at + 1.month).next_business_day, :report_type => RequestReport.eval_type_name)
+      request_reports << eval_request_document
+    end
+    
+    # This will generate (but not persist to DB) all the transactions, etc. necessary to make the grant go through
+    def generate_grant_details
+      generate_grant_dates
+      generate_grant_reports
+      generate_grant_transactions
 
       # award_letter_template = LetterTemplate.find :first, :conditions => ['letter_type = ?', 'AwardLetterTemplate']
       # ga_letter_template = LetterTemplate.find :first, :conditions => ['letter_type = ?', 'GrantAgreementTemplate']
