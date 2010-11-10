@@ -11,7 +11,7 @@
   %dd.value= model.updated_at.mdy if model.updated_at
   
 = render :partial => "project_lists/list_project_lists", :locals => { :model => model}
-%h2 
+%h3 
   Relationships
 %table.full
   %tr
@@ -35,5 +35,5 @@
 
 = render :partial => "wiki_documents/list_wiki_documents", :locals => { :model => model}
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => Project.name}
-= render :partial => "audits/list_audits", :locals => { :model => model}  
+= render :partial => "audits/list_audits", :locals => { :model => model}
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
