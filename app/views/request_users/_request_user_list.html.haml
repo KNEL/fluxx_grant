@@ -1,15 +1,15 @@
-- request = nil unless defined?(:request)
-- unless request
+- model ||= nil
+- unless model
   - if params[:request_id]
-    - request = BlobStruct.new :id => params[:request_id], :class => Request
+    - model = BlobStruct.new :id => params[:request_id], :class => Request
 
 %table.tabular{:cellspacing => 0}
   %thead
     %tr
       %th
         %span Linked Users
-        - if request && current_user.has_create_for_model?(RequestUser)
-          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
+        - if model && current_user.has_create_for_model?(RequestUser)
+          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
   %tbody
     - if !models || models.empty?
       %tr
