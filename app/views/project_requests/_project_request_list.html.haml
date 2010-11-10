@@ -2,20 +2,12 @@
 - unless project
   - if params[:project_id]
     - project = Project.find(grab_param(:project_request, :project_id)) rescue nil
-%table.tabular{:cellspacing => 0}
-  - if project
-    %thead
-      %tr
-        %th
-          %span Requests
-  %tbody
-    - if !models || models.empty?
-      %tr
-        %td= "No Requests"
-    - else
-      - models.each do |model|
-        %tr
-          %td
-            = model.request.base_request_id if model.request
-            - if current_user.has_delete_for_model? model
-              %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), project_request_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+%ul
+  - if !models || models.empty?
+    %li.caption= "No Requests"
+  - else
+    - models.each do |model|
+      %li
+        = model.request.base_request_id if model.request
+        - if current_user.has_delete_for_model? model
+          %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), project_request_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
