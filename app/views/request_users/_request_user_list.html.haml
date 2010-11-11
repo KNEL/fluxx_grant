@@ -9,7 +9,7 @@
       %th
         %span Linked Users
         - if model && current_user.has_create_for_model?(RequestUser)
-          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
+          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
   %tbody
     - if !models || models.empty?
       %tr

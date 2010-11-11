@@ -7,8 +7,8 @@
   %td
     - if display_achieved
       - unless model.achieved
-        %span= link_to 'Mark Achieved', request_evaluation_metric_path(:id => model.id, :request_evaluation_metric => {:achieved => true}), {:class => 'as-put', 'data-on-success' => 'refreshCaller', 'data-is-success' => '.show'}
+        %span= link_to 'Mark Achieved', request_evaluation_metric_path(:id => model.id, :request_evaluation_metric => {:achieved => true}), {:class => 'as-put', 'data-on-success' => 'refreshCaller'}
       - else
-        %span= link_to 'Mark Not Achieved', request_evaluation_metric_path(:id => model.id, :achieved => false), {:class => 'as-put', 'data-on-success' => 'refreshCaller', 'data-is-success' => '.show'}
-    %span.edit_link= link_to image_tag("/images/fluxx_engine/theme/default/icons/page_edit.png"), edit_request_evaluation_metric_path(model), :class => 'to-modal', :title => "Edit Evaluation Metric", 'data-on-success' => 'refreshCaller,close', 'data-is-success' => '.show'
+        %span= link_to 'Mark Not Achieved', request_evaluation_metric_path(:id => model.id, :achieved => false), {:class => 'as-put', 'data-on-success' => 'refreshCaller'}
+    %span.edit_link= link_to image_tag("/images/fluxx_engine/theme/default/icons/page_edit.png"), edit_request_evaluation_metric_path(model), :class => 'to-modal', :title => "Edit Evaluation Metric", 'data-on-success' => 'refreshCaller,close'
     %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), request_evaluation_metric_path(model), {:class => 'as-delete', :title => "Delete Evaluation Metric", 'data-on-success' => 'refreshCaller'}

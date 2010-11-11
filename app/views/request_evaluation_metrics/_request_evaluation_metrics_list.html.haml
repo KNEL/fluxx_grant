@@ -8,7 +8,7 @@
 %h2 
   %span Evaluation Metrics
   .actions
-  = link_to image_tag("/images/fluxx_engine/theme/default/icons/add.png"), new_request_evaluation_metric_path(:request_evaluation_metric => {:request_id => model.id}), :class => 'to-modal', :title => "Add Evaluation Metric", 'data-on-success' => 'refreshCaller,close', 'data-is-success' => '.show'
+  = link_to image_tag("/images/fluxx_engine/theme/default/icons/add.png"), new_request_evaluation_metric_path(:request_evaluation_metric => {:request_id => model.id}), :class => 'to-modal', :title => "Add Evaluation Metric", 'data-on-success' => 'refreshCaller,close'
 
 %table.tabular{:cellspacing => 0}
   %thead
