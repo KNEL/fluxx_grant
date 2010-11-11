@@ -1,3 +1,3 @@
 - partial_data_src_url = url_for(request_organizations_path({:request_id => model.id, :skip_wrapper => true}))
-%span.partial{'data-src' => partial_data_src_url}
+%div.partial{'data-src' => partial_data_src_url}
   = render :partial => 'request_organizations/request_organization_list',  :locals => {:models => model.request_organizations, :request => model}

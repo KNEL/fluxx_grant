@@ -1,14 +1,17 @@
 %h1= model.title
 %p= model.description
-%dl.pairs
-  %dt.key= 'Status:'
-  %dd.value= model.state.humanize if model.state
-  %dt.key= 'Project Lead:'
-  %dd.value= model.lead_user.full_name if model.lead_user
-  %dt.key= 'Project Type:'
-  %dd.value= model.project_type
-  %dt.key= 'Last Updated:'
-  %dd.value= model.updated_at.mdy if model.updated_at
+.pairs
+  .key= 'Status:'
+  .value= model.state.humanize if model.state
+.pairs
+  .key= 'Project Lead:'
+  .value= model.lead_user.full_name if model.lead_user
+.pairs
+  .key= 'Project Type:'
+  .value= model.project_type
+.pairs
+  .key= 'Last Updated:'
+  .value= model.updated_at.mdy if model.updated_at
   
 = render :partial => "project_lists/list_project_lists", :locals => { :model => model}
 %h3 

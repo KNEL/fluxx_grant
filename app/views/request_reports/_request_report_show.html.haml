@@ -1,16 +1,16 @@
 %h1= model.type_to_english
 
-%div.subhead= render_request_or_grant_amount model.request, ' granted'
+%h4.subhead= render_request_or_grant_amount model.request, ' granted'
   
-%div.subhead= render_program_name model.request
+%h4.subhead= render_program_name model.request
   
-%div.description= render_grant_or_request_id model.request
+%p.description= render_grant_or_request_id model.request
   
 - unless model.request.nil? || model.request.project_summary.blank?
-  %div.description= model.request.project_summary
+  %p.description= model.request.project_summary
 
-%h2
-%div.description
+
+%div.content
   .pairs
     .key= "Status:"
     .value= model.state_to_english

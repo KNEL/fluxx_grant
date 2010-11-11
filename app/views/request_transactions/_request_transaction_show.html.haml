@@ -1,33 +1,30 @@
 - request_transaction_list = model.request.request_transactions
 %h1= number_to_currency model.amount_due, :precision => 0 if model.amount_due
-
-.subhead
+%h4.subhead
   = "Payment #{request_transaction_list.index(model) + 1} of #{request_transaction_list.size}"
-.subhead
+%h4.subhead
   = render_request_or_grant_amount model.request, 'total granted'
-  
-.description= raw "#{render_grant_or_request_id model.request} - #{render_program_name model.request}"
+%p.description= raw "#{render_grant_or_request_id model.request} - #{render_program_name model.request}"
 
 %p= model.state_to_english
-.blank
-
-.pairs
-  .key Due:
-  .value= model.due_at.mdy if model.due_at
-
-- if model.paid_at
+%div.partial
   .pairs
-    .key Paid:
-    .value
-      = number_to_currency model.amount_paid, :precision => 0 if model.amount_paid
-      on
-      = model.paid_at.mdy
-      by
-      = model.payment_type
-      = model.payment_confirmation_number
+    .key Due:
+    .value= model.due_at.mdy if model.due_at
+
+  - if model.paid_at
+    .pairs
+      .key Paid:
+      .value
+        = number_to_currency model.amount_paid, :precision => 0 if model.amount_paid
+        on
+        = model.paid_at.mdy
+        by
+        = model.payment_type
+        = model.payment_confirmation_number
   
-.pairs
-  .key Payment Recorded by:
-  .value= model.payment_recorded_by.full_name if model.payment_recorded_by
+  .pairs
+    .key Payment Recorded by:
+    .value= model.payment_recorded_by.full_name if model.payment_recorded_by
 
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => RequestTransaction.name}

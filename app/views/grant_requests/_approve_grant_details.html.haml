@@ -1,4 +1,4 @@
-<h2>Dates</h2>
+%h2= "Dates"
 = form.input :grant_agreement_at, :label => "Agreement Date", :id => (rand * 999999999).to_i
 = form.input :grant_begins_at, :label => "Grant Start Date", :id => (rand * 999999999).to_i
 
@@ -7,7 +7,7 @@
     = form.input :funds_expended_amount, :label => 'Funds Expended'
     = form.input :funds_expended_at, :label => 'Funds Expended Date', :id => (rand * 999999999).to_i
 
-  <h2>Letters</h2>
+  %h2= "Letters"
 
   = form.input :award_letter_type, :as => :select, :collection => LetterTemplate.award_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
   = form.input :grant_agreement_letter_type, :as => :select, :collection => LetterTemplate.grant_agreement_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
@@ -15,7 +15,7 @@
   %div.form-transactions
     %h2
       Transactions
-      = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png'), '#',  :class=> 'clone-template', "data-append-to" => ".form-transactions", "data-template" => generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
+      %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png'), '#',  :class=> 'clone-template', "data-append-to" => ".form-transactions", "data-template" => generate_template(form, :request_transactions, :partial => 'grant_requests/edit_request_transaction', :form_builder_local => :req_trans) 
     - unless model.request_transactions.empty?
       =form.semantic_fields_for :request_transactions do |req_trans|
         = render :partial => 'grant_requests/edit_request_transaction', :locals => {:req_trans => req_trans}
@@ -23,7 +23,7 @@
   %div.form-reports
     %h2
       Reports
-      = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png'), '#', :class=> 'clone-template', "data-append-to" => ".form-reports", "data-template" => generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
+      %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png'), '#', :class=> 'clone-template', "data-append-to" => ".form-reports", "data-template" => generate_template(form, :request_reports, :partial => 'grant_requests/edit_request_report', :form_builder_local => :req_report) 
     - unless model.request_reports.empty?
       = form.semantic_fields_for :request_reports do |req_report|
         = render :partial => 'grant_requests/edit_request_report', :locals => {:req_report => req_report}
