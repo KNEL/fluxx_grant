@@ -12,7 +12,7 @@ module FluxxRequestTransaction
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.has_many :group_members, :as => :groupable
     base.has_many :groups, :through => :group_members
-
+    
     base.insta_favorite
     base.insta_export do |insta|
       insta.filename = 'request_transaction'
