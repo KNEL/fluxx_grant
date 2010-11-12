@@ -2,24 +2,12 @@
 - unless model
   - if params[:request_id]
     - model = BlobStruct.new :id => params[:request_id], :class => Request
-
-%table.tabular{:cellspacing => 0}
-  %thead
-    %tr
-      %th
-        %span Linked Users
-        - if model && current_user.has_create_for_model?(RequestUser)
-          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_user_path(:request_user => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Link User"
-  %tbody
-    - if !models || models.empty?
-      %tr
-        %td= "No links to users"
-    - else
-      - models.each do |model|
-        %tr
-          %td
-            %span
-              = model.user.full_name
-              %div.relationship-description= model.description if model.description
-              - if current_user.has_delete_for_model?(model)
-                %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete', 'data-on-success' => 'refreshCaller'
+%ul
+  - if !models || models.empty?
+    %li.caption= "No People"
+  - else
+    - models.each do |model|
+      %li
+        = model.user.full_name if model.user
+        - if current_user.has_delete_for_model? model
+          %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), model, {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}

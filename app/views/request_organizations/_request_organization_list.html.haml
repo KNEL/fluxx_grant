@@ -2,25 +2,12 @@
 - unless model
   - if params[:request_id]
     - model = BlobStruct.new :id => params[:request_id], :class => Request
-
-%table.tabular{:cellspacing => 0}
-  %thead
-    %tr
-      %th
-        %span Linked Orgs
-        - if model && current_user.has_create_for_model?(RequestOrganization)
-          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_organization_path(:request_organization => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Link Organization"
-  %tbody
-    - if !models || models.empty?
-      %tr
-        %td= "No links to organizations"
-    - else
-      - models.each do |model|
-        %tr
-          %td
-            %span
-              = model.organization.display_name
-              - if model.description
-                %div.relationship-description= model.description
-              - if current_user.has_delete_for_model?(model)
-                %span.temp= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete', 'data-on-success' => 'refreshCaller'
+%ul
+  - if !models || models.empty?
+    %li.caption= "No Organizations"
+  - else
+    - models.each do |model|
+      %li
+        = model.organization.name if model.organization
+        - if current_user.has_delete_for_model? model
+          %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), model, {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
