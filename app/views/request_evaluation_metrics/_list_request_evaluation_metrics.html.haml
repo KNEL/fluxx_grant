@@ -1,3 +1,4 @@
+- display_achieved ||= false
 - if model.respond_to?(:request_evaluation_metrics)
-  %span.partial{'data-src' => request_evaluation_metrics_path(:request_id => model.id, :skip_wrapper => true)}
-    = render :partial => "request_evaluation_metrics/request_evaluation_metrics_list", :locals => { :models => model.request_evaluation_metrics, :request => model }        
+  %span.partial{'data-src' => request_evaluation_metrics_path(:request_id => model.id, :skip_wrapper => true, :display_achieved => display_achieved)}
+    = render :partial => "request_evaluation_metrics/request_evaluation_metrics_list", :locals => { :models => model.request_evaluation_metrics, :model => model, :display_achieved => display_achieved }

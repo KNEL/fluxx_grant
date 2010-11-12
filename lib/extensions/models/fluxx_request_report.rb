@@ -132,22 +132,22 @@ module FluxxRequestReport
     # RequestReport.interim_narrative_type_name => 'Interim Narrative',
     
     base.insta_workflow do |insta|
-      insta.add_state_to_english :new_state, 'New'
-      insta.add_state_to_english :pending_lead_approval_state, 'Pending Lead Approval'
-      insta.add_state_to_english :pending_grant_team_approval_state, 'Pending Grants Team Approval'
-      insta.add_state_to_english :pending_finance_approval_state, 'Pending Finance Approval'
-      insta.add_state_to_english :approved_state, 'Approved'
-      insta.add_state_to_english :sent_back_to_pa_state, 'Sent Back to PA'
-      insta.add_state_to_english :sent_back_to_lead_state, 'Sent Back to Lead'
-      insta.add_state_to_english :sent_back_to_grant_team_state, 'Sent Back to Grants Team'
+      insta.add_state_to_english RequestReport.new_state, 'New'
+      insta.add_state_to_english RequestReport.pending_lead_approval_state, 'Pending Lead Approval'
+      insta.add_state_to_english RequestReport.pending_grant_team_approval_state, 'Pending Grants Team Approval'
+      insta.add_state_to_english RequestReport.pending_finance_approval_state, 'Pending Finance Approval'
+      insta.add_state_to_english RequestReport.approved_state, 'Approved'
+      insta.add_state_to_english RequestReport.sent_back_to_pa_state, 'Sent Back to PA'
+      insta.add_state_to_english RequestReport.sent_back_to_lead_state, 'Sent Back to Lead'
+      insta.add_state_to_english RequestReport.sent_back_to_grant_team_state, 'Sent Back to Grants Team'
       
-      insta.add_event_to_english :submit_report_event, 'Submit Report'
-      insta.add_event_to_english :lead_approve_event, 'Approve'
-      insta.add_event_to_english :lead_send_back_event, 'Send Back'
-      insta.add_event_to_english :grant_team_approve_event, 'Approve'
-      insta.add_event_to_english :grant_team_send_back_event, 'Send Back'
-      insta.add_event_to_english :finance_approve_event, 'Approve'
-      insta.add_event_to_english :finance_send_back_event, 'Send Back'
+      insta.add_event_to_english RequestReport.submit_report_event, 'Submit Report'
+      insta.add_event_to_english RequestReport.lead_approve_event, 'Approve'
+      insta.add_event_to_english RequestReport.lead_send_back_event, 'Send Back'
+      insta.add_event_to_english RequestReport.grant_team_approve_event, 'Approve'
+      insta.add_event_to_english RequestReport.grant_team_send_back_event, 'Send Back'
+      insta.add_event_to_english RequestReport.finance_approve_event, 'Approve'
+      insta.add_event_to_english RequestReport.finance_send_back_event, 'Send Back'
     end
     
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)

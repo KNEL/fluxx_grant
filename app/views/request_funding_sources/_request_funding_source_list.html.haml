@@ -1,7 +1,7 @@
-- request = nil unless defined?(:request)
-- unless request
+- model ||= nil
+- unless model
   - if params[:request_id]
-    - request = BlobStruct.new :id => params[:request_id], :class => Request
+    - model = BlobStruct.new :id => params[:request_id], :class => Request
 %h3
   = "Funding Sources"
   %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && current_user.has_create_for_model?(RequestFundingSource))

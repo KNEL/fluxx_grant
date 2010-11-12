@@ -1,7 +1,7 @@
-- request = nil unless defined?(:request)
-- unless request
+- model ||= nil
+- unless model
   - if params[:request_id]
-    - request = BlobStruct.new :id => params[:request_id], :class => Request
+    - model = BlobStruct.new :id => params[:request_id], :class => Request
 
 %table.tabular{:cellspacing => 0}
   %thead
