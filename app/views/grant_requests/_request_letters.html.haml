@@ -1,4 +1,4 @@
-%h4= "Request Letters"
+%h3= "Request Letters"
 - model.request_letters.sort_by{|rl| rl.letter_template ? (rl.letter_template.category || '') : '' }.each do |letter|
   %p
     = link_to letter.description, letter, :target => '_blank'

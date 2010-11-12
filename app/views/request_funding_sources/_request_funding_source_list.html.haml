@@ -3,7 +3,7 @@
   - if params[:request_id]
     - request = BlobStruct.new :id => params[:request_id], :class => Request
 %h3
-  Funding Sources
+  = "Funding Sources"
   %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => request.id}),
       :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && current_user.has_create_for_model?(RequestFundingSource))
 
@@ -34,6 +34,7 @@
       .pairs
         .key= 'Total Funding'
         .value= number_to_currency total
+      <hr/>
       %span.actions
         - if current_user.has_delete_for_model?(funding_source)
-          = link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), funding_source, :class => 'as-delete', 'data-on-success' => 'refreshCaller' if @edit_funding_sources_enabled
+          = link_to image_tag("/images/fluxx_engine/theme/default/icons/bin.png", :class => 'delete-button'), funding_source, :class => 'as-delete', 'data-on-success' => 'refreshCaller' if @edit_funding_sources_enabled
