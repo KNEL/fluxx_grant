@@ -19,8 +19,8 @@ module FluxxRequestReport
     base.insta_search
     base.insta_export do |insta|
       insta.filename = 'report'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'request_id', 'state', 'report_type', ['Date Due', :date], ['Date Approved', :date], 'org_name', 
-            ['Amount Recommended', :currency], 'lead_po', 'project_summary']
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Request ID', 'state', 'Report Type', ['Date Due', :date], ['Date Approved', :date], 'Org Name', 
+            ['Amount Recommended', :currency], 'Lead PO', 'Project Summary']
       insta.sql_query = "select rd.created_at, rd.updated_at, requests.base_request_id request_id, rd.state, rd.report_type, rd.due_at, rd.approved_at, organizations.name program_org_name,
               requests.amount_recommended, 
               (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
@@ -344,6 +344,10 @@ module FluxxRequestReport
     def is_eval_report_type?
       report_type == RequestReport.eval_type_name
     end
+    
+    def is_final_type?
+      is_final_budget_type? || is_final_narrative_type?
+    end
 
     def is_final_budget_type?
       report_type == RequestReport.final_budget_type_name
@@ -351,6 +355,10 @@ module FluxxRequestReport
 
     def is_final_narrative_type?
       report_type == RequestReport.final_narrative_type_name
+    end
+
+    def is_interim_type?
+      is_interim_budget_type? || is_interim_narrative_type?
     end
 
     def is_interim_budget_type?

@@ -4,8 +4,7 @@
     - request = BlobStruct.new :id => params[:request_id], :class => Request
 %h3
   = "Funding Sources"
-  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => request.id}),
-      :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && current_user.has_create_for_model?(RequestFundingSource))
+  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_funding_source_path(:request_funding_source => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close' if params[:skip_wrapper] || (@edit_funding_sources_enabled && current_user.has_create_for_model?(RequestFundingSource))
 
 - if !models || models.empty?
   %p= "No funding sources available"
@@ -18,9 +17,9 @@
         .key= "Amount:"
         .value
           - if @edit_funding_sources_enabled
-            = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close'
+            = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
           - else
-            = number_to_currency funding_source.funding_amount
+            = number_to_currency funding_source.funding_amount 
       .pairs
         .key= "Source:"
         .value= funding_source.funding_source.name if funding_source.funding_source
