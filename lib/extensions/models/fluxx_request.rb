@@ -346,9 +346,9 @@ module FluxxRequest
 
       aasm_state :new
       class_inheritable_reader :local_pre_recommended_chain
-      write_inheritable_attribute :local_pre_recommended_chain, [:new, :funding_recommended, :unknown_from_import]
+      write_inheritable_attribute :local_pre_recommended_chain, [:new, :unknown_from_import]
       class_inheritable_reader :local_approval_chain
-      write_inheritable_attribute :local_approval_chain, [:pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
+      write_inheritable_attribute :local_approval_chain, [:funding_recommended, :pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
       class_inheritable_reader :local_approved
       write_inheritable_attribute :local_approved, (local_approval_chain - [:pending_grant_team_approval])
       class_inheritable_reader :local_sent_back_states

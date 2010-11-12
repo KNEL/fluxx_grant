@@ -12,6 +12,11 @@ module FluxxRequestTransactionsController
       insta.template = 'request_transaction_show'
       insta.icon_style = ICON_STYLE
       insta.add_workflow
+      insta.post do |controller_dsl, controller, model|
+        # You should not be able to edit or delete transactions
+        controller.instance_variable_set '@edit_enabled', false
+        controller.instance_variable_set '@delete_enabled', false
+      end
     end
     base.insta_new RequestTransaction do |insta|
       insta.template = 'request_transaction_form'

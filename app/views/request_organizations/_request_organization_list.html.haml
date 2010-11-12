@@ -8,8 +8,8 @@
     %tr
       %th
         %span Linked Orgs
-        - if request && current_user.has_create_for_model?(RequestOrganization)
-          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_organization_path(:request_organization => {:request_id => request.id}), :class => 'to-modal', 'data-is-success' => '.show', 'data-on-success' => 'refreshCaller,close', :title => "Link Organization"
+        - if model && current_user.has_create_for_model?(RequestOrganization)
+          .actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_request_organization_path(:request_organization => {:request_id => model.id}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Link Organization"
   %tbody
     - if !models || models.empty?
       %tr
