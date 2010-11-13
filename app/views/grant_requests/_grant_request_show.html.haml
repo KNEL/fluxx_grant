@@ -17,23 +17,24 @@
     .pairs
       .key= 'Fip Type:'
       .value= model.fip_type if model.fip_type
-    .pairs
-      .key Status:
-      .value.with-more-info
-        = link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
-    .pairs
-      .key Request Submitted:
-      .value= model.request_received_at.mdy if model.request_received_at
-    .pairs
-      .key Final Proposal Date:
-      .value= model.ierf_proposed_end_at.mdy if model.ierf_proposed_end_at
-    .pairs
-      .key Final Budget Date:
-      .value= model.ierf_budget_end_at.mdy if model.ierf_budget_end_at
-    .pairs
-      .key Tax Status:
-      .value= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
-    - if model.is_grant?
+  .pairs
+    .key Status:
+    .value.with-more-info
+      = link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
+  .pairs
+    .key Request Submitted:
+    .value= model.request_received_at.mdy if model.request_received_at
+  .pairs
+    .key Final Proposal Date:
+    .value= model.ierf_proposed_end_at.mdy if model.ierf_proposed_end_at
+  .pairs
+    .key Final Budget Date:
+    .value= model.ierf_budget_end_at.mdy if model.ierf_budget_end_at
+  .pairs
+    .key Tax Status:
+    .value= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
+  - if model.is_grant?
+    %div.partial
       .pairs
         .key Request Submitted:
         .value= model.request_received_at.mdy if model.request_received_at
@@ -46,17 +47,17 @@
       .pairs
         .key Tax Status:
         .value= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
-      - if model.is_grant?
-        .pairs
-          .key Agreement Date:
-          .value= model.grant_agreement_at.mdy if model.grant_agreement_at
-        .pairs
-          .key Grant Start Date:
-          .value= model.grant_begins_at.mdy if model.grant_begins_at
-        .pairs
-          .key Grant End Date:
-          .value= model.grant_ends_at.mdy if model.grant_ends_at
+  - if model.is_grant?
     %div.partial
+      .pairs
+        .key Agreement Date:
+        .value= model.grant_agreement_at.mdy if model.grant_agreement_at
+      .pairs
+        .key Grant Start Date:
+        .value= model.grant_begins_at.mdy if model.grant_begins_at
+      .pairs
+        .key Grant End Date:
+        .value= model.grant_ends_at.mdy if model.grant_ends_at
       - if model.is_a? GrantRequest
         .pairs
           .key Duration:
@@ -97,8 +98,6 @@
         .pairs
           .key Amount Paid to Date:
           .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
-
-
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => @model}
 = render :partial => "grant_requests/request_letters", :locals => { :model => @model}
 
