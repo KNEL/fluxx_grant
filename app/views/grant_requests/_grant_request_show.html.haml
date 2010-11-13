@@ -98,14 +98,9 @@
         .pairs
           .key Amount Paid to Date:
           .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
-= render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => @model}
-= render :partial => "grant_requests/request_letters", :locals => { :model => @model}
-
-%h3= "Relationships"
-
-= render :partial => "request_organizations/list_request_organizations", :locals => { :model => @model}
-= render :partial => "request_users/list_request_users", :locals => { :model => @model}
-
+= render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
+= render :partial => "grant_requests/request_letters", :locals => { :model => model}
+= render :partial => "grant_requests/grant_request_show_relationships", :locals => { :model => model}
 %h3= "#{model.is_grant? ? "Grant" : "Request"} Details"
 %div.partial
   .pairs
