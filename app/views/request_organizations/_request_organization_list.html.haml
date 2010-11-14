@@ -7,7 +7,7 @@
     %li.caption= "No Organizations"
   - else
     - models.each do |model|
-      %li
+      %li.action-item
         = model.organization.name if model.organization
         - if current_user.has_delete_for_model? model
-          %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), model, {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+          %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), model, {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
