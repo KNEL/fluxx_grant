@@ -66,6 +66,9 @@ module FluxxGrantRequestsController
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
+        related.add_title_block do |model|
+          model.full_name if model
+        end
         related.for_search do |model|
           model.related_users
         end
@@ -73,6 +76,9 @@ module FluxxGrantRequestsController
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
+        related.add_title_block do |model|
+          model.name if model
+        end
         related.for_search do |model|
           model.related_organizations
         end

@@ -55,12 +55,18 @@ module FluxxRequestReportsController
         related.for_search do |model|
           model.related_users
         end
+        related.add_title_block do |model|
+          model.full_name if model
+        end
         related.display_template = '/users/related_users'
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
         related.for_search do |model|
           model.related_organizations
+        end
+        related.add_title_block do |model|
+          model.name if model
         end
         related.display_template = '/organizations/related_organization'
       end
@@ -69,12 +75,18 @@ module FluxxRequestReportsController
         related.for_search do |model|
           model.related_grants
         end
+        related.add_title_block do |model|
+          model.title if model
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
         related.display_name = 'Reports'
         related.for_search do |model|
           model.related_reports
+        end
+        related.add_title_block do |model|
+          model.title if model
         end
         related.display_template = '/request_reports/related_documents'
       end
