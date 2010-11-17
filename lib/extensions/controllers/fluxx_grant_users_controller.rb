@@ -3,7 +3,7 @@ module FluxxGrantUsersController
   def self.included(base)
     base.send :include, FluxxUsersController
     base.insta_index User do |insta|
-      insta.filter_title = "Users Filter"
+      insta.filter_title = "People Filter"
       insta.filter_template = 'users/user_filter'
       insta.pre do |controller_dsl, controller|
         if controller.params[:related_organization_id]

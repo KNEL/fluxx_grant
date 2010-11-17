@@ -6,7 +6,7 @@ module FluxxGrantedRequestsController
     base.send :include, FluxxCommonRequestsController
     base.insta_index Request do |insta|
       insta.template = 'granted_requests/grant_request_list'
-      insta.filter_title = "Granted Requests Filter"
+      insta.filter_title = "Grants Filter"
       insta.filter_template = 'granted_requests/granted_request_filter'
       insta.search_conditions = {:granted => 1, :has_been_rejected => 0}
       insta.suppress_model_anchor_tag = true

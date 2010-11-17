@@ -3,7 +3,7 @@ module FluxxRequestReportsController
   def self.included(base)
     base.insta_index RequestReport do |insta|
       insta.template = 'request_report_list'
-      insta.filter_title = "Request Reports Filter"
+      insta.filter_title = "Grantee Reports Filter"
       insta.filter_template = 'request_reports/request_report_filter'
       insta.order_clause = 'due_at desc'
       insta.icon_style = ICON_STYLE

@@ -3,7 +3,7 @@ module FluxxRequestTransactionsController
   def self.included(base)
     base.insta_index RequestTransaction do |insta|
       insta.template = 'request_transaction_list'
-      insta.filter_title = "Request Transactions Filter"
+      insta.filter_title = "Transactions Filter"
       insta.filter_template = 'request_transactions/request_transaction_filter'
       insta.order_clause = 'due_at desc'
       insta.icon_style = ICON_STYLE
