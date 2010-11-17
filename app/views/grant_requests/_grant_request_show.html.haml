@@ -52,38 +52,38 @@
       .key Projected End Date:
       .value= model.fip_projected_end_at.mdy if model.fip_projected_end_at 
 
-  %div.partial
-    .pairs
-      .key Main Contact:
-      .value
-        = model.grantee_org_owner.full_name if model.grantee_org_owner
-    .pairs
-      .key Program:
-      .value= model.program.name if model.program
-    .pairs
-      .key Initiative:
-      .value= model.initiative.name if model.initiative
-    .pairs
-      .key Lead Program Officer/Director:
-      .value= model.program_lead.full_name if model.program_lead
-    .pairs
-      .key Primary Signatory:
-      .value= model.grantee_signatory.full_name if model.grantee_signatory
-    .pairs
-      .key Request Created By:
-      .value= "#{model.created_by.full_name if model.created_by} (#{model.created_at.mdy if model.created_at})"
+%div.partial
+  .pairs
+    .key Main Contact:
+    .value
+      = model.grantee_org_owner.full_name if model.grantee_org_owner
+  .pairs
+    .key Program:
+    .value= model.program.name if model.program
+  .pairs
+    .key Initiative:
+    .value= model.initiative.name if model.initiative
+  .pairs
+    .key Lead Program Officer/Director:
+    .value= model.program_lead.full_name if model.program_lead
+  .pairs
+    .key Primary Signatory:
+    .value= model.grantee_signatory.full_name if model.grantee_signatory
+  .pairs
+    .key Request Created By:
+    .value= "#{model.created_by.full_name if model.created_by} (#{model.created_at.mdy if model.created_at})"
 
-  %div.partial
+%div.partial
+  .pairs
+    .key Amount Requested:
+    .value= number_to_currency(model.amount_requested, :precision => 0) if model.amount_requested
+  .pairs
+    .key Amount Recommended:
+    .value= number_to_currency(model.amount_recommended, :precision => 0) if model.amount_recommended
+  - if model.is_grant?
     .pairs
-      .key Amount Requested:
-      .value= number_to_currency(model.amount_requested, :precision => 0) if model.amount_requested
-    .pairs
-      .key Amount Recommended:
-      .value= number_to_currency(model.amount_recommended, :precision => 0) if model.amount_recommended
-    - if model.is_grant?
-      .pairs
-        .key Amount Paid to Date:
-        .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
+      .key Amount Paid to Date:
+      .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
 
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
 = render :partial => "grant_requests/request_letters", :locals => { :model => model}
