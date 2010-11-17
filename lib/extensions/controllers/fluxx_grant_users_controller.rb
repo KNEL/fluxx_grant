@@ -3,7 +3,7 @@ module FluxxGrantUsersController
   def self.included(base)
     base.send :include, FluxxUsersController
     base.insta_index User do |insta|
-      insta.filter_title = "Users Filter"
+      insta.filter_title = "People Filter"
       insta.filter_template = 'users/user_filter'
       insta.pre do |controller_dsl, controller|
         if controller.params[:related_organization_id]
@@ -38,6 +38,9 @@ module FluxxGrantUsersController
         related.for_search do |model|
           model.related_requests
         end
+        related.add_title_block do |model|
+          model.title if model
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
@@ -45,12 +48,18 @@ module FluxxGrantUsersController
         related.for_search do |model|
           model.related_grants
         end
+        related.add_title_block do |model|
+          model.title if model
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
         related.for_search do |model|
           model.related_organizations
+        end
+        related.add_title_block do |model|
+          model.name if model
         end
         related.display_template = '/organizations/related_organization'
       end
