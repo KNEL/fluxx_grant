@@ -12,12 +12,13 @@
 %table{:cellspacing => 0}
   %thead
     %tr
+      %th
       %th Description
       %th Comment
       %th
   %tbody
     - if !models || models.empty?
       %tr
-        %td{:colspan => 3}  No Metrics
+        %td{:colspan => 4}  No Metrics
     - else
       = render :partial => "request_evaluation_metrics/request_evaluation_metrics_show", :collection => models, :as => :model, :locals => {:display_achieved => display_achieved}
