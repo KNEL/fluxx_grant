@@ -9,12 +9,12 @@
 - display_achieved ||= nil
 - unless display_achieved
   - display_achieved = params[:display_achieved]
-%table.tabular{:cellspacing => 0}
+%table{:cellspacing => 0}
   %thead
     %tr
       %th Description
       %th Comment
-      %th 
+      %th
   %tbody
     - if !models || models.empty?
       %tr
