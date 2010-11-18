@@ -19,7 +19,7 @@
       %dl.inline
         %dt= "Amount:"
         %dd
-          - if @edit_funding_sources_enabled
+          - if current_user.has_update_for_model?(funding_source)
             = link_to "#{number_to_currency funding_source.funding_amount}", edit_request_funding_source_path(funding_source), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
           - else
             = number_to_currency funding_source.funding_amount 

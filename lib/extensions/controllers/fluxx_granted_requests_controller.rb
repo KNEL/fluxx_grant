@@ -6,7 +6,7 @@ module FluxxGrantedRequestsController
     base.send :include, FluxxCommonRequestsController
     base.insta_index Request do |insta|
       insta.template = 'granted_requests/grant_request_list'
-      insta.filter_title = "Granted Requests Filter"
+      insta.filter_title = "Grants Filter"
       insta.filter_template = 'granted_requests/granted_request_filter'
       insta.search_conditions = {:granted => 1, :has_been_rejected => 0}
       insta.suppress_model_anchor_tag = true
@@ -36,6 +36,9 @@ module FluxxGrantedRequestsController
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
+        related.add_title_block do |model|
+          model.full_name if model
+        end
         related.for_search do |model|
           model.related_users
         end
@@ -43,6 +46,9 @@ module FluxxGrantedRequestsController
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
+        related.add_title_block do |model|
+          model.name if model
+        end
         related.for_search do |model|
           model.related_organizations
         end
@@ -50,6 +56,9 @@ module FluxxGrantedRequestsController
       end
       insta.add_related do |related|
         related.display_name = 'Trans'
+        related.add_title_block do |model|
+          model.title if model
+        end
         related.for_search do |model|
           model.related_request_transactions
         end
@@ -57,6 +66,9 @@ module FluxxGrantedRequestsController
       end
       insta.add_related do |related|
         related.display_name = 'Reports'
+        related.add_title_block do |model|
+          model.title if model
+        end
         related.for_search do |model|
           model.related_request_reports
         end

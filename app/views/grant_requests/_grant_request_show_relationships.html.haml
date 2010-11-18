@@ -9,8 +9,10 @@
 %table.relData{:cellspacing => 0}
   %thead
     %tr
-      %th= "Organizations:"
-      %th= "People:" 
+      %th
+        = "Organizations: "
+      %th
+        = "People: " 
   %tbody
     %tr
       %td= render :partial => "request_organizations/list_request_organizations", :locals => { :model => model}

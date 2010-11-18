@@ -225,7 +225,7 @@ module FluxxRequestReport
     def report_doc_types
       [interim_budget_type_name, interim_narrative_type_name, final_budget_type_name, final_narrative_type_name, eval_type_name]
     end
-
+    
     def type_to_english_translation report_type
       case report_type
         when RequestReport.eval_type_name then 'Eval'

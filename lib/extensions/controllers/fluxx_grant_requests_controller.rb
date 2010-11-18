@@ -5,7 +5,7 @@ module FluxxGrantRequestsController
     base.insta_index Request do |insta|
       insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_request_list'
-      insta.filter_title = "Grant Requests Filter"
+      insta.filter_title = "Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
       insta.icon_style = ICON_STYLE
@@ -66,6 +66,9 @@ module FluxxGrantRequestsController
     base.insta_related GrantRequest do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
+        related.add_title_block do |model|
+          model.full_name if model
+        end
         related.for_search do |model|
           model.related_users
         end
@@ -73,6 +76,9 @@ module FluxxGrantRequestsController
       end
       insta.add_related do |related|
         related.display_name = 'Orgs'
+        related.add_title_block do |model|
+          model.name if model
+        end
         related.for_search do |model|
           model.related_organizations
         end
