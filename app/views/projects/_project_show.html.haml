@@ -39,7 +39,7 @@
       %td= render :partial => "project_organizations/list_project_organizations", :locals => { :model => model}
       %td= render :partial => "project_requests/list_project_requests", :locals => { :model => model}
       %td= render :partial => "project_requests/list_project_grants", :locals => { :model => model}
-= render :partial => "wiki_documents/list_wiki_documents", :locals => { :model => model}
+= render :partial => "wiki_documents/list_wiki_documents", :locals => { :model => model, :wiki_title=>"Wiki Document (#{model.title})"}
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => Project.name}
 = render :partial => "audits/list_audits", :locals => { :model => model}  
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
