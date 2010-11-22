@@ -15,7 +15,7 @@
 %div.partial
   - if model.is_a? FipRequest
     .pairs
-      .key= 'Fip Type:'
+      .key= I18n.t(:fip_name) + ' Type:'
       .value= model.fip_type if model.fip_type
   .pairs
     .key Status:
