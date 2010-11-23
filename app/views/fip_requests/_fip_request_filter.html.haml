@@ -1,7 +1,7 @@
 = form.input :program_id, :label => 'Program', :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 = form.input :initiative_id, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 
-= form.input :filter_type, :label => 'Request Type', :required => false, :as => :select, :collection => [['Grants', GrantRequest.name], ['Fips', FipRequest.name]], :input_html => {:class => 'add-another'}
+= form.input :filter_type, :label => 'Request Type', :required => false, :as => :select, :collection => [['Grants', GrantRequest.name], [I18n.t(:fip_name).pluralize, FipRequest.name]], :input_html => {:class => 'add-another'}
 = form.input :filter_state, :label => 'Status:', :required => false, :as => :select, :collection => (((FipRequest.pre_recommended_chain) + FipRequest.approval_chain + FipRequest.sent_back_states + FipRequest.rejected_states).map{|state|[Request.state_to_english_translation(state), state]}), :input_html => {:class => 'add-another'}
 = form.input :lead_user_ids, :label => 'PO/Lead', :required => false, :as => :select, :collection => Program.all_program_users.sort_by{|user| user.full_name ? user.full_name.downcase : ''}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
 = form.input :created_by_id, :as => :select, :required => false, :collection => Program.all_program_users.sort_by{|user| user.full_name ? user.full_name.downcase : ''}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
@@ -12,6 +12,6 @@ Amount Recommended:
 = form.input :has_been_rejected, :label => 'Include Rejected Requests', :required => false, :as => :boolean, :checked_value => 1, :unchecked_value => ''
 = form.input :favorite_user_ids, :label => 'Marked as Favorite', :required => false, :as => :boolean, :checked_value => (current_user ? current_user.id : nil), :unchecked_value => ''
 = form.input :missing_request_id, :label => 'Missing Request ID', :required => false, :as => :boolean, :checked_value => 1, :unchecked_value => ''
-= form.input :sort_attribute, :label => 'Sort Field', :required => false, :as => :select, :include_blank => nil, :collection => [['Last Updated (Default)', 'updated_at'], ['Date', 'request_received_at'], ['Amount', 'amount_requested'], ['Fip Title', 'fip_title'], ['Program', 'program_name']]
+= form.input :sort_attribute, :label => 'Sort Field', :required => false, :as => :select, :include_blank => nil, :collection => [['Last Updated (Default)', 'updated_at'], ['Date', 'request_received_at'], ['Amount', 'amount_requested'], [I18n.t(:fip_name)+' Title', 'fip_title'], ['Program', 'program_name']]
 = form.input :sort_order, :label => 'Sort Order', :required => false, :as => :select, :include_blank => nil, :collection => [['Descending', 'desc'], ['Ascending', 'asc']]
 

@@ -291,8 +291,9 @@ class FipRequestsControllerTest < ActionController::TestCase
       
       post :create, :fip_request => { :fip_title => Sham.sentence, :fip_type => bp_attrs[:fip_type_contract], :fip_projected_end_at => Time.now.to_s, :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
     end
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to fip_request_path(assigns(:fip_request))
+
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{fip_request_path(assigns(:fip_request))}$/
   end
 
   test "should create role grantee org owner user" do
@@ -304,8 +305,8 @@ class FipRequestsControllerTest < ActionController::TestCase
     assert_not_nil request.reload.grantee_org_owner
     assert_equal @user1.id, request.grantee_org_owner.id
 
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to fip_request_path(assigns(:fip_request))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{fip_request_path(assigns(:fip_request))}$/
   end
 
   test "should show request" do
@@ -337,13 +338,15 @@ class FipRequestsControllerTest < ActionController::TestCase
 
   test "should update request" do
     put :update, :id => @request1.to_param, :fip_request => { }
-    assert_redirected_to fip_request_path
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{fip_request_path}$/
   end
 
   test "should destroy request" do
     delete :destroy, :id => @request1.to_param
     assert_not_nil @request1.reload().deleted_at 
-    assert_redirected_to fip_request_path
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{fip_request_path}$/
   end
   
   test "test filter display" do

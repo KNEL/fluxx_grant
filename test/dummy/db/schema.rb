@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101101232752) do
+ActiveRecord::Schema.define(:version => 20101123021536) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -176,20 +176,6 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
 
   add_index "initiatives", ["program_id"], :name => "index_initiatives_on_program_id"
 
-  create_table "letter_templates", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "created_by_id"
-    t.integer  "updated_by_id"
-    t.string   "letter_type"
-    t.string   "filename"
-    t.string   "description"
-    t.string   "category"
-    t.text     "letter"
-    t.datetime "deleted_at"
-    t.boolean  "delta",         :default => true, :null => false
-  end
-
   create_table "model_document_types", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -330,6 +316,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.datetime "due_at"
     t.integer  "item_order"
     t.integer  "assigned_user_id"
+    t.boolean  "item_completed",   :default => false
     t.datetime "deleted_at"
     t.datetime "locked_until"
     t.integer  "locked_by_id"
@@ -365,6 +352,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "updated_by_id"
     t.integer  "project_id"
     t.integer  "organization_id"
+    t.string   "description"
   end
 
   add_index "project_organizations", ["created_by_id"], :name => "project_organizations_created_by_id"
@@ -379,6 +367,8 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "updated_by_id"
     t.integer  "project_id"
     t.integer  "request_id"
+    t.boolean  "granted"
+    t.string   "description"
   end
 
   add_index "project_requests", ["created_by_id"], :name => "project_requests_created_by_id"
@@ -393,6 +383,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "updated_by_id"
     t.integer  "project_id"
     t.integer  "user_id"
+    t.string   "description"
   end
 
   add_index "project_users", ["created_by_id"], :name => "project_users_created_by_id"
@@ -407,6 +398,7 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.integer  "updated_by_id"
     t.string   "title"
     t.text     "description"
+    t.string   "state"
     t.integer  "project_type_id"
     t.integer  "lead_user_id"
     t.datetime "deleted_at"
@@ -474,23 +466,6 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
 
   add_index "request_geo_states", ["geo_state_id"], :name => "index_request_geo_states_on_geo_state_id"
   add_index "request_geo_states", ["request_id"], :name => "index_request_geo_states_on_request_id"
-
-  create_table "request_letters", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "created_by_id"
-    t.integer  "updated_by_id"
-    t.integer  "request_id"
-    t.integer  "letter_template_id"
-    t.text     "letter"
-    t.integer  "locked_by_id"
-    t.datetime "locked_until"
-    t.datetime "deleted_at"
-    t.boolean  "delta",              :default => true, :null => false
-  end
-
-  add_index "request_letters", ["letter_template_id"], :name => "index_request_letters_on_letter_template_id"
-  add_index "request_letters", ["request_id"], :name => "index_request_letters_on_request_id"
 
   create_table "request_organizations", :force => true do |t|
     t.datetime "created_at"
@@ -727,14 +702,48 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.datetime "locked_until"
     t.integer  "locked_by_id"
     t.integer  "user_profile_id"
+    t.string   "crypted_password",             :limit => 128,  :default => "",                           :null => false
+    t.string   "password_salt",                                :default => "",                           :null => false
+    t.string   "persistence_token"
+    t.datetime "single_access_token"
+    t.datetime "confirmation_sent_at"
+    t.integer  "login_count",                                  :default => 0
+    t.integer  "failed_login_count",                           :default => 0
+    t.datetime "current_login_at"
+    t.datetime "last_login_at"
+    t.string   "current_login_ip"
+    t.string   "last_login_ip"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["login"], :name => "index_users_on_login", :unique => true
+  add_index "users", ["persistence_token"], :name => "index_users_on_persistence_token"
   add_index "users", ["personal_geo_country_id"], :name => "users_personal_country_id"
   add_index "users", ["personal_geo_state_id"], :name => "users_personal_geo_state_id"
   add_index "users", ["primary_user_organization_id"], :name => "users_primary_user_org_id"
+  add_index "users", ["single_access_token"], :name => "index_users_on_single_access_token"
   add_index "users", ["user_profile_id"], :name => "users_user_profile_id"
+
+  create_table "wiki_document_templates", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "model_type"
+    t.string   "document_type"
+    t.string   "filename"
+    t.string   "description"
+    t.string   "category"
+    t.text     "document"
+    t.datetime "deleted_at"
+    t.boolean  "delta",         :default => true, :null => false
+  end
+
+  add_index "wiki_document_templates", ["category"], :name => "index_wiki_document_templates_on_category"
+  add_index "wiki_document_templates", ["created_by_id"], :name => "wikdoctemplate_created_by_id"
+  add_index "wiki_document_templates", ["document_type"], :name => "index_wiki_document_templates_on_document_type"
+  add_index "wiki_document_templates", ["model_type"], :name => "index_wiki_document_templates_on_model_type"
+  add_index "wiki_document_templates", ["updated_by_id"], :name => "wikdoctemplate_updated_by_id"
 
   create_table "wiki_documents", :force => true do |t|
     t.datetime "created_at"
@@ -749,10 +758,12 @@ ActiveRecord::Schema.define(:version => 20101101232752) do
     t.datetime "deleted_at"
     t.datetime "locked_until"
     t.integer  "locked_by_id"
+    t.integer  "wiki_document_template_id"
   end
 
   add_index "wiki_documents", ["created_by_id"], :name => "wiki_documents_created_by_id"
   add_index "wiki_documents", ["updated_by_id"], :name => "wiki_documents_updated_by_id"
+  add_index "wiki_documents", ["wiki_document_template_id"], :name => "wiki_documents_template_id"
 
   create_table "workflow_events", :force => true do |t|
     t.datetime "created_at"

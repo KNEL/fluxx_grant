@@ -28,8 +28,8 @@ class RequestTransactionsControllerTest < ActionController::TestCase
       post :create, :request_transaction => { :request_id => @request1.to_param, :amount_due => 93323, :due_at => Time.now.mdy }
     end
 
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to request_transaction_path(assigns(:request_transaction))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_transaction_path(assigns(:request_transaction))}$/
   end
 
   test "should show request_transaction" do
@@ -46,13 +46,15 @@ class RequestTransactionsControllerTest < ActionController::TestCase
     put :update, :id => @request_transaction1.to_param, :request_transaction => {}
     assert flash[:info]
     
-    assert_redirected_to request_transaction_path(assigns(:request_transaction))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_transaction_path(assigns(:request_transaction))}$/
   end
 
   test "should destroy request_transaction" do
     delete :destroy, :id => @request_transaction1.id
     assert_not_nil @request_transaction1.reload().deleted_at 
-    assert_redirected_to request_transaction_url(@request_transaction1)
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_transaction_path(@request_transaction1)}$/
   end
 
   test "should not be allowed to edit if somebody else is editing" do
