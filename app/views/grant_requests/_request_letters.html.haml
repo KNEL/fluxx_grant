@@ -1,6 +1,0 @@
-- if model.granted?
-  %h3= "Request Letters"
-  - model.request_letters.sort_by{|rl| rl.letter_template ? (rl.letter_template.category || '') : '' }.each do |letter|
-    %p
-      = link_to letter.description, letter, :target => '_blank'
-      = link_to image_tag('/images/fluxx_engine/theme/default/icons/page_edit.png'), edit_request_letter_path(letter), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit #{letter.description}" if current_user.has_update_for_model?(letter)

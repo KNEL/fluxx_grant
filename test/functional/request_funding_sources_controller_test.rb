@@ -37,7 +37,8 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
   test "should update organization" do
     rfs = RequestFundingSource.make
     put :update, :id => rfs.id, :request_funding_source => {:funding_source_id => @funding_source.id}
-    assert_redirected_to request_funding_source_path(assigns(:request_funding_source))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_funding_source_url(assigns(:request_funding_source))}$/
     assert_equal @funding_source, assigns(:request_funding_source).funding_source
   end
   
@@ -47,7 +48,9 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
     assert_raises ActiveRecord::RecordNotFound do
       rfs.reload()
     end
-    assert_redirected_to request_funding_source_url(rfs)
+
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_funding_sources_path}$/
   end
   
   test "should not be allowed to edit if somebody else is editing" do

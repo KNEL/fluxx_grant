@@ -78,13 +78,15 @@ class RequestReportsControllerTest < ActionController::TestCase
     put :update, :id => @request_eval_report.to_param, :request_report => {}
     assert flash[:info]
     
-    assert_redirected_to request_report_path(assigns(:request_report))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_report_url(assigns(:request_report))}$/
   end
 
   test "should destroy request_report" do
     delete :destroy, :id => @request_final_report.id
     assert_not_nil @request_final_report.reload().deleted_at 
-    assert_redirected_to request_report_url(@request_final_report)
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_report_url(@request_final_report)}$/
   end
   
   test "try to have pa approve a report" do

@@ -39,7 +39,6 @@ module FluxxRequest
     base.has_many :request_transactions
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
-    base.has_many :request_letters
     base.has_many :request_evaluation_metrics
     base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
@@ -49,13 +48,10 @@ module FluxxRequest
     base.belongs_to :initiative
     base.after_create :generate_request_id
     base.after_save :process_before_save_blocks
-    base.before_save :resolve_letter_type_changes
     
     # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
-    base.send :attr_accessor, :grant_agreement_letter_type
-    base.send :attr_accessor, :award_letter_type
     base.send :attr_accessor, :force_all_request_programs_approved
 
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL'
@@ -813,55 +809,6 @@ module FluxxRequest
       'G'
     end
 
-    def grant_agreement_request_letter
-      request_letters.reload.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.grant_agreement_category)}.first
-    end
-
-    def load_grant_agreement_letter_type
-      ga_letter = grant_agreement_request_letter
-      ga_letter.letter_template.id if ga_letter && ga_letter.letter_template
-    end
-
-    def award_request_letter
-      request_letters.reload.select {|rl| rl.letter_template && (rl.letter_template.category == LetterTemplate.award_category)}.first
-    end
-
-    def load_award_letter_type
-      al_letter = award_request_letter
-      al_letter.letter_template.id if al_letter && al_letter.letter_template
-    end
-    
-    def resolve_letter_type_changes
-      ga_request_letter = grant_agreement_request_letter
-      if !@grant_agreement_letter_type.blank? && ((load_grant_agreement_letter_type && @grant_agreement_letter_type != load_grant_agreement_letter_type) || !load_grant_agreement_letter_type)
-        ga_letter_template = LetterTemplate.find(@grant_agreement_letter_type)
-        if ga_request_letter
-          # Need to swap out the existing content and point to the new letter_template
-          ga_request_letter.letter_template = ga_letter_template
-          ga_request_letter.letter = ga_letter_template.letter
-          ga_request_letter.save
-        else
-          # No GA request letter exists yet- let's create one
-          RequestLetter.create :request => self, :letter_template => ga_letter_template, :letter => ga_letter_template.letter
-        end
-      end
-
-      awd_request_letter = award_request_letter
-      if !@award_letter_type.blank? && ((load_award_letter_type && @award_letter_type != load_award_letter_type) || !load_award_letter_type)
-        award_letter_template = LetterTemplate.find(@award_letter_type)
-        if awd_request_letter
-          # Need to swap out the existing content and point to the new letter_template
-          awd_request_letter.letter_template = award_letter_template
-          awd_request_letter.letter = award_letter_template.letter
-          awd_request_letter.save
-        else
-          # No GA request letter exists yet- let's create one
-          RequestLetter.create :request => self, :letter_template => award_letter_template, :letter => award_letter_template.letter
-        end
-      end
-    end
-    
-    
     def filter_state
       self.state
     end

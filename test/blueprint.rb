@@ -43,7 +43,7 @@ end
 User.blueprint do
   first_name Sham.first_name
   last_name Sham.last_name
-  login(Sham.login + 'abcdef')
+  login(Sham.login + 'abcdef' + "#{rand(999)}")
   email Sham.email
   created_at 5.days.ago.to_s(:db)
   state 'active'
@@ -128,23 +128,6 @@ RequestTransaction.blueprint do
   request {GrantRequest.make}
 end
 
-LetterTemplate.blueprint do
-  letter_type Sham.word
-  category Sham.word
-  description Sham.word
-  letter Sham.sentence
-end
-
-RequestLetter.blueprint do
-  request {GrantRequest.make}
-  letter do
-    bp_attrs[:ga_letter_template].letter
-  end
-  letter_template_id do
-    bp_attrs[:ga_letter_template].id
-  end
-end
-
 Note.blueprint do
   note Sham.sentence
   notable_type 'User'
@@ -203,12 +186,13 @@ WikiDocument.blueprint do
   note Sham.sentence
 end
 
-def setup_letter_templates
-  unless bp_attrs[:award_letter_template]
-    LetterTemplate.delete_all
-    bp_attrs[:award_letter_template] = LetterTemplate.make :letter_type => 'al_public_charity', :letter => Sham.sentence, :description => 'Award Letter Public Charity', :category => 'Award', :filename => 'al_public_charity'
-    bp_attrs[:ga_letter_template] = LetterTemplate.make :letter_type => 'ga_public_charity', :letter => Sham.sentence, :description => 'Grant Agreement Public Charity', :category => 'Grant Agreement', :filename => 'ga_public_charity'
-  end
+WikiDocumentTemplate.blueprint do
+  model_type Organization.name
+  document_type Sham.word
+  filename Sham.word
+  description Sham.word
+  category Sham.word
+  document Sham.sentence
 end
 
 def setup_org_tax_classes
@@ -251,5 +235,21 @@ def setup_multi_element_groups
     Request.add_multi_elements
     RequestFundingSource.add_multi_elements
     User.add_multi_elements
+
+    project_type_group = MultiElementGroup.create :name => 'project_types', :description => 'ProjectType', :target_class_name => 'Project'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Program'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'IT'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Grants'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Finance'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'HR'
+    MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'All Staff'
+    ProjectList.add_multi_elements
+
+    # project list types 
+    project_list_type_group = MultiElementGroup.create :name => 'list_types', :description => 'ListType', :target_class_name => 'ProjectList'
+    MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Numbers'
+    MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Bulleted'
+    MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'To-Do'
+    Project.add_multi_elements
   end
 end

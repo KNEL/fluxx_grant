@@ -27,8 +27,6 @@ class ProjectRequestsControllerTest < ActionController::TestCase
     assert 201, @response.status
     assert @response.header["Location"] =~ /#{project_request_path(assigns(:project_request))}$/
   end
-  
-
 
   test "should show project_request" do
     get :show, :id => @project_request1.to_param
@@ -44,7 +42,8 @@ class ProjectRequestsControllerTest < ActionController::TestCase
     put :update, :id => @project_request1.to_param, :project_request => {}
     assert flash[:info]
     
-    assert_redirected_to project_request_path(assigns(:project_request))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{project_request_path(assigns(:project_request))}$/
   end
 
   test "should destroy project_request" do

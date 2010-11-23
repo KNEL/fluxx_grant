@@ -79,7 +79,6 @@ class ActiveSupport::TestCase
     unless TestHelper.loaded_meg
       TestHelper.loaded_meg = true
       setup_multi_element_groups
-      setup_letter_templates
       setup_org_tax_classes
       setup_fip_types
     end

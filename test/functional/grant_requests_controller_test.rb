@@ -420,55 +420,10 @@ class GrantRequestsControllerTest < ActionController::TestCase
     assert_difference('GrantRequest.count') do
       post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :duration_in_months => 12, :program_id => @program.id, :amount_requested => 45000 }
     end
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to grant_request_path(assigns(:grant_request))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{grant_request_path(assigns(:grant_request))}$/
   end
 
-  test "should choose a request letter for a request that currently has none" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    assert_difference('RequestLetter.count', 2) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter.id, :grant_agreement_letter_type => ga_letter.id }
-      @request1.reload.request_letters.each do |rl|
-      end
-    end
-  end
-  
-  test "should not create new request letters for a request that currently has that letter template chosen" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    RequestLetter.create :request => @request1, :letter_template => award_letter
-    RequestLetter.create :request => @request1, :letter_template => ga_letter
-    assert_difference('RequestLetter.count', 0) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter.id, :grant_agreement_letter_type => ga_letter.id }
-    end
-  end
-  
-  test "should update the request letters for a request that currently has a different letter template chosen" do
-    program = Program.make
-    login_as_user_with_role Program.grants_administrator_role_name, program
-    @request1.save
-    award_letter = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    award_letter2 = LetterTemplate.make :category => LetterTemplate.award_category
-    ga_letter2 = LetterTemplate.make :category => LetterTemplate.grant_agreement_category
-    RequestLetter.create :request => @request1, :letter_template => award_letter
-    RequestLetter.create :request => @request1, :letter_template => ga_letter
-    assert_difference('RequestLetter.count', 0) do
-      put :update, :id => @request1.to_param, :grant_request => { :award_letter_type => award_letter2.id, :grant_agreement_letter_type => ga_letter2.id }
-    end
-    
-    @request1.reload.grant_agreement_letter_type
-    assert_equal award_letter2.id, @request1.reload.load_award_letter_type
-    assert_equal ga_letter2.id, @request1.reload.load_grant_agreement_letter_type
-  end
-  
   test "should create role grantee org owner user" do
     assert_difference('Request.count') do
       post :create, :grant_request => { :project_summary => Sham.sentence, :program_organization_id => @org.id, :grantee_org_owner_id => @user1.id, :duration_in_months => 12, :amount_requested => 45000, :program_id => @program.id }
@@ -478,8 +433,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
     assert_not_nil request.reload.grantee_org_owner
     assert_equal @user1.id, request.grantee_org_owner.id
 
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to grant_request_path(assigns(:grant_request))
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{grant_request_path(assigns(:grant_request))}$/
   end
 
   test "should show request" do
@@ -511,13 +466,15 @@ class GrantRequestsControllerTest < ActionController::TestCase
 
   test "should update request" do
     put :update, :id => @request1.to_param, :grant_request => { }
-    assert_redirected_to grant_request_path
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{grant_request_path}$/
   end
 
   test "should destroy request" do
     delete :destroy, :id => @request1.to_param
     assert_not_nil @request1.reload().deleted_at 
-    assert_redirected_to grant_request_path
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{grant_request_path}$/
   end
   
   test "test filter display" do

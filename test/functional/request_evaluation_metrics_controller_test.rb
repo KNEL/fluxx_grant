@@ -18,32 +18,33 @@ class RequestEvaluationMetricsControllerTest < ActionController::TestCase
       post :create, :request_evaluation_metric => {:request_id => @request1.id, :description => Sham.sentence}
     end
 
-    # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
-    # assert_redirected_to user_organization_path(assigns(:user_organization))
-    
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_evaluation_metric_path(assigns(:request_evaluation_metric))}$/
     assert_equal @request1, assigns(:request_evaluation_metric).request
   end
 
   test "should get edit" do
-    rfs = RequestEvaluationMetric.make
-    get :edit, :id => rfs.id
+    rem = RequestEvaluationMetric.make
+    get :edit, :id => rem.id
     assert_response :success
   end
 
   test "should update organization" do
-    rfs = RequestEvaluationMetric.make
-    put :update, :id => rfs.id, :request_evaluation_metric => {:description => 'hello'}
-    assert_redirected_to request_evaluation_metric_path(assigns(:request_evaluation_metric))
+    rem = RequestEvaluationMetric.make
+    put :update, :id => rem.id, :request_evaluation_metric => {:description => 'hello'}
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_evaluation_metric_path(assigns(:request_evaluation_metric))}$/
     assert_equal 'hello', assigns(:request_evaluation_metric).description
   end
   
   test "should destroy request_evaluation_metric" do
-    rfs = RequestEvaluationMetric.make
-    delete :destroy, :id => rfs.to_param
+    rem = RequestEvaluationMetric.make
+    delete :destroy, :id => rem.to_param
     assert_raises ActiveRecord::RecordNotFound do
-      rfs.reload()
+      rem.reload()
     end
-    assert_redirected_to request_evaluation_metric_url(rfs)
+    assert 201, @response.status
+    assert @response.header["Location"] =~ /#{request_evaluation_metrics_path}$/
   end
   
   test "should get request evaluation metrics list for given request" do
