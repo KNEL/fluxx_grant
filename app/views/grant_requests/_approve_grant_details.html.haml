@@ -6,11 +6,6 @@
   - if model.state && Request.grant_states.include?(model.state.to_sym)
     = form.input :funds_expended_amount, :label => 'Funds Expended'
     = form.input :funds_expended_at, :label => 'Funds Expended Date', :id => (rand * 999999999).to_i
-
-  %h2= "Letters"
-
-  = form.input :award_letter_type, :as => :select, :collection => LetterTemplate.award_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
-  = form.input :grant_agreement_letter_type, :as => :select, :collection => LetterTemplate.grant_agreement_letter_templates.map{|letter_template| [letter_template.description, letter_template.id]}
   
   %div.form-transactions
     %h2
