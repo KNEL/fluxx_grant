@@ -42,6 +42,7 @@ module FluxxRequest
     base.has_many :request_evaluation_metrics
     base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    base.has_many :wiki_documents, :as => :model
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.belongs_to :program
@@ -160,6 +161,14 @@ module FluxxRequest
 
     base.insta_multi
     base.insta_lock
+    
+    base.insta_template do |insta|
+      insta.entity_name = 'request'
+      insta.add_methods [:program_organization, :title]
+      insta.add_list_method :request_transactions, RequestTransaction
+      insta.remove_methods [:id]
+    end
+    
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]

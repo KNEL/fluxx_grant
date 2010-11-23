@@ -10,6 +10,7 @@ module FluxxFipRequest
     base.validates_presence_of     :amount_requested
     base.validates_presence_of     :amount_recommended, :if => :state_after_pre_recommended_chain
     base.validates_associated      :program
+    base.has_many :wiki_documents, :foreign_key => :model_id, :conditions => {:model_type => base.name}
 
     base.extend(ModelClassMethods)
     base.class_eval do
