@@ -2,7 +2,7 @@
   %ol
     = form.input :fip_title, :label => "Title" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
     = form.input :fip_projected_end_at, :label => "Projected End Date" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
-    = form.input :fip_type, :label => "Fip Type"
+    = form.input :fip_type, :label => "#{I18n.t(:fip_name)} Type"
 
     = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
 

@@ -5,7 +5,7 @@ module FluxxFipRequestsController
     base.insta_index Request do |insta|
       insta.search_conditions = {:granted => 0, :has_been_rejected => 0}
       insta.template = 'grant_requests/grant_request_list'
-      insta.filter_title = "Fip Requests Filter"
+      insta.filter_title = "#{I18n.t(:fip_name)} Requests Filter"
       insta.filter_template = 'fip_request_filter'
       insta.order_clause = 'updated_at desc'
       insta.icon_style = ICON_STYLE
