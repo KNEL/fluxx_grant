@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101123002112) do
+ActiveRecord::Schema.define(:version => 20101123021536) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -352,6 +352,7 @@ ActiveRecord::Schema.define(:version => 20101123002112) do
     t.integer  "updated_by_id"
     t.integer  "project_id"
     t.integer  "organization_id"
+    t.string   "description"
   end
 
   add_index "project_organizations", ["created_by_id"], :name => "project_organizations_created_by_id"
@@ -367,6 +368,7 @@ ActiveRecord::Schema.define(:version => 20101123002112) do
     t.integer  "project_id"
     t.integer  "request_id"
     t.boolean  "granted"
+    t.string   "description"
   end
 
   add_index "project_requests", ["created_by_id"], :name => "project_requests_created_by_id"
@@ -381,6 +383,7 @@ ActiveRecord::Schema.define(:version => 20101123002112) do
     t.integer  "updated_by_id"
     t.integer  "project_id"
     t.integer  "user_id"
+    t.string   "description"
   end
 
   add_index "project_users", ["created_by_id"], :name => "project_users_created_by_id"
