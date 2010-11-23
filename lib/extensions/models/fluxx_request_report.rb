@@ -73,6 +73,12 @@ module FluxxRequestReport
     base.insta_utc do |insta|
       insta.time_attributes = [:due_at, :approved_at, :bjo_received_at] 
     end
+    
+    base.insta_template do |insta|
+      insta.entity_name = 'request_report'
+      insta.add_methods []
+      insta.remove_methods [:id]
+    end
 
     base.send :include, AASM
     base.aasm_column :state

@@ -72,6 +72,12 @@ module FluxxRequestTransaction
       insta.add_event_to_english :mark_actually_due, 'Mark Due'
       insta.add_event_to_english :mark_paid, 'Record Payment'      
     end
+    
+    base.insta_template do |insta|
+      insta.entity_name = 'request_transaction'
+      insta.add_methods []
+      insta.remove_methods [:id]
+    end
 
     base.extend(ModelClassMethods)
     base.class_eval do

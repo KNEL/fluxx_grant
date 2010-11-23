@@ -164,8 +164,9 @@ module FluxxRequest
     
     base.insta_template do |insta|
       insta.entity_name = 'request'
-      insta.add_methods [:program_organization, :title]
+      insta.add_methods [:program_organization, :signatory_contact, :address_org, :title, :grant_id, :request_id, :grant_ends_at]
       insta.add_list_method :request_transactions, RequestTransaction
+      insta.add_list_method :request_reports, RequestReport
       insta.remove_methods [:id]
     end
     
@@ -909,6 +910,14 @@ module FluxxRequest
     
     def state_after_pre_recommended_chain
       state && !((Request.pre_recommended_chain + Request.rejected_states).include?(state.to_sym))
+    end
+    
+    def signatory_contact
+      fiscal_signatory  || fiscal_org_owner || grantee_signatory ||  grantee_org_owner || User.new
+    end
+    
+    def address_org
+      fiscal_organization || program_organization || Organization.new
     end
   end
 end
