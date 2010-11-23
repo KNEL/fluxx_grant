@@ -6,15 +6,6 @@
     - if model && current_user.has_create_for_model?(RequestUser)
       &nbsp;|&nbsp;
       = render :partial => "request_users/user_add", :locals => { :model => model} 
-%table.relData{:cellspacing => 0}
-  %thead
-    %tr
-      %th
-        = "Organizations: "
-      %th
-        = "People: " 
-  %tbody
-    %tr
-      %td= render :partial => "request_organizations/list_request_organizations", :locals => { :model => model}
-      %td= render :partial => "request_users/list_request_users", :locals => { :model => model}
+= render :partial => "request_organizations/list_request_organizations", :locals => { :model => model}
+= render :partial => "request_users/list_request_users", :locals => { :model => model}
 
