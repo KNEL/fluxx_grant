@@ -76,7 +76,7 @@ module FluxxRequestReport
     
     base.insta_template do |insta|
       insta.entity_name = 'request_report'
-      insta.add_methods []
+      insta.add_methods [:type_to_english]
       insta.remove_methods [:id]
     end
 
