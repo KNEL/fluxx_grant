@@ -1,4 +1,5 @@
 = form.input :project_id, :as => :hidden
+= form.input :description, :as => :text
 = form.input :granted, :as => :hidden
 - if model.granted
   - auto_url = granted_requests_path(:format => :autocomplete, :name_method => 'to_s')

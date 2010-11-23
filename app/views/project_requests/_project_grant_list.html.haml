@@ -4,11 +4,11 @@
     - project = Project.find(grab_param(:project_request, :project_id)) rescue nil
   - if project
 %ul
-  - if !models || models.empty?
-    %li.caption= "No Grants"
-  - else
-    - models.each do |model|
-      %li
-        = model.request.base_request_id if model.request
-        - if current_user.has_delete_for_model? model
-          %span.delete-button= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), project_request_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+  - models.each do |model|
+    %li.relationship{:class=>"action-item"}
+      - if current_user.has_delete_for_model? model
+        %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), project_request_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+      = image_tag("/images/fluxx_engine/theme/default/card-icons/button_card_grants.png", :class=> 'float_left', :width=> '18px')
+      = model.request.base_request_id if model.request
+      <br/>
+      %p.caption= model.description
