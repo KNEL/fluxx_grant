@@ -19,7 +19,7 @@ module FluxxGrantedRequestsController
         end
       end
     end
-    base.insta_show GrantRequest do |insta|
+    base.insta_show Request do |insta|
       insta.template = 'grant_requests/grant_request_show'
       insta.icon_style = ICON_STYLE
       insta.add_workflow
@@ -33,7 +33,7 @@ module FluxxGrantedRequestsController
       end
     end
     base.add_grant_request_install_role
-    base.insta_related GrantRequest do |insta|
+    base.insta_related Request do |insta|
       insta.add_related do |related|
         related.display_name = 'People'
         related.add_title_block do |model|
