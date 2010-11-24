@@ -10,6 +10,11 @@ module FluxxInitiative
     base.insta_search
     base.insta_export
     base.insta_realtime
+    base.insta_template do |insta|
+      insta.entity_name = 'initiative'
+      insta.add_methods []
+      insta.remove_methods [:id]
+    end
     
     base.extend(ModelClassMethods)
     base.class_eval do
