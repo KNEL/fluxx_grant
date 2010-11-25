@@ -124,7 +124,6 @@ module FluxxCommonRequestsController
         end
       
         controller.instance_variable_set '@edit_enabled', edit_enabled
-        controller.instance_variable_set '@edit_funding_sources_enabled', edit_funding_sources_enabled
         controller.instance_variable_set '@delete_enabled', delete_enabled
       end
     end
