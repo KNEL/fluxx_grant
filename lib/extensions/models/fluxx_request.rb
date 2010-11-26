@@ -538,8 +538,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -582,8 +584,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -623,8 +627,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
+        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
