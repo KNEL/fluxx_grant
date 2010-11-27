@@ -128,6 +128,23 @@ RequestTransaction.blueprint do
   request {GrantRequest.make}
 end
 
+ModelDocument.blueprint do
+  documentable do
+    User.make
+  end
+  document Sham.document
+end
+
+# this helper class creates classes so your blueprint is happy
+class Documentable
+  def self.make(attrs = {})
+  end
+end
+
+Document.blueprint do
+  document Sham.document
+end
+
 Note.blueprint do
   note Sham.sentence
   notable_type 'User'
@@ -187,6 +204,15 @@ WikiDocument.blueprint do
 end
 
 WikiDocumentTemplate.blueprint do
+  model_type Organization.name
+  document_type Sham.word
+  filename Sham.word
+  description Sham.word
+  category Sham.word
+  document Sham.sentence
+end
+
+ModelDocumentTemplate.blueprint do
   model_type Organization.name
   document_type Sham.word
   filename Sham.word
