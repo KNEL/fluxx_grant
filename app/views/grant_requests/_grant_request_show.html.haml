@@ -85,10 +85,11 @@
       .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
 
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
-= render :partial => "grant_requests/grant_request_show_relationships", :locals => { :model => model}
-
-%h3= "#{model.is_grant? ? "Grant" : "Request"} Details"
 %div.partial
+  = render :partial => "grant_requests/grant_request_show_relationships", :locals => { :model => model}
+
+%div.partial
+  %h3= "#{model.is_grant? ? "Grant" : "Request"} Details"
   .pairs
     .key Funds Expended:
     .value
@@ -112,25 +113,26 @@
 - if model.program_organization
   = render :partial => "model_documents/list_model_documents", :locals => { :model => model.program_organization}
 
-- unless model.state_in(GrantRequest.new_states)
-  %h3 Strategic Assessment
-  %dl.qa
-    %dt Goals: How does this grant or cluster of grants fit into your logic model?  What will this grant or cluster of grants accomplish if it is successful?
-    %dd= simple_format(model.ierf_goals)
-    %dt Tactics: What are the primary means the grantee(s) will use?  How are the tactics linked to the strategy?
-    %dd= simple_format(model.ierf_tactics)
-    %dt Probability: What is the likelihood that the grantee(s) will succeed in the tactics they lay out?  What are the possible failure scenarios?
-    %dd= simple_format(model.ierf_probability)
-  %h3 Due Diligence Assessment
-  %dl.qa
-    %dt Does this grant overlap with any other sectors or key funders?  If so, please explain which sectors/funder, and provide any scheduled meetings.
-    %dd= simple_format(model.ierf_due_diligence_overlap)
-    %dt Does this grant pose any institutional risks to EF?  If yes, please explain how these issues will be addressed.
-    %dd= simple_format(model.ierf_due_diligence_risks)
-    %dt Have you carefully reviewed the proposal and budget to make sure that they contain no C4 work?
-    %dd= simple_format(model.ierf_due_diligence_noc4_work)
-    %dt Does this grant warrant input and/or review by board members?  If yes, please list board member name and any related information.
-    %dd= simple_format(model.ierf_due_diligence_board_review)
+%div.partial
+  - unless model.state_in(GrantRequest.new_states)
+    %h3 Strategic Assessment
+    %dl.qa
+      %dt Goals: How does this grant or cluster of grants fit into your logic model?  What will this grant or cluster of grants accomplish if it is successful?
+      %dd= simple_format(model.ierf_goals)
+      %dt Tactics: What are the primary means the grantee(s) will use?  How are the tactics linked to the strategy?
+      %dd= simple_format(model.ierf_tactics)
+      %dt Probability: What is the likelihood that the grantee(s) will succeed in the tactics they lay out?  What are the possible failure scenarios?
+      %dd= simple_format(model.ierf_probability)
+    %h3 Due Diligence Assessment
+    %dl.qa
+      %dt Does this grant overlap with any other sectors or key funders?  If so, please explain which sectors/funder, and provide any scheduled meetings.
+      %dd= simple_format(model.ierf_due_diligence_overlap)
+      %dt Does this grant pose any institutional risks to EF?  If yes, please explain how these issues will be addressed.
+      %dd= simple_format(model.ierf_due_diligence_risks)
+      %dt Have you carefully reviewed the proposal and budget to make sure that they contain no C4 work?
+      %dd= simple_format(model.ierf_due_diligence_noc4_work)
+      %dt Does this grant warrant input and/or review by board members?  If yes, please list board member name and any related information.
+      %dd= simple_format(model.ierf_due_diligence_board_review)
 
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => Request.name}
 = render :partial => "audits/list_audits", :locals => { :model => model}
