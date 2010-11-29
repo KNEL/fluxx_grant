@@ -101,9 +101,14 @@ module FluxxGrantRequest
       eval_request_document = RequestReport.new(:request => self, :due_at => (final_request_document.due_at + 1.month).next_business_day, :report_type => RequestReport.eval_type_name)
       request_reports << eval_request_document
     end
+
+    def generate_grant_documents
+      # TODO any default documents for grants that need to be generated?
+    end
     
     # This will generate (but not persist to DB) all the transactions, etc. necessary to make the grant go through
     def generate_grant_details
+      generate_grant_documents
       generate_grant_dates
       generate_grant_reports
       generate_grant_transactions
