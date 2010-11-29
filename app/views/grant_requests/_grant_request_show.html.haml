@@ -2,16 +2,15 @@
   = raw render_program_name model
   = raw render_grant_or_request_id model
 %h4.subhead= raw render_request_or_grant_amount model
-%div.partial
-  - unless model.project_summary.blank?
-    %p= simple_format(model.project_summary)
+- unless model.project_summary.blank?
+  %p= simple_format(model.project_summary)
+- warnings = []
+- warnings << 'This grant is funding general operating support.' if model.funding_general_operating_support 
+- warnings << 'This grant requires direct board authority.' if model.board_authorization_required 
+- warnings << 'This grant is a renewal.' if model.renewal_grant 
+- warnings.each do |warning|
   %div.warning
-    - warnings = []
-    - warnings << 'This grant is funding general operating support.' if model.funding_general_operating_support 
-    - warnings << 'This grant requires direct board authority.' if model.board_authorization_required 
-    - warnings << 'This grant is a renewal.' if model.renewal_grant 
-    - warnings.each do |warning|
-      = warning
+    = warning
 %div.partial
   - if model.is_a? FipRequest
     .pairs
