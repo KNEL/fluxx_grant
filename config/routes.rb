@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :granted_requests
   resources :request_organizations
   resources :programs
+  resources :initiatives
   resources :request_reports
   resources :project_requests
 end

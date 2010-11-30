@@ -1,4 +1,5 @@
 module FluxxInitiative
+  SEARCH_ATTRIBUTES = [:program_id]
   def self.included(base)
     base.belongs_to :program
     base.acts_as_audited
@@ -7,7 +8,9 @@ module FluxxInitiative
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
     
-    base.insta_search
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES
+    end
     base.insta_export
     base.insta_realtime
     base.insta_template do |insta|

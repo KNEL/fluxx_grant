@@ -1,7 +1,9 @@
 - labels ||= {}
-= form.input :program, :label => labels[:program_label] || "Program", :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select"}
+= form.input :program, :label => labels[:program_label] || "Program", :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select,.initiative-select"}
 
-= form.input :initiative, :label => labels[:initiative_label] || "Initiative", :as => :select, :collection => Initiative.all.map{|initiative| [initiative.name, initiative.id]}
+- initiatives = []
+- initiatives = form.object.program.load_initiatives if form.object.program
+= form.input :initiative, :label => labels[:initiative_label] || "Initiative", :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete')}
 
 - program_leads = []
 - program_leads = form.object.program.load_users if form.object.program
