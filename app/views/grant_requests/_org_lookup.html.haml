@@ -8,19 +8,12 @@
   - labels ||= {}
   - hidden_attribute_class = "#{org_name}_hidden_value"
   - form.object.send "#{org_lookup_name}=", (form.object.send(org_name) ? form.object.send(org_name).display_name : '')
-  = form.input org_lookup_name, :label => labels[:org_name_label] || 'Organization', :as => :autocomplete, :hidden_attribute_class => hidden_attribute_class, :autocomplete_url => organizations_path(:format => :autocomplete, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => "#{org_name}_organization_lookup_select", 'data-related-child' => ".#{org_name}-org-sat-select"}
+  = form.input org_lookup_name, :label => labels[:org_name_label] || 'Organization', :aft => (link_to 'Add New', new_organization_path, :class => 'to-modal', 'data-on-success' => 'close'), :as => :autocomplete, :hidden_attribute_class => hidden_attribute_class, :autocomplete_url => organizations_path(:format => :autocomplete, :parent_org_id => 0, :name_method => 'to_s'), :related_attribute_name => :name, :input_html => {:class => "#{org_name}_organization_lookup_select", 'data-related-child' => ".#{org_name}-org-sat-select"}
   - organization_satellites = form.object.send(org_name) ? form.object.send(org_name).satellites : []
   = form.input org_name, :label => labels[:org_sat_label] || 'Location', :aft => (image_tag('/images/fluxx_engine/theme/default/icons/delete.png', :class => 'clear-selected-org', :alt => 'Clear This Organization')), :as => :select, :input_html => {:class => "#{org_name}-org-sat-select", 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1', 'data-related-child' => ".#{org_name}-org-contact,.#{org_name}-org-signatory"}, :collection => organization_satellites.map {|org| [org.name, org.id]}
-  - # TODO ESH: need to make the delete button clear out all selections in the select box immediately above
 
   - program_users = []
   - program_users = form.object.send(org_name).users if form.object.send(org_name)
   = form.input org_owner, :label => labels[:org_owner_label] || 'Primary Contact', :aft => (link_to 'Add New', new_user_path(:user => {:temp_organization_id => (form.object.send(org_name) ? form.object.send(org_name).id : nil), :temp_organization_title => 'Lead'}), :class => 'to-modal', 'data-on-success' => 'close', 'data-trigger-field'.to_sym => ".#{hidden_attribute_class}"), :as => :select, :collection => program_users, :input_html => {:class => "#{org_name}-org-contact", 'data-cache'.to_sym => 'contact_select', 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-param'.to_sym => 'related_organization_id'}
-  - # TODO ESH: need to:
-  - #  1. hide this link until the org has been selected
-  - #  2. have a way for this link to grab the selected org ID when the user clicks it (or when it's selected)
-  - #  3. Open create new user form (new_user_path) as a modal when the user clicks this link
-  - #  4. When the modal is closed and if a new user was actually created, we want to add the new user to the grantee_org_owner select and mark them as selected
-  - #  5. do we want to pass in an organization_title of some sort?
 
   = form.input org_signatory, :label => labels[:signatory_label] || 'Primary Signatory', :aft => (link_to 'Add New', new_user_path(:user => {:temp_organization_id => (form.object.send(org_name) ? form.object.send(org_name).id : nil), :temp_organization_title => 'Lead'}), :class => 'to-modal', 'data-on-success' => 'close', 'data-trigger-field'.to_sym => ".#{hidden_attribute_class}"), :as => :select, :collection => program_users, :input_html => {:class => "#{org_name}-org-signatory", 'data-cache'.to_sym => "#{org_name}_signatory_select", 'data-required' => 1, 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-param'.to_sym => 'related_organization_id'}
