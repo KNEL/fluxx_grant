@@ -10,6 +10,11 @@ module FluxxFipRequest
     base.validates_presence_of     :amount_requested
     base.validates_presence_of     :amount_recommended, :if => :state_after_pre_recommended_chain
     base.validates_associated      :program
+    base.has_many :workflow_events, :foreign_key => :workflowable_id, :conditions => {:workflowable_type => base.name}
+    base.has_many :favorites, :foreign_key => :favorable_id, :conditions => {:favorable_type => base.name}
+    base.has_many :notes, :foreign_key => :notable_id, :conditions => {:notable_type => base.name}
+    base.has_many :group_members, :foreign_key => :groupable_id, :conditions => {:groupable_type => base.name}
+    base.has_many :model_documents, :foreign_key => :documentable_id, :conditions => {:documentable_type => base.name}
     base.has_many :wiki_documents, :foreign_key => :model_id, :conditions => {:model_type => base.name}
 
     base.extend(ModelClassMethods)
