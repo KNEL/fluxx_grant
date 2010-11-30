@@ -23,6 +23,8 @@
   = form.input :twitter_url, :label => "Twitter Url"
   = form.input :acronym, :label => "Acronym"
   = form.input :tax_class, :label => "Tax Class"
+  - if parent_org
+    = form.input :force_headquarters, :label => 'Make Headquarters', :as => :boolean, :checked_value => 1, :unchecked_value => '', :required => false
 
   = form.commit_button
 
