@@ -5,3 +5,5 @@ require File.expand_path('../application', __FILE__)
 Dummy::Application.initialize!
 
 require 'thinking_sphinx/deltas/delayed_delta'
+
+FLUXX_CONFIGURATION = {}
