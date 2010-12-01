@@ -131,6 +131,13 @@ module FluxxGrantOrganization
         set_property :delta => :delayed
       end
     end
+    
+    def sorted_tax_classes
+      group = MultiElementGroup.find :first, :conditions => {:name => 'tax_classes', :target_class_name => 'Organization'}
+      tax_status_choices = if group
+        MultiElementValue.find(:all, :conditions => ['multi_element_group_id = ?', group.id]).sort_by{|st| st.value}.collect {|p| [ (p.description || p.value), p.id ] }
+      end || []
+    end
   end
 
   module ModelInstanceMethods
@@ -211,6 +218,7 @@ module FluxxGrantOrganization
       when '509a3' then false
       when 'Private Foundation' then true
       when '501c4' then true
+      when '501c5' then true
       when '501c6' then true
       when 'non-US' then true
       when 'Non-Exempt' then true
