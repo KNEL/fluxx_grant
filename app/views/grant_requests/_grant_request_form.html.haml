@@ -26,7 +26,7 @@
       = form.input :ierf_start_at, :label => "Start Date:"
       = form.input :ierf_proposed_end_at, :label => "Final Proposal Date:"
       = form.input :ierf_budget_end_at, :label => "Final Budget Date:"
-      -# TODO ESH: = render :partial => "grant_requests/funding_sources", :locals => { :model => model, :form => form}
+      = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model }
       = form.input :constituents, :label => "Constituents:", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
       = form.input :usa_means, :label => "Means:", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
       = form.input :china_means, :label => "Type of Organization (China use only):", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
