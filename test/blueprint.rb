@@ -43,7 +43,7 @@ end
 User.blueprint do
   first_name Sham.first_name
   last_name Sham.last_name
-  login(Sham.login + 'abcdef' + "#{rand(999)}")
+  login(Sham.login + 'abcdef' + "#{rand(999)}" + "#{Time.now.to_i}")
   email Sham.email
   created_at 5.days.ago.to_s(:db)
   state 'active'
@@ -132,7 +132,8 @@ ModelDocument.blueprint do
   documentable do
     User.make
   end
-  document Sham.document
+  document Sham.sentence
+  document_file_name Sham.word
 end
 
 # this helper class creates classes so your blueprint is happy
@@ -219,6 +220,10 @@ ModelDocumentTemplate.blueprint do
   description Sham.word
   category Sham.word
   document Sham.sentence
+end
+
+Audit.blueprint do
+  action 'create'
 end
 
 def setup_org_tax_classes
