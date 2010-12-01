@@ -110,5 +110,52 @@ module ApplicationGrantHelper
   def escape_carriage_returns html
     html.gsub "\n", '\\n'
   end
-
+  
+  def build_add_card_links
+    links = []
+    links << "  '#{link_to 'Projects', projects_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_projects]
+    links << "  '#{link_to 'Organizations', organizations_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_organizations]
+    links << "  '#{link_to 'People', users_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_people]
+    links << "  '#{link_to 'Requests', grant_requests_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_requests]
+    links << "  '#{link_to 'Grants', granted_requests_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_grants]
+    links << "  '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_grantee_reports]
+    links << "  '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_transactions]
+    links.join ",\n"
+  end
+  
+  def build_quicklinks
+    links = []
+    links << "{
+      label: 'New Org',
+      url: '#{new_organization_path}',
+      className: 'new-detail',
+      type: 'style-ql-library small'
+    }" unless FLUXX_CONFIGURATION[:hide_organizations]
+    links << "{
+      label: 'New Person',
+      url: '#{new_user_path}',
+      className: 'new-detail',
+      type: 'style-ql-user small'
+    }" unless FLUXX_CONFIGURATION[:hide_people]
+    
+    request_links = []
+    request_links << "  '#{link_to 'New Grant Request', new_grant_request_path, :class => 'new-detail'}'\n" unless FLUXX_CONFIGURATION[:hide_requests]
+    request_links << "  '#{link_to 'New ' + I18n.t(:fip_name) + ' Request', new_fip_request_path, :class => 'new-detail'}'\n" unless FLUXX_CONFIGURATION[:hide_requests]
+    
+    links << "{
+      label: 'New Request',
+      url: '#',
+      className: 'noop',
+      type: 'style-ql-documents small',
+      popup: [#{request_links.join ",\n"}
+      ]
+    }" unless FLUXX_CONFIGURATION[:hide_requests] && FLUXX_CONFIGURATION[:hide_grants]
+    links << "{
+      label: 'New Project',
+      url: '#{new_project_path}',
+      className: 'new-detail',
+      type: 'style-ql-project small'
+    }" unless FLUXX_CONFIGURATION[:hide_projects]
+    links.join ",\n"
+  end
 end

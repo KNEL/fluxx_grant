@@ -32,34 +32,7 @@
             dock: {
               quicklinks: [
                 [
-                  {
-                    label: 'New Org',
-                    url: '#{new_organization_path}',
-                    className: 'new-detail',
-                    type: 'style-ql-library small'
-                  },
-                  {
-                    label: 'New Person',
-                    url: '#{new_user_path}',
-                    className: 'new-detail',
-                    type: 'style-ql-user small'
-                  },
-                  {
-                    label: 'New Request',
-                    url: '#',
-                    className: 'noop',
-                    type: 'style-ql-documents small',
-                    popup: [
-                      '#{link_to 'New Grant Request', new_grant_request_path, :class => 'new-detail'}',
-                      '#{link_to 'New ' + I18n.t(:fip_name) + ' Request', new_fip_request_path, :class => 'new-detail'}'
-                    ]
-                  },
-                  {
-                    label: 'New Project',
-                    url: '#{new_project_path}',
-                    className: 'new-detail',
-                    type: 'style-ql-project small'
-                  }
+                  #{build_quicklinks}
                 ],
                 [
                   {
@@ -68,13 +41,7 @@
                     className: 'noop',
                     type: 'plus small',
                     popup: [
-                      '#{link_to 'Projects', projects_path, :class => 'new-listing'}',
-                      '#{link_to 'Organizations', organizations_path, :class => 'new-listing'}',
-                      '#{link_to 'People', users_path, :class => 'new-listing'}',
-                      '#{link_to 'Requests', grant_requests_path, :class => 'new-listing'}',
-                      '#{link_to 'Grants', granted_requests_path, :class => 'new-listing'}',
-                      '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing'}',
-                      '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing'}'
+                      #{build_add_card_links}
                     ]
                   }
                 ]
