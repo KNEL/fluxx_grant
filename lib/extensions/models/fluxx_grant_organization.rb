@@ -27,6 +27,26 @@ module FluxxGrantOrganization
                   organizations.id IN (?)"
     end
     
+    base.insta_search do |insta|
+      insta.derived_filters = {
+        :grant_program_ids => (lambda do |params, search_with_attributes, val|
+          program_id_strings = val.split(',').map{|v| v.strip}
+          programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
+          program_ids = programs.map do |program| 
+            children = program.children_programs
+            if children.empty?
+              program
+            else
+              [program] + children
+            end
+          end.compact.flatten.map &:id
+          # Have to consider that state may have been parsed before program_id
+          if program_ids && !program_ids.empty?
+            search_with_attributes[:grant_program_ids] = program_ids
+          end
+        end),
+      }
+    end
     base.insta_multi
     base.insta_lock
     base.insta_search do |insta|
@@ -135,7 +155,7 @@ module FluxxGrantOrganization
     def sorted_tax_classes
       group = MultiElementGroup.find :first, :conditions => {:name => 'tax_classes', :target_class_name => 'Organization'}
       tax_status_choices = if group
-        MultiElementValue.find(:all, :conditions => ['multi_element_group_id = ?', group.id]).sort_by{|st| st.value}.collect {|p| [ (p.description || p.value), p.id ] }
+        MultiElementValue.find(:all, :conditions => ['multi_element_group_id = ?', group.id], :order => 'description asc, value asc').collect {|p| [ (p.description || p.value), p.id ] }
       end || []
     end
   end
