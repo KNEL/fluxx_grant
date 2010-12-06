@@ -25,6 +25,7 @@ module FluxxRequestTransaction
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids]
       insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, request_params, name, value|
+        value = value.first if value && value.is_a?(Array)
           if value.to_s.is_numeric?
             due_date_check = Time.now + value.to_i.days
             search_with_attributes[:due_at] = (0..due_date_check.to_i)
@@ -32,6 +33,7 @@ module FluxxRequestTransaction
           end || {}
         end),
         :overdue_by_days => (lambda do |search_with_attributes, request_params, name, value|
+          value = value.first if value && value.is_a?(Array)
           if value.to_s.is_numeric?
             due_date_check = Time.now - value.to_i.days
             search_with_attributes[:due_at] = (0..due_date_check.to_i)
@@ -39,7 +41,7 @@ module FluxxRequestTransaction
           end || {}
         end),
         :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
-          program_id_strings = val.split(',').map{|v| v.strip}
+          program_id_strings = val
           programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
           program_ids = programs.map do |program| 
             children = program.children_programs

@@ -216,6 +216,7 @@ module FluxxRequest
             end
           end),
           :greater_amount_recommended => (lambda do |search_with_attributes, request_params, name, val|
+            val = val.first if val && val.is_a?(Array)
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = (val.to_i..(search_with_attributes[:amount_recommended].end))
             else
@@ -224,6 +225,7 @@ module FluxxRequest
             search_with_attributes
           end),
           :lesser_amount_recommended => (lambda do |search_with_attributes, request_params, name, val|
+            val = val.first if val && val.is_a?(Array)
             if search_with_attributes[:amount_recommended]
               search_with_attributes[:amount_recommended] = ((search_with_attributes[:amount_recommended].begin)..val.to_i)
             else
@@ -232,7 +234,10 @@ module FluxxRequest
             search_with_attributes
           end),
           :request_from_date => (lambda do |search_with_attributes, request_params, name, val|
-            case request_params[:request][:date_range_selector]
+            val = val.first if val && val.is_a?(Array)
+            date_range_selector = request_params[:request][:date_range_selector] if request_params[:request]
+            date_range_selector = request_params[:date_range_selector] unless date_range_selector
+            case date_range_selector
             when 'funding_agreement' then
               prepare_from_date search_with_attributes, :grant_agreement_at, val
             when 'grant_begins' then
@@ -242,7 +247,10 @@ module FluxxRequest
             end
           end),
           :request_to_date => (lambda do |search_with_attributes, request_params, name, val|
-            case request_params[:request][:date_range_selector]
+            val = val.first if val && val.is_a?(Array)
+            date_range_selector = request_params[:request][:date_range_selector] if request_params[:request]
+            date_range_selector = request_params[:date_range_selector] unless date_range_selector
+            case date_range_selector
             when 'funding_agreement' then
               prepare_to_date search_with_attributes, :grant_agreement_at, val
             when 'grant_begins' then
