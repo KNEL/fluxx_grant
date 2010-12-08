@@ -1,5 +1,7 @@
 = form.input :request_id, :as => :hidden
 = form.input :funding_source, :label => 'Funding Source:', :as => :select, :collection => FundingSource.all.map {|funding_source| [funding_source.name, funding_source.id]}
+= form.input :board_authority
+
 = form.input :program, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".initiative-select"}
 - initiatives = []
 - initiatives = form.object.program.load_initiatives if form.object.program

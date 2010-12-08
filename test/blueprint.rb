@@ -282,5 +282,24 @@ def setup_multi_element_groups
     MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Bulleted'
     MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'To-Do'
     Project.add_multi_elements
+    
+    # Request funding source board authority
+    board_authority_group = MultiElementGroup.create :name => 'board_authorities', :description => 'Board Authorities', :target_class_name => 'RequestFundingSource'
+    MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '3/1/2010', :description => 'March 2010'
+    MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '6/1/2010', :description => 'June 2010'
+    MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '11/1/2010', :description => 'November 2010'
+    MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '1/1/2011', :description => 'January 2011'
+    RequestFundingSource.add_multi_elements
+    
   end
+end
+
+SubProgram.blueprint do
+  name Sham.word
+  initiative_id 1
+end
+
+SubInitiative.blueprint do
+  name Sham.word
+  sub_program_id 1
 end
