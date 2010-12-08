@@ -360,7 +360,7 @@ module FluxxRequest
 
       aasm_state :new
       class_inheritable_reader :local_pre_recommended_chain
-      write_inheritable_attribute :local_pre_recommended_chain, [:new, :unknown_from_import]
+      write_inheritable_attribute :local_pre_recommended_chain, [:new]
       class_inheritable_reader :local_approval_chain
       write_inheritable_attribute :local_approval_chain, [:funding_recommended, :pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
       class_inheritable_reader :local_approved
@@ -393,7 +393,7 @@ module FluxxRequest
       write_inheritable_attribute :local_un_reject_events, [:un_reject]
       
       def self.new_states
-        [:new, :unknown_from_import]
+        [:new]
       end
 
       def self.grant_states
@@ -467,7 +467,6 @@ module FluxxRequest
       aasm_state :pending_po_approval
       aasm_state :pending_president_approval
       aasm_state :pending_grant_promotion, :enter => :add_president_approval_date
-      aasm_state :unknown_from_import
       aasm_state :rejected
       aasm_state :funding_recommended
       aasm_state :new
@@ -486,7 +485,6 @@ module FluxxRequest
       end
 
       aasm_event :recommend_funding do
-        transitions :from => :unknown_from_import, :to => :funding_recommended
         transitions :from => :new, :to => :funding_recommended
       end
 

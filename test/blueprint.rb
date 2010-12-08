@@ -28,6 +28,17 @@ end
 
 Initiative.blueprint do
   name Sham.words
+  program_id 1
+end
+
+SubProgram.blueprint do
+  name Sham.word
+  initiative_id 1
+end
+
+SubInitiative.blueprint do
+  name Sham.word
+  sub_program_id 1
 end
 
 FundingSource.blueprint do
@@ -294,12 +305,3 @@ def setup_multi_element_groups
   end
 end
 
-SubProgram.blueprint do
-  name Sham.word
-  initiative_id 1
-end
-
-SubInitiative.blueprint do
-  name Sham.word
-  sub_program_id 1
-end

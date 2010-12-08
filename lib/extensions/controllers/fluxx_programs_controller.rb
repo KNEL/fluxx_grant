@@ -4,6 +4,7 @@ module FluxxProgramsController
       insta.template = 'program_list'
       insta.filter_title = "Programs Filter"
       insta.filter_template = 'programs/program_filter'
+      insta.order_clause = 'name asc'
     end
     base.insta_show Program do |insta|
       insta.template = 'program_show'

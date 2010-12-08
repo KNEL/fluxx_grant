@@ -23,5 +23,13 @@ module FluxxSubProgram
   end
   
   module ModelInstanceMethods
+    def load_sub_initiatives minimum_fields=true
+      select_field_sql = if minimum_fields
+        'name, id, sub_program_id'
+      else
+        'sub_initiative.*'
+      end
+      SubInitiative.find :all, :select => select_field_sql, :conditions => ['sub_program_id = ?', id], :order => :name
+    end
   end
 end

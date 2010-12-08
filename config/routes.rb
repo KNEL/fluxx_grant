@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :sub_initiatives
+
+  resources :sub_programs
+
   resources :request_funding_sources
   resources :request_evaluation_metrics
   resources :request_transactions
