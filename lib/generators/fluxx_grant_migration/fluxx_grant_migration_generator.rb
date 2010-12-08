@@ -20,45 +20,29 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
   
   def create_geo_tables
     handle_migration 'create_programs.rb', 'db/migrate/fluxx_grant_create_programs.rb'
-    sleep 1
     handle_migration 'create_funding_sources.rb', 'db/migrate/fluxx_grant_create_funding_sources.rb'
-    sleep 1
     handle_migration 'create_initiatives.rb', 'db/migrate/fluxx_grant_create_initiatives.rb'
-    sleep 1
     handle_migration 'create_letter_templates.rb', 'db/migrate/fluxx_grant_create_letter_templates.rb'
-    sleep 1
     handle_migration 'create_requests.rb', 'db/migrate/fluxx_grant_create_requests.rb'
-    sleep 1
     handle_migration 'create_request_letters.rb', 'db/migrate/fluxx_grant_create_request_letters.rb'
-    sleep 1
     handle_migration 'create_request_organizations.rb', 'db/migrate/fluxx_grant_create_request_organizations.rb'
-    sleep 1
     handle_migration 'create_request_reports.rb', 'db/migrate/fluxx_grant_create_request_reports.rb'
-    sleep 1
     handle_migration 'create_request_transactions.rb', 'db/migrate/fluxx_grant_create_request_transactions.rb'
-    sleep 1
     handle_migration 'create_request_funding_sources.rb', 'db/migrate/fluxx_grant_create_request_funding_sources.rb'
-    sleep 1
     handle_migration 'create_request_users.rb', 'db/migrate/fluxx_grant_create_request_users.rb'
-    sleep 1
     handle_migration 'create_request_geo_states.rb', 'db/migrate/fluxx_grant_create_request_geo_states.rb'
-    sleep 1
     handle_migration 'add_grant_fields_to_organization.rb', 'db/migrate/fluxx_grant_add_grant_fields_to_organization.rb'
-    sleep 1
     handle_migration 'create_request_evaluation_metrics.rb', 'db/migrate/fluxx_grant_create_request_evaluation_metrics.rb'
-    sleep 1
     handle_migration 'create_project_requests.rb', 'db/migrate/fluxx_grant_create_project_requests.rb'
-    sleep 1
     handle_migration 'drop_request_letters.rb', 'db/migrate/fluxx_grant_drop_request_letters.rb'
-    sleep 1
     handle_migration 'add_description_to_project_relationships.rb', 'db/migrate/fluxx_grant_add_description_to_project_relationships.rb'
-    sleep 1
   end
   
   private
   def handle_migration name, filename
     begin
       migration_template name, filename
+      sleep 1
     rescue Exception => e
       p e.to_s
     end
