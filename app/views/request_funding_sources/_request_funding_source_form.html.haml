@@ -2,10 +2,7 @@
 = form.input :funding_source, :label => 'Funding Source:', :as => :select, :collection => FundingSource.all.map {|funding_source| [funding_source.name, funding_source.id]}
 = form.input :board_authority
 
-= form.input :program, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".initiative-select"}
-- initiatives = []
-- initiatives = form.object.program.load_initiatives if form.object.program
-= form.input :initiative, :label => "Initiative", :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete')}
+= render :partial => "request_funding_sources/program_form", :locals => { :form => form}
 
 = form.input :funding_amount
 

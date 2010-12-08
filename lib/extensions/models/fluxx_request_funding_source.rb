@@ -6,6 +6,8 @@ module FluxxRequestFundingSource
     base.belongs_to :funding_source
     base.belongs_to :program
     base.belongs_to :initiative
+    base.belongs_to :sub_program
+    base.belongs_to :sub_initiative
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES

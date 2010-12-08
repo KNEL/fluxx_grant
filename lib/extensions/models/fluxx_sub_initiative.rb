@@ -1,5 +1,5 @@
 module FluxxSubInitiative
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :sub_program_id]
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -22,5 +22,12 @@ module FluxxSubInitiative
   end
   
   module ModelInstanceMethods
+    def autocomplete_to_s
+      description || name
+    end
+
+    def to_s
+      autocomplete_to_s
+    end
   end
 end

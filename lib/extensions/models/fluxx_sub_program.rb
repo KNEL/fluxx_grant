@@ -23,9 +23,17 @@ module FluxxSubProgram
   end
   
   module ModelInstanceMethods
+    def autocomplete_to_s
+      description || name
+    end
+
+    def to_s
+      autocomplete_to_s
+    end
+
     def load_sub_initiatives minimum_fields=true
       select_field_sql = if minimum_fields
-        'name, id, sub_program_id'
+        'description, name, id, sub_program_id'
       else
         'sub_initiative.*'
       end

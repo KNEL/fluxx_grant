@@ -85,7 +85,7 @@ module FluxxProgram
   module ModelInstanceMethods
     def load_initiatives minimum_fields=true
       select_field_sql = if minimum_fields
-        'name, id, program_id'
+        'description, name, id, program_id'
       else
         'initiatives.*'
       end
@@ -95,9 +95,13 @@ module FluxxProgram
     def load_users
       User.joins(:role_users).where({:role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
     end
+    
+    def autocomplete_to_s
+      description || name
+    end
 
     def to_s
-      name
+      autocomplete_to_s
     end
   end
 end
