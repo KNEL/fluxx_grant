@@ -74,7 +74,7 @@ module FluxxProgram
     end
     
     def all_role_names
-      request_roles + grant_roles + finance_roles
+      (request_roles + grant_roles + finance_roles).uniq
     end
 
     def all_program_users
