@@ -1,4 +1,6 @@
 = raw "<input type='hidden' name='event_action' value='#{params['hidden_event_action']}'>"
+- model.amount_paid = model.amount_due
+= form.input :amount_paid, :as => :hidden
 = form.input :payment_type, {:label => 'Payment Type:', :as => :select, :collection => ['Check', 'Wire']}
 = form.input :paid_at, :label => 'Date Paid'
 = form.input :payment_confirmation_number, :label => 'Check/Confirmation Number:'

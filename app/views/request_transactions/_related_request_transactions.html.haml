@@ -1,4 +1,4 @@
-- if model.amount_paid
+- if model.has_been_paid
   %span.fluxx-card-content-metadata-section-title= number_to_currency model.amount_paid, :precision => 0
   %span.fluxx-card-content-metadata-section-info
     = model.request.grant_id if model.request

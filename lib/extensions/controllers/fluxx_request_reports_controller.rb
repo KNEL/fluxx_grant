@@ -78,6 +78,9 @@ module FluxxRequestReportsController
         related.add_title_block do |model|
           model.title if model
         end
+        related.add_model_url_block do |controller, model|
+          controller.send :granted_request_path, :id => model.id
+        end
         related.display_template = '/grant_requests/related_request'
       end
       insta.add_related do |related|
