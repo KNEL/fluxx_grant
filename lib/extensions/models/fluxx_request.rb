@@ -32,10 +32,8 @@ module FluxxRequest
     base.send :attr_accessor, :program_organization_lookup
     base.belongs_to :fiscal_organization, :class_name => 'Organization', :foreign_key => :fiscal_organization_id
     base.send :attr_accessor, :fiscal_organization_lookup
-    base.has_many :request_geo_states
     base.has_many :request_organizations
     base.has_many :request_users
-    base.has_many :geo_states, :through => :request_geo_states
     base.has_many :request_transactions
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
@@ -111,8 +109,6 @@ module FluxxRequest
           program.name, initiative.name,
           requests.request_received_at, 
           requests.duration_in_months,
-          (select replace(group_concat(name, ', '), ', ', '') from geo_states, request_geo_states where geo_states.id = request_geo_states.geo_state_id
-           and request_geo_states.request_id = requests.id group by request_geo_states.request_id) geo_states, 
           (select replace(group_concat(mev.value, ', '), ', ', '')
           from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
           WHERE   meg.name = 'constituents'
