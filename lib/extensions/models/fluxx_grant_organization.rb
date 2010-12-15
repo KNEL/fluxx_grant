@@ -29,8 +29,8 @@ module FluxxGrantOrganization
     
     base.insta_search do |insta|
       insta.derived_filters = {
-        :grant_program_ids => (lambda do |params, search_with_attributes, val|
-          program_id_strings = val.split(',').map{|v| v.strip}
+        :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
+          program_id_strings = val
           programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
           program_ids = programs.map do |program| 
             children = program.children_programs
@@ -40,7 +40,6 @@ module FluxxGrantOrganization
               [program] + children
             end
           end.compact.flatten.map &:id
-          # Have to consider that state may have been parsed before program_id
           if program_ids && !program_ids.empty?
             search_with_attributes[:grant_program_ids] = program_ids
           end
@@ -50,7 +49,7 @@ module FluxxGrantOrganization
     base.insta_multi
     base.insta_lock
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :multi_element_value_ids]
     end
     base.insta_realtime do |insta|
       insta.delta_attributes = SEARCH_ATTRIBUTES
@@ -84,6 +83,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :group_ids
         has satellite_orgs(:id), :as => :satellite_org_ids
         has "CONCAT(organizations.id, ',', IFNULL(organizations.parent_org_id, '0'))", :as => :related_org_ids, :type => :multi
+        has multi_element_choices.multi_element_value_id, :type => :multi, :as => :multi_element_value_ids
 
         set_property :delta => :delayed
       end
@@ -105,6 +105,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
+        has 'null', :type => :multi, :as => :multi_element_value_ids
 
         set_property :delta => :delayed
       end
@@ -126,6 +127,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
+        has 'null', :type => :multi, :as => :multi_element_value_ids
 
         set_property :delta => :delayed
       end
@@ -147,6 +149,7 @@ module FluxxGrantOrganization
         has group_members.group(:id), :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
+        has 'null', :type => :multi, :as => :multi_element_value_ids
 
         set_property :delta => :delayed
       end
@@ -246,5 +249,6 @@ module FluxxGrantOrganization
         raise "Invalid tax_class: '#{tax_class_value}'" 
       end
     end
+    
   end
 end
