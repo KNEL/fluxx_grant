@@ -2,8 +2,8 @@ class GemHandler
   def self.dependent_gems_block
     (lambda do |params|
       dev_local, cur_dir, gem_versions = params
-      #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
-      gem "thinking-sphinx", :git => "https://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
+      gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
+      # gem "thinking-sphinx", :git => "https://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
       if dev_local 
         p "Installing dependent fluxx gems to point to local paths.  Be sure you install fluxx_engine, fluxx_crm and fluxx_grant in the same directory as the reference implementation."
         if File.exist?("#{cur_dir}/../fluxx_engine")
