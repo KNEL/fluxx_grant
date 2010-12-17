@@ -13,4 +13,9 @@ class GrantedRequestsControllerTest < ActionController::TestCase
   test "test filter display" do
     get :index, :view => 'filter'
   end
+
+  test "should show request" do
+    get :show, :id => @request1.to_param
+    assert_response :success
+  end
 end

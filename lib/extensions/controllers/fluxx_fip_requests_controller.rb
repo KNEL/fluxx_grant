@@ -11,8 +11,9 @@ module FluxxFipRequestsController
       insta.icon_style = ICON_STYLE
       insta.delta_type = Request.translate_delta_type false # Vary the request type based on whether a request has been granted yet or not
       insta.format do |format|
-        format.html do |controller_dsl, controller, outcome, default_block|
-          base.grant_request_index_format_html controller_dsl, controller, outcome, default_block
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          grant_request_index_format_html controller_dsl, outcome, default_block
         end
       end
     end
@@ -21,12 +22,14 @@ module FluxxFipRequestsController
       insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.format do |format|
-        format.html do |controller_dsl, controller, outcome, default_block|
-          base.grant_request_show_format_html controller_dsl, controller, outcome, default_block
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          grant_request_show_format_html controller_dsl, outcome, default_block
         end
       end
-      insta.post do |controller_dsl, controller, model|
-        base.set_enabled_variables controller_dsl, controller
+      insta.post do |pair|
+        controller_dsl, model = pair
+        set_enabled_variables controller_dsl
       end
     end
     base.add_grant_request_install_role
@@ -37,10 +40,10 @@ module FluxxFipRequestsController
     base.insta_edit FipRequest do |insta|
       insta.template = 'fip_requests/fip_request_form'
       insta.icon_style = ICON_STYLE
-      # ESH: hmmm this is a bit ugly; look into a way to set the context to be the same as the controller's
       insta.format do |format|
-        format.html do |controller_dsl, controller, outcome, default_block|
-          base.grant_request_edit_format_html controller_dsl, controller, outcome, default_block
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          grant_request_edit_format_html controller_dsl, outcome, default_block
         end
       end
     end
@@ -53,8 +56,9 @@ module FluxxFipRequestsController
       insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.format do |format|
-        format.html do |controller_dsl, controller, outcome, default_block|
-          base.grant_request_update_format_html controller_dsl, controller, outcome, default_block
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          grant_request_update_format_html controller_dsl, outcome, default_block
         end
       end
     end

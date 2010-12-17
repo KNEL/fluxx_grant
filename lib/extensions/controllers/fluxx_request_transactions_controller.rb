@@ -12,10 +12,11 @@ module FluxxRequestTransactionsController
       insta.template = 'request_transaction_show'
       insta.icon_style = ICON_STYLE
       insta.add_workflow
-      insta.post do |controller_dsl, controller, model|
+      insta.post do |pair|
+        controller_dsl, model = pair
         # You should not be able to edit or delete transactions
-        controller.instance_variable_set '@edit_enabled', false
-        controller.instance_variable_set '@delete_enabled', false
+        instance_variable_set '@edit_enabled', false
+        instance_variable_set '@delete_enabled', false
       end
     end
     base.insta_new RequestTransaction do |insta|
@@ -78,8 +79,8 @@ module FluxxRequestTransactionsController
         related.add_title_block do |model|
           model.title if model
         end
-        related.add_model_url_block do |controller, model|
-          controller.send :granted_request_path, :id => model.id
+        related.add_model_url_block do |model|
+          send :granted_request_path, :id => model.id
         end
         related.display_template = '/grant_requests/related_request'
       end
