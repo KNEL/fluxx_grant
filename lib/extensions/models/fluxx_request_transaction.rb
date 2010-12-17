@@ -1,5 +1,5 @@
 module FluxxRequestTransaction
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state]
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => 1}
@@ -106,7 +106,7 @@ module FluxxRequestTransaction
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
-        has grant.initiative(:id), :as => :grant_initiative_ids
+        has grant.initiative(:id), :as => :grant_sub_program_ids
         has request(:type), :type => :string, :crc => true, :as => :request_type
         has "IF(request_transactions.state = 'paid' OR (paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
@@ -174,9 +174,9 @@ module FluxxRequestTransaction
       end
     end
 
-    def grant_initiative_ids
-      if request && request.initiative
-        [request.initiative.id]
+    def grant_sub_program_ids
+      if request && request.sub_program
+        [request.sub_program.id]
       else
         []
       end

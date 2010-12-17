@@ -1,5 +1,5 @@
 = form.input :grant_program_ids, :required => false, :label => 'Programs', :as => :select, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :grant_initiative_ids, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :grant_sub_program_ids, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 = form.input :report_type, :required => false, :label => 'Report Type', :as => :select, :collection => RequestReport.report_doc_types.map{|doc_type| [RequestReport.type_to_english_translation(doc_type), doc_type]}, :input_html => {:class => 'add-another'}
 = form.input :state, :required => false, :label => 'Status', :as => :select, :collection => RequestReport.states.map{|doc_state| [RequestReport.state_to_english_translation(doc_state), doc_state]}, :input_html => {:class => 'add-another'}
 = form.input :due_in_days, :label => 'Due in:', :required => false, :as => :select, :collection => (0..31).map{|num| [num, num]}, :aft => 'Days'

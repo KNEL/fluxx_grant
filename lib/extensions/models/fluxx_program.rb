@@ -2,7 +2,7 @@ module FluxxProgram
   def self.included(base)
     base.acts_as_audited
 
-    base.has_many :initiatives
+    base.has_many :sub_programs
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
 
@@ -83,13 +83,13 @@ module FluxxProgram
   end
 
   module ModelInstanceMethods
-    def load_initiatives minimum_fields=true
+    def load_sub_programs minimum_fields=true
       select_field_sql = if minimum_fields
         'description, name, id, program_id'
       else
-        'initiatives.*'
+        'sub_programs.*'
       end
-      Initiative.find :all, :select => select_field_sql, :conditions => ['program_id = ?', id], :order => :name
+      SubProgram.find :all, :select => select_field_sql, :conditions => ['program_id = ?', id], :order => :name
     end
 
     def load_users

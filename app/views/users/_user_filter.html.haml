@@ -1,5 +1,5 @@
 = form.input :grant_program_ids, :required => false, :label => 'Program Grantee Contacts', :as => :select, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :grant_initiative_ids, :label => 'Initiative Grantee Contacts', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :grant_sub_program_ids, :label => 'Initiative Grantee Contacts', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 
 = form.input :program_organization_lookup, :label => "Organization", :as => :autocomplete, :autocomplete_url => organizations_path(:format => :autocomplete), :related_attribute_name => :name, :input_html => {:class => 'program_organization_lookup_select', 'data-related-child' => ".program-org-sat-select"}
 = form.input :organization_id, :label => 'Location: ', :as => :select, :input_html => {:class => 'program-org-sat-select', 'data-param'.to_sym => 'related_org_ids', 'data-src'.to_sym => organizations_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'org_sat_select', 'data-required' => '1'}, :collection => []

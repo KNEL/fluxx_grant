@@ -1,5 +1,5 @@
 module FluxxGrantUser
-  SEARCH_ATTRIBUTES = [:program_ids, :grant_program_ids, :grant_initiative_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
+  SEARCH_ATTRIBUTES = [:program_ids, :grant_program_ids, :grant_sub_program_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
   
   def self.included(base)
     base.has_many :request_users
@@ -73,7 +73,7 @@ module FluxxGrantUser
         has created_at, updated_at, deleted_at
 
         has role_users_programs.program(:id), :as => :grant_program_ids
-        has role_users_initiatives.initiative(:id), :as => :grant_initiative_ids
+        has role_users_initiatives.initiative(:id), :as => :grant_sub_program_ids
 
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id
@@ -95,7 +95,7 @@ module FluxxGrantUser
         has created_at, updated_at, deleted_at
 
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_initiative_ids
+        has 'null', :type => :multi, :as => :grant_sub_program_ids
 
         has favorites.user(:id), :as => :favorite_user_ids
         has user_organizations.organization(:id), :as => :organization_id
@@ -150,8 +150,8 @@ module FluxxGrantUser
      all_related_requests.map{|req| req.program.id if req && req.program}.flatten.compact
     end
 
-    def grant_initiative_ids
-      all_related_requests.map{|req| req.initiative.id if req && req.initiative}.flatten.compact
+    def grant_sub_program_ids
+      all_related_requests.map{|req| req.sub_program.id if req && req.sub_program}.flatten.compact
     end
 
     def organization_id
