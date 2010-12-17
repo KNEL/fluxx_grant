@@ -26,19 +26,19 @@ Program.blueprint do
   name Sham.words
 end
 
-SubProgram.blueprint do
-  name Sham.word
+Initiative.blueprint do
+  name Sham.words
   program_id 1
 end
 
-Initiative.blueprint do
-  name Sham.words
-  sub_program_id 1
+SubProgram.blueprint do
+  name Sham.word
+  initiative_id 1
 end
 
 SubInitiative.blueprint do
   name Sham.word
-  initiative_id 1
+  sub_program_id 1
 end
 
 FundingSource.blueprint do
@@ -236,10 +236,6 @@ end
 Audit.blueprint do
   action 'create'
 end
-
-FundingSourceAllocation.blueprint do
-end
-
 
 def setup_org_tax_classes
   unless bp_attrs[:executed_setup_org_tax_classes]

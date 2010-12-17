@@ -1,5 +1,5 @@
 module FluxxGrantOrganization
-  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
+  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_initiative_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
 
   def self.included(base)
     base.send :include, ::FluxxOrganization
@@ -73,7 +73,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has grants(:id), :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -95,7 +95,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has grants.program(:id), :as => :grant_program_ids
-        has grants.initiative(:id), :as => :grant_sub_program_ids
+        has grants.initiative(:id), :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -117,7 +117,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has grant_requests(:id), :as => :request_ids
         has fiscal_requests(:id), :as => :fiscal_request_ids
@@ -139,7 +139,7 @@ module FluxxGrantOrganization
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
         has 'null', :type => :multi, :as => :grant_program_ids
-        has 'null', :type => :multi, :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_initiative_ids
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
         has 'null', :type => :multi, :as => :fiscal_request_ids
@@ -193,8 +193,8 @@ module FluxxGrantOrganization
       grants.map{|grant| grant.program.id if grant.program}.flatten.compact
     end
 
-    def grant_sub_program_ids
-      grants.map{|grant| grant.sub_program.id if grant.sub_program}.flatten.compact
+    def grant_initiative_ids
+      grants.map{|grant| grant.initiative.id if grant.initiative}.flatten.compact
     end
     
     def related_org_ids

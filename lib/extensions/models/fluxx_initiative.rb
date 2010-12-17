@@ -1,10 +1,10 @@
 module FluxxInitiative
-  SEARCH_ATTRIBUTES = [:sub_program_id]
+  SEARCH_ATTRIBUTES = [:program_id]
   def self.included(base)
-    base.belongs_to :sub_program
+    base.belongs_to :program
     base.acts_as_audited
 
-    base.validates_presence_of     :sub_program
+    base.validates_presence_of     :program
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
     
@@ -37,13 +37,13 @@ module FluxxInitiative
       autocomplete_to_s
     end
     
-    def load_sub_initiatives minimum_fields=true
+    def load_sub_programs minimum_fields=true
       select_field_sql = if minimum_fields
         'description, name, id, initiative_id'
       else
-        'sub_initiatives.*'
+        'sub_programs.*'
       end
-      SubInitiative.find :all, :select => select_field_sql, :conditions => ['initiative_id = ?', id], :order => :name
+      SubProgram.find :all, :select => select_field_sql, :conditions => ['initiative_id = ?', id], :order => :name
     end
   end
 end

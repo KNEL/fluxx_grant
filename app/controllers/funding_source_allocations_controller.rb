@@ -1,3 +1,0 @@
-class FundingSourceAllocationsController < ApplicationController
-  include FluxxFundingSourceAllocationsController
-end

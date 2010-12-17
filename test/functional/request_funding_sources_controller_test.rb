@@ -34,17 +34,6 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-
-  test "should get edit with program, subprogram, initiative, subinitiative" do
-    program = Program.make
-    sub_program = SubProgram.make :program => program
-    initiative = Initiative.make :sub_program => sub_program
-    sub_initiative = SubInitiative.make :initiative => initiative
-    rfs = RequestFundingSource.make :program => program, :sub_program => sub_program, :initiative => initiative, :sub_initiative => sub_initiative
-    get :edit, :id => rfs.id
-    assert_response :success
-  end
-
   test "should update organization" do
     rfs = RequestFundingSource.make
     put :update, :id => rfs.id, :request_funding_source => {:funding_source_id => @funding_source.id}

@@ -23,7 +23,7 @@ module FluxxRequest
     end || {}
   end
   
-  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
+  SEARCH_ATTRIBUTES = [:program_id, :initiative_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
@@ -44,7 +44,7 @@ module FluxxRequest
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.belongs_to :program
-    base.belongs_to :sub_program
+    base.belongs_to :initiative
     base.after_create :generate_request_id
     base.after_save :process_before_save_blocks
     
@@ -75,7 +75,7 @@ module FluxxRequest
           grant_block = [['Amount Funded', :currency], ['Total Paid', :currency], ['Total Due', :currency], ['Grant Agreement Date', :date], ['Grant Start Date', :date], ['Grant End Date', :date]]
           block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
             'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL',
-            'Lead PO/PD', 'Program', 'Sub Program', ['Date Request Received', :date], ['Duration', :integer], 
+            'Lead PO/PD', 'Program', 'Initiative', ['Date Request Received', :date], ['Duration', :integer], 
             'Geo Focus (States)', 'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 'Request Summary']
           if with_clause && with_clause[:granted]==1
             block1 + grant_block + block2
@@ -106,7 +106,7 @@ module FluxxRequest
           fiscal_organization.url fiscal_org_url,
           (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
           users where id = program_lead_id) lead_po,
-          program.name, sub_program.name,
+          program.name, initiative.name,
           requests.request_received_at, 
           requests.duration_in_months,
           (select replace(group_concat(mev.value, ', '), ', ', '')
@@ -135,7 +135,7 @@ module FluxxRequest
           project_summary
                          FROM requests
                          LEFT OUTER JOIN programs program ON program.id = requests.program_id
-                         LEFT OUTER JOIN sub_programs sub_program ON sub_program.id = requests.sub_program_id
+                         LEFT OUTER JOIN initiatives initiative ON initiative.id = requests.initiative_id
                          LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
                          LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
                          LEFT OUTER JOIN request_funding_sources ON request_funding_sources.request_id = requests.id
@@ -547,7 +547,7 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "if(granted = 0, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
           :as => :related_request_organization_ids, :type => :multi
@@ -593,7 +593,7 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
@@ -636,7 +636,7 @@ module FluxxRequest
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
-        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
+        has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :initiative_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :amount_requested, :amount_recommended, :granted
         has :program_organization_id, :fiscal_organization_id
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi

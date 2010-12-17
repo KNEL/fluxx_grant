@@ -34,7 +34,7 @@ class SubInitiativesControllerTest < ActionController::TestCase
 
   test "should create sub_initiative" do
     assert_difference('SubInitiative.count') do
-      post :create, :sub_initiative => { :name => 'some random name for you', :initiative_id => 1 }
+      post :create, :sub_initiative => { :name => 'some random name for you', :sub_program_id => 1 }
     end
 
     assert 201, @response.status

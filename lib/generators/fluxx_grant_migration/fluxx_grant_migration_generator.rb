@@ -40,9 +40,6 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'create_sub_program.rb', 'db/migrate/fluxx_grant_create_sub_program.rb'
     handle_migration 'create_sub_initiative.rb', 'db/migrate/fluxx_grant_create_sub_initiative.rb'
     handle_migration 'add_sub_initiative_program_to_request_funding_source.rb', 'db/migrate/fluxx_grant_add_sub_initiative_program_to_request_funding_source.rb'
-    handle_migration 'add_new_fields_to_funding_source.rb', 'db/migrate/fluxx_grant_add_new_fields_to_funding_source.rb'
-    handle_migration 'switch_around_program_initiative_etc.rb', 'db/migrate/fluxx_grant_switch_around_program_initiative_etc.rb'
-    handle_migration 'create_funding_source_allocation.rb', 'db/migrate/fluxx_grant_create_funding_source_allocation.rb'
   end
   
   private

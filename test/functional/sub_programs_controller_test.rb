@@ -35,7 +35,7 @@ class SubProgramsControllerTest < ActionController::TestCase
 
   test "should create sub_program" do
     assert_difference('SubProgram.count') do
-      post :create, :sub_program => { :name => 'some random name for you', :program_id => 1 }
+      post :create, :sub_program => { :name => 'some random name for you', :initiative_id => 1 }
     end
 
     assert 201, @response.status
