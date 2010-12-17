@@ -106,7 +106,7 @@ module FluxxRequestTransaction
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
-        has grant.initiative(:id), :as => :grant_sub_program_ids
+        has grant.sub_program(:id), :as => :grant_sub_program_ids
         has request(:type), :type => :string, :crc => true, :as => :request_type
         has "IF(request_transactions.state = 'paid' OR (paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
