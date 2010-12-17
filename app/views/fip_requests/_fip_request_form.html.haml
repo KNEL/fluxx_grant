@@ -11,7 +11,7 @@
     - program_leads = form.object.program.load_users if form.object.program
     = form.input :program_lead, :label => "Program Lead", :as => :select, :collection => program_leads.map{|user| [user.full_name, user.id]}, :input_html => {:class => 'program-lead-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'program_lead_select'}
 
-    = form.input :initiative, :label => "Initiative", :as => :select, :collection => Initiative.all.map{|initiative| [initiative.name, initiative.id]}
+    = form.input :sub_program, :label => "SubProgram", :as => :select, :collection => SubProgram.all.map{|sub_program| [sub_program.name, sub_program.id]}
 
     = form.input :project_summary, :label => "Project Summary", :as => :text
 

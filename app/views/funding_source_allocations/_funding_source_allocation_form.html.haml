@@ -1,0 +1,11 @@
+%fieldset.inputs
+  %ol
+  = form.input :funding_source, :label => "Funding Source", :as => :select
+  = form.input :program, :label => "Program", :as => :select
+  = form.input :sub_program, :label => "SubProgram", :as => :select
+  = form.input :initiative, :label => "Initiative", :as => :select
+  = form.input :sub_initiative, :label => "SubInitiative", :as => :select
+  - # TODO ESH: pull list of authorities
+  = form.input :authority, :label => "Name", :as => :select, :collection => []
+  
+  = form.commit_button
