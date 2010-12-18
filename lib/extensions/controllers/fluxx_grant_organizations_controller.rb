@@ -33,8 +33,8 @@ module FluxxGrantOrganizationsController
           model.title if model
         end
         related.display_template = '/grant_requests/related_request'
-        related.add_model_url_block do |controller, model|
-          controller.send :granted_request_path, :id => model.id
+        related.add_model_url_block do |model|
+          send :granted_request_path, :id => model.id
         end
       end
       insta.add_related do |related|

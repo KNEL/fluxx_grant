@@ -174,7 +174,7 @@ module FluxxRequestReport
         set_property :delta => :delayed
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
-        has grant.initiative(:id), :as => :grant_sub_program_ids
+        has grant.sub_program(:id), :as => :grant_sub_program_ids
         has grant.state, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
         has :state, :type => :string, :crc => true

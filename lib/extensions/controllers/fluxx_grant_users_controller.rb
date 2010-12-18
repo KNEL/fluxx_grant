@@ -5,10 +5,10 @@ module FluxxGrantUsersController
     base.insta_index User do |insta|
       insta.filter_title = "People Filter"
       insta.filter_template = 'users/user_filter'
-      insta.pre do |controller_dsl, controller|
-        if controller.params[:related_organization_id]
-          rel_org_id = controller.params[:related_organization_id]
-          controller.pre_models = User.find_by_sql ['SELECT users.* FROM users, user_organizations 
+      insta.pre do |controller_dsl|
+        if params[:related_organization_id]
+          rel_org_id = params[:related_organization_id]
+          self.pre_models = User.find_by_sql ['SELECT users.* FROM users, user_organizations 
                                  WHERE user_organizations.organization_id IN 
                                  (select distinct(id) from (select id from organizations where id = ? 
                                   union select id from organizations where parent_org_id = ? 
@@ -21,7 +21,8 @@ module FluxxGrantUsersController
     
     # Add in a post method to create a user org if the organization_id param is passed in
     base.insta_post User do |insta|
-      insta.post do |controller_dsl, controller, model|
+      insta.post do |pair|
+        controller_dsl, model = pair
         # Check to see if there was an organization passed in to use to create a user organization
         user = model
         org = Organization.where(:id => user.temp_organization_id).first
@@ -52,8 +53,8 @@ module FluxxGrantUsersController
           model.title if model
         end
         related.display_template = '/grant_requests/related_request'
-        related.add_model_url_block do |controller, model|
-          controller.send :granted_request_path, :id => model.id
+        related.add_model_url_block do |model|
+          send :granted_request_path, :id => model.id
         end
       end
       insta.add_related do |related|

@@ -10,7 +10,6 @@ module FluxxGrantUser
     base.has_many :fiscal_org_owner_requests, :class_name => 'Request', :foreign_key => :fiscal_org_owner_id
     base.has_many :fiscal_signatory_requests, :class_name => 'Request', :foreign_key => :fiscal_signatory_id
     base.has_many :role_users_programs, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Program'}
-    base.has_many :role_users_initiatives, :class_name => 'RoleUser', :foreign_key => 'user_id', :conditions => {:roleable_type => 'Initiative'}
     base.has_many :role_programs, :class_name => 'Program', :through => :role_users_programs, :source => :user
     
     base.send :attr_accessor, :temp_organization_title
@@ -73,7 +72,7 @@ module FluxxGrantUser
         has created_at, updated_at, deleted_at
 
         has role_users_programs.program(:id), :as => :grant_program_ids
-        has role_users_initiatives.initiative(:id), :as => :grant_sub_program_ids
+        has 'null', :type => :multi, :as => :grant_sub_program_ids
 
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id

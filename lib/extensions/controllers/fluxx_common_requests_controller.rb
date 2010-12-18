@@ -8,11 +8,11 @@ module FluxxCommonRequestsController
   end
 
   module ModelClassMethods
-
+    
     def funnel_allowed_states
       Request.pre_recommended_chain + Request.approval_chain + Request.sent_back_states + [Request.granted_state]
     end
-
+    
     def grant_request_index_format_html controller_dsl, controller, outcome, default_block
       if controller.params[:view_funnel]
         local_models = controller.instance_variable_get '@models'
@@ -22,13 +22,11 @@ module FluxxCommonRequestsController
         controller.instance_variable_set '@funnel', funnel
         # TODO ESH: make sure we do skip_favorites
         controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/funnel', :footer_template => 'grant_requests/funnel_footer'}
-      elsif controller.params[:visualizations]
-        controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/visualizations', :footer_template => 'grant_requests/visualizations_footer'}
       else
         default_block.call
       end
     end
-
+    
     def grant_request_index_format_csv controller_dsl, controller, outcome, default_block
       if controller.params[:view_funnel]
         local_models = controller.instance_variable_get '@models'
@@ -46,7 +44,7 @@ module FluxxCommonRequestsController
         default_block.call
       end
     end
-
+    
     def grant_request_show_format_html controller_dsl, controller, outcome, default_block
       if controller.params[:view_states]
         local_model = controller.instance_variable_get '@model'
@@ -55,7 +53,7 @@ module FluxxCommonRequestsController
         default_block.call
       end
     end
-
+    
     def grant_request_edit_format_html controller_dsl, controller, outcome, default_block
       if controller.params[:approve_grant_details]
         actual_local_model = controller.instance_variable_get '@model'
@@ -78,16 +76,16 @@ module FluxxCommonRequestsController
           controller.instance_variable_set "@approve_grant_details_error", true
           controller.redirect_to controller.url_for(actual_local_model)
         end
-
+        
       else
         default_block.call
       end
     end
-
+    
     def grant_request_update_format_html controller_dsl, controller, outcome, default_block
       actual_local_model = controller.instance_variable_get '@model'
       if controller.params[:event_action] == 'recommend_funding' && outcome == :success
-        # redirect to the edit screen IF THE USER
+        # redirect to the edit screen IF THE USER 
         controller.redirect_to controller.send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
       elsif controller.params[:event_action] == 'become_grant' && outcome == :success
         controller.send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
@@ -99,16 +97,16 @@ module FluxxCommonRequestsController
         end
       end
     end
-
+    
     def set_enabled_variables controller_dsl, controller
       fluxx_request = controller.instance_variable_get "@model"
       if fluxx_request
         promotion_events = fluxx_request.current_allowed_events(Request.promotion_events + Request.grant_events)
         allowed_promotion_events = controller.event_allowed?(promotion_events, fluxx_request)
         promotion_event = allowed_promotion_events && allowed_promotion_events.first
-
+      
         # If there is no promote or sendback event available in the workflow, do not let the user edit
-        edit_enabled = (!(fluxx_request && fluxx_request.granted) && promotion_event) ||
+        edit_enabled = (!(fluxx_request && fluxx_request.granted) && promotion_event) || 
           (fluxx_request && fluxx_request.state == Request.granted_state.to_s) && controller.has_role_for_event?(Request.become_grant_event, fluxx_request)
         edit_funding_sources_enabled = if !Program.finance_roles.select{|role_name| controller.current_user.has_role? role_name}.empty?
           true
@@ -124,13 +122,13 @@ module FluxxCommonRequestsController
           edit_funding_sources_enabled = true
           delete_enabled = true
         end
-
+      
         controller.instance_variable_set '@edit_enabled', edit_enabled
         controller.instance_variable_set '@delete_enabled', delete_enabled
       end
     end
-
-
+    
+    
     def add_grant_request_install_role
       insta_role Request do |insta|
         # Define who is allowd to perform which events
