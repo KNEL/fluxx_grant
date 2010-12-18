@@ -15,9 +15,11 @@ GRANT_EXTENSION_CLASSES_TO_NOT_AUTOLOAD = GRANT_EXTENSION_CLASSES_TO_PRELOAD + G
 GRANT_EXTENSION_CLASSES_TO_PRELOAD.each do |filename|
   require filename
 end
-Dir.glob("#{File.dirname(__FILE__).to_s}/extensions/**/*.rb").map{|filename| filename.gsub /\.rb$/, ''}.
-  reject{|filename| GRANT_EXTENSION_CLASSES_TO_NOT_AUTOLOAD.include?(filename) }.each {|filename| require filename }
+all_extension_files = Dir.glob("#{File.dirname(__FILE__).to_s}/extensions/**/*.rb").map{|filename| filename.gsub /\.rb$/, ''}
+all_extension_files = all_extension_files.reject{|filename| filename =~ /extensions\/cap_deploy$/}
+all_extension_files.reject{|filename| GRANT_EXTENSION_CLASSES_TO_NOT_AUTOLOAD.include?(filename) }.each {|filename| require filename }
 GRANT_EXTENSION_CLASSES_TO_POSTLOAD.each do |filename|
+  
   require filename
 end
 
