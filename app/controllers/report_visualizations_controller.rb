@@ -18,7 +18,7 @@ class ReportVisualizationsController < ApplicationController
     when "1" then
       year = Time.new.year.to_s
       plot[:title] = year + " Monthly Grants By Program"
-      plot[:axes] = { :xaxis => { :min => 1, :max => 12, :pad => 1.0, :numberTicks => 5 }, :yaxis => { :numberTicks => 5, :min => 0 }}
+      plot[:axes] = { :xaxis => { :min => 1, :max => 12, :pad => 1.0, :numberTicks => 12 }, :yaxis => { :numberTicks => 5, :min => 0 }}
       plot[:seriesDefaults] = { :fill => true, :showMarker => true, :shadow => false }
       series = []
       data = []
