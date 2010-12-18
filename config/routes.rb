@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :admin_cards
+
   resources :funding_source_allocations
 
   resources :sub_initiatives
