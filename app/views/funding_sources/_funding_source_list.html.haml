@@ -1,6 +1,14 @@
-%h2
-  = model.name
-%h4
-  secondary
-%p
-  tertiary
+- models = FundingSource.all.sort_by{|fs| (fs.name||'').downcase}
+%h3 
+  Funding Sources
+  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_path, :class => 'to-modal', 'data-on-success' => 'refreshNamed,close', 'target' => '.funding-source-partial-span', :title => "Add Funding Source"
+- if !models || models.empty?
+  %p.caption= "There are no funding sources."
+- else
+  - models.each do |model|
+    %ul.list
+      %li
+        %div.action-item
+          %strong= link_to model.name, edit_funding_source_path(model), :class => 'to-modal', :title => 'Update Funding Source', 'data-on-success' => 'refreshCaller,close'
+          - if current_user.has_delete_for_model? model
+            %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}

@@ -1,6 +1,20 @@
-%h2
-  = model.funding_source.name if model.funding_source
-%h4
-  - # secondary
-%p
-  - # tertiary
+- models = FundingSourceAllocation.all.sort_by{|model| (model.funding_source.name if model.funding_source || '').downcase}
+%h3 
+  Funding Source Allocations
+  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_allocation_path, :class => 'to-modal', 'data-on-success' => 'refreshNamed,close', 'target' => '.funding-source-allocation-partial-span', :title => "Add Funding Source Allocation"
+- if !models || models.empty?
+  %p.caption= "There are no funding source allocations."
+- else
+  - models.each do |model|
+    - funding_source_name = model.funding_source.name if model.funding_source
+    - program_name = model.program.name if model.program
+    - sub_program_name = model.sub_program.name if model.sub_program
+    - initiative_name = model.initiative.name if model.initiative
+    - sub_initiative_name = model.sub_initiative.name if model.sub_initiative
+    - composite_name = "#{funding_source_name} - #{program_name} - #{sub_program_name} - #{initiative_name} - #{sub_initiative_name}"
+    %ul.list
+      %li
+        %div.action-item
+          %strong= link_to composite_name, edit_funding_source_allocation_path(model), :class => 'to-modal', :title => 'Update Funding Source Allocation', 'data-on-success' => 'refreshCaller,close'
+          - if current_user.has_delete_for_model? model
+            %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_allocation_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}

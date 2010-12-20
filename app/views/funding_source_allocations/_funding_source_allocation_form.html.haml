@@ -5,7 +5,8 @@
   = form.input :sub_program, :label => "SubProgram", :as => :select
   = form.input :initiative, :label => "Initiative", :as => :select
   = form.input :sub_initiative, :label => "SubInitiative", :as => :select
-  - # TODO ESH: pull list of authorities
-  = form.input :authority, :label => "Name", :as => :select, :collection => []
+  - group = MultiElementGroup.find_for_model_or_super FundingSourceAllocation, 'board_authorities'
+  - authority_options = group ? group.elements_to_dropdown : []
+  = form.input :authority, :label => "Authority", :as => :select, :collection => authority_options
   
   = form.commit_button
