@@ -25,12 +25,12 @@
           - else
             = number_to_currency funding_source.funding_amount 
         %dt= "Source:"
-        %dd= funding_source.funding_source.name if funding_source.funding_source
+        %dd= funding_source.funding_source_allocation.funding_source.name if funding_source.funding_source_allocation && funding_source.funding_source_allocation.funding_source
         %dt= "Initiatives:" 
         %dd
           -  program_names = []
-          -  program_names << funding_source.program.name if funding_source.program
-          -  program_names << funding_source.initiative.name if funding_source.initiative
+          -  program_names << funding_source.funding_source_allocation.program.name if funding_source.funding_source_allocation && funding_source.funding_source_allocation.program
+          -  program_names << funding_source.funding_source_allocation.initiative.name if funding_source.funding_source_allocation && funding_source.funding_source_allocation.initiative
           = program_names.join ', '
       <hr/>
   %strong

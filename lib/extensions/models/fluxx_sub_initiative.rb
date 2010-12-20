@@ -27,6 +27,14 @@ module FluxxSubInitiative
       description || name
     end
 
+    def funding_source_allocations show_retired=false
+      fsas = FundingSourceAllocation.where(:sub_initiative_id => self.id)
+      unless show_retired 
+        fsas = fsas.where(["retired != ? or retired is null", 1])
+      end
+      fsas.all
+    end
+
     def to_s
       autocomplete_to_s
     end

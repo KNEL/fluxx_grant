@@ -3,11 +3,12 @@ module FluxxRequestFundingSource
 
   def self.included(base)
     base.belongs_to :request
-    base.belongs_to :funding_source
-    base.belongs_to :program
-    base.belongs_to :initiative
-    base.belongs_to :sub_program
-    base.belongs_to :sub_initiative
+    base.belongs_to :funding_source_allocation
+
+    base.send :attr_accessor, :program
+    base.send :attr_accessor, :initiative
+    base.send :attr_accessor, :sub_program
+    base.send :attr_accessor, :sub_initiative
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES

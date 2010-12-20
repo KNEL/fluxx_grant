@@ -1,6 +1,4 @@
 = form.input :request_id, :as => :hidden
-= form.input :funding_source, :label => 'Funding Source:', :as => :select, :collection => FundingSource.all.map {|funding_source| [funding_source.name, funding_source.id]}
-= form.input :board_authority
 
 = render :partial => "request_funding_sources/program_form", :locals => { :form => form}
 

@@ -96,6 +96,14 @@ module FluxxProgram
       User.joins(:role_users).where({:role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
     end
     
+    def funding_source_allocations show_retired=false
+      fsas = FundingSourceAllocation.where(:program_id => self.id)
+      unless show_retired 
+        fsas = fsas.where(["retired != ? or retired is null", 1])
+      end
+      fsas.all
+    end
+    
     def autocomplete_to_s
       description || name
     end

@@ -6,6 +6,9 @@ module FluxxFundingSourceAllocationsController
       insta.filter_title = "FundingSourceAllocations Filter"
       insta.filter_template = 'funding_source_allocations/funding_source_allocation_filter'
       insta.order_clause = 'updated_at desc'
+      insta.results_per_page = 500
+      insta.include_relation = :funding_source
+      insta.order_clause = 'funding_sources.name asc'
       insta.icon_style = ICON_STYLE
     end
     base.insta_show FundingSourceAllocation do |insta|
