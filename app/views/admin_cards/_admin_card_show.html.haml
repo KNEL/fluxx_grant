@@ -1,8 +1,9 @@
 %h1 Budgeting
 
 %h2 Funding Sources:
-- FundingSource.all.each do |funding_source|
-  = funding_source.name
+- FundingSource.all.sort_by{|fs| fs.name}.each do |funding_source|
+  %li.action-item
+    = link_to funding_source.name, funding_source, :class => 'to-modal', :title => 'Update Funding Source', 'data-on-success' => 'refreshCaller'
 
 %h2 Funding Allocations:
 

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :funding_sources
+
   resources :admin_cards
 
   resources :funding_source_allocations
