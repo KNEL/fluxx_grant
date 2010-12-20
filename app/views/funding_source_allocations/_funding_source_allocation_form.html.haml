@@ -1,12 +1,13 @@
 %fieldset.inputs
   %ol
-  = form.input :funding_source, :label => "Funding Source", :as => :select
-  = form.input :program, :label => "Program", :as => :select
-  = form.input :sub_program, :label => "SubProgram", :as => :select
-  = form.input :initiative, :label => "Initiative", :as => :select
-  = form.input :sub_initiative, :label => "SubInitiative", :as => :select
+  - all_funding_sources = FundingSource.all.sort_by {|fs| fs.name ? fs.name.downcase : ''}
+  = form.input :funding_source, :label => "Funding Source", :as => :select, :collection => all_funding_sources
+  = render :partial => "request_funding_sources/program_form", :locals => { :form => form}
+  
   - group = MultiElementGroup.find_for_model_or_super FundingSourceAllocation, 'board_authorities'
   - authority_options = group ? group.elements_to_dropdown : []
   = form.input :authority, :label => "Authority", :as => :select, :collection => authority_options
+  = form.input :amount, :label => "Amount"
+  = form.input :retired, :as => :boolean
   
   = form.commit_button
