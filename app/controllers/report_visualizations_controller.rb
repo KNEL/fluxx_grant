@@ -26,7 +26,7 @@ class ReportVisualizationsController < ApplicationController
       program_ids_queried = []
       programs.each do |program|
         if program != 'Other'
-          program_id = Program.where(:name => program).first[:id]
+          program_id = Program.where(:name => program).first.id
           program_ids_queried << program_id
           condition = "in"
         else
