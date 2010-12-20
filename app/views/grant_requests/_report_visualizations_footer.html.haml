@@ -1,0 +1,8 @@
+.visualizations
+  %select.visualization_selector
+    - ['- Select One -', 'Monthly Grants By Program'].each do |i|
+      %option{:value => i}= i
+
+  %ul.buttons
+    %li= link_to 'Export', '#', :target => "_blank", :class => 'btn area-url'
+
