@@ -4,6 +4,10 @@
 #   Need to remember the last report selected when refreshing the dashboard
 
 class ReportVisualizationsController < ApplicationController
+  def self.reports
+    [{'Monthly Grants By Program' => 1}]
+  end
+
   def show
 
     plot = {:library => "jqplot"}
@@ -17,40 +21,29 @@ class ReportVisualizationsController < ApplicationController
     case params[:id]
     when "1" then
       year = Time.new.year.to_s
-      plot[:title] = year + " Monthly Grants By Program"
+      plot[:title] = "#{year} Monthly Grants By Program"
       plot[:axes] = { :xaxis => { :min => 1, :max => 12, :pad => 1.0, :numberTicks => 12 }, :yaxis => { :numberTicks => 5, :min => 0 }}
       plot[:seriesDefaults] = { :fill => true, :showMarker => true, :shadow => false }
-      series = []
-      data = []
-      programs = ['Buildings', 'Climate', 'Power', 'Transportation', 'Other']
-      program_ids_queried = []
-      programs.each do |program|
-        if program != 'Other'
-          program_id = Program.where(:name => program).first.id
-          program_ids_queried << program_id
-          condition = "in"
-        else
-          # The "Other" program is all programs besides the ones queried already
-          condition = "not in"
-          program_id = program_ids_queried
-        end
-        series << { :label => program }
+      plot[:series] = []
+      plot[:data] = []
+      Program.all.each do |program|
         requests = {}
         row = []
         # TODO AML: Should this be filtered on grant_approved_at?
-        query = "select COUNT(id) as num, MONTH(created_at) as month from requests where YEAR(created_at) = ? and program_id " + condition + " (?) group by MONTH(created_at)"
-        req = Request.connection.execute(Request.send(:sanitize_sql, [query, year, program_id]))
+        query = "select COUNT(id) as num, MONTH(created_at) as month from requests where YEAR(created_at) = ? and program_id = ? and id in (?) group by MONTH(created_at)"
+        req = Request.connection.execute(Request.send(:sanitize_sql, [query, year, program.id, params[:request_ids]]))
         req.each_hash{ |res| requests[res["month"].to_i] = res["num"].to_i }
-        # Make sure we have a value for each month
-        (1..12).each do |month|
-          num = requests[month] ? requests[month] : 0
-          row << num
+        if requests.count > 0
+          # Make sure we have a value for each month
+          (1..12).each do |month|
+            num = requests[month] ? requests[month] : 0
+            row << num
+          end
+          plot[:data] << row
+          plot[:series] << { :label => program.name }
         end
-        data << row
       end
     end
-    plot[:data] = data
-    plot[:series] = series
 
     render :inline => plot.to_json
   end

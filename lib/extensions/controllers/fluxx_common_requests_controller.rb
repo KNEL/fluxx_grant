@@ -54,6 +54,9 @@ module FluxxCommonRequestsController
         # TODO ESH: make sure we do skip_favorites
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/funnel', :footer_template => 'grant_requests/funnel_footer'}
       elsif params[:visualizations]
+        local_models = instance_variable_get '@models'
+        instance_variable_set '@request_ids', local_models.map(&:id).join(",")
+        instance_variable_set '@reports', ReportVisualizationsController.reports
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/report_visualizations', :footer_template => 'grant_requests/report_visualizations_footer'}
       else
         default_block.call

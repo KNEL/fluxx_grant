@@ -1,7 +1,8 @@
 .visualizations
   %select.visualization_selector
-    - ['- Select One -', 'Monthly Grants By Program'].each do |i|
-      %option{:value => i}= i
+    %option= '- Select One -'
+    - @reports.each do |label, value|
+      %option{:value => value}= label
 
   %ul.buttons
     %li= link_to 'Export', '#', :target => "_blank", :class => 'btn area-url'
