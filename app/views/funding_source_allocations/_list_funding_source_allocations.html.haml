@@ -1,3 +1,6 @@
-- partial_data_src_url = url_for(funding_source_allocations_path({:skip_wrapper => true}))
-%div{:class => 'partial funding-source-allocation-partial-span', 'data-src' => partial_data_src_url}
-  = render :partial => 'funding_source_allocations/funding_source_allocation_list', :locals => {:models => []}
+%div
+  Board Authorities
+  - group = MultiElementGroup.find_for_model_or_super FundingSourceAllocation, 'board_authorities'
+  %ul.list
+    - group.multi_element_values.each do |board_authority|
+      %li= link_to (board_authority.description || board_authority.value), funding_source_allocations_path({:skip_wrapper => true, :authority_id => board_authority.id})

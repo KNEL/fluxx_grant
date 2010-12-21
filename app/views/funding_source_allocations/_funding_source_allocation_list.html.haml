@@ -1,4 +1,3 @@
-- models = FundingSourceAllocation.all.sort_by{|model| ((model.funding_source.name if model.funding_source) || '').downcase}
 %h3 
   Funding Source Allocations
   %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_allocation_path, :class => 'to-modal', 'data-on-success' => 'refreshNamed,close', 'target' => '.funding-source-allocation-partial-span', :title => "Add Funding Source Allocation"
