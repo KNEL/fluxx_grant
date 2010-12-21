@@ -613,7 +613,7 @@ module FluxxRequest
         has "null", :type => :multi, :as => :request_org_ids
         has "null", :type => :multi, :as => :grant_org_ids
         has request_users(:id), :as => :request_user_ids
-        has request_funding_sources.funding_source(:id), :as => :funding_source_ids
+        has request_funding_sources.funding_source_allocation.funding_source(:id), :as => :funding_source_ids
 
         has "null", :type => :multi, :as => :group_ids
 
