@@ -6,9 +6,13 @@ module FluxxRequestFundingSource
     base.belongs_to :funding_source_allocation
 
     base.send :attr_accessor, :program
+    base.send :attr_accessor, :program_id
     base.send :attr_accessor, :initiative
+    base.send :attr_accessor, :initiative_id
     base.send :attr_accessor, :sub_program
+    base.send :attr_accessor, :sub_program_id
     base.send :attr_accessor, :sub_initiative
+    base.send :attr_accessor, :sub_initiative_id
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES

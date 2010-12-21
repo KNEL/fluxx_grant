@@ -2,7 +2,7 @@
   %ol
   - all_funding_sources = FundingSource.all.sort_by {|fs| fs.name ? fs.name.downcase : ''}
   = form.input :funding_source, :label => "Funding Source", :as => :select, :collection => all_funding_sources
-  = render :partial => "request_funding_sources/program_form", :locals => { :form => form}
+  = render :partial => "funding_source_allocations/programs", :locals => { :form => form}
   
   - group = MultiElementGroup.find_for_model_or_super FundingSourceAllocation, 'board_authorities'
   - authority_options = group ? group.elements_to_dropdown : []
