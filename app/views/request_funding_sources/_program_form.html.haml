@@ -13,19 +13,19 @@
   - form.object.sub_initiative = form.object.funding_source_allocation.sub_initiative
   - form.object.sub_initiative_id = form.object.sub_initiative.id if form.object.sub_initiative
   - if form.object.program
-    - sub_programs = form.object.program.load_sub_programs 
+    - sub_programs = form.object.program.load_sub_programs
     - if form.object.funding_source_allocation.sub_program
       - initiatives = form.object.sub_program.load_initiatives
       - if form.object.funding_source_allocation.initiative
         - sub_initiatives = form.object.initiative.load_sub_initiatives
 
-= form.input :program_id, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".sub-program-select,.funding-source-allocation-select"}
+= form.input :program_id, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select,.funding-source-allocation-select"}
 - unless FLUXX_CONFIGURATION[:hide_request_funding_source_sub_program]
-  = form.input :sub_program_id, :label => "Sub Program", :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.description || sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-related-child' => ".initiative-select", 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete')}
+  = form.input :sub_program_id, :label => "Sub Program", :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.description || sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-related-child-param' => 'sub_program_id', 'data-related-child' => ".funding-source-allocation-select,.initiative-select", 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete')}
 - unless FLUXX_CONFIGURATION[:hide_request_funding_source_initiative]
-  = form.input :initiative_id, :label => "Initiative", :as => :select, :collection => initiatives.map{|initiative| [initiative.description || initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-related-child' => ".sub-initiative-select", 'data-param'.to_sym => 'sub_program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete')}
+  = form.input :initiative_id, :label => "Initiative", :as => :select, :collection => initiatives.map{|initiative| [initiative.description || initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'initiative_id' => 'sub_program_id', 'data-related-child' => ".funding-source-allocation-select,.sub-initiative-select", 'data-param'.to_sym => 'sub_program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete')}
 - unless FLUXX_CONFIGURATION[:hide_request_funding_source_sub_initiative]
-  = form.input :sub_initiative_id, :label => "Sub Initiative", :as => :select, :collection => sub_initiatives.map{|sub_initiative| [sub_initiative.description || sub_initiative.name, sub_initiative.id]}, :input_html => {:class => 'sub-initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => sub_initiatives_path(:format => 'autocomplete')}
+  = form.input :sub_initiative_id, :label => "Sub Initiative", :as => :select, :collection => sub_initiatives.map{|sub_initiative| [sub_initiative.description || sub_initiative.name, sub_initiative.id]}, :input_html => {:class => 'sub-initiative-select', 'data-related-child-param' => 'sub_initiative_id', 'data-related-child' => '.funding-source-allocation-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => sub_initiatives_path(:format => 'autocomplete')}
 
 - funding_source_allocations = if form.object.sub_initiative
   - form.object.sub_initiative.funding_source_allocations
@@ -37,5 +37,5 @@
   - form.object.program.funding_source_allocations
 - funding_source_allocations = [] unless funding_source_allocations
 
-- # TODO Drew: need to find a way so that choosing sub-program, initiative, sub-initiative each limit the pool of funding source allocations 
+- # TODO Drew: need to find a way so that choosing sub-program, initiative, sub-initiative each limit the pool of funding source allocations
 = form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.title, fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
