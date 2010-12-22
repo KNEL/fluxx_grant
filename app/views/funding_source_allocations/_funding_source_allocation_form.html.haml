@@ -1,13 +1,17 @@
 %fieldset.inputs
   %ol
   - all_funding_sources = FundingSource.all.sort_by {|fs| fs.name ? fs.name.downcase : ''}
-  = form.input :funding_source, :label => "Funding Source", :as => :select, :collection => all_funding_sources
+  = form.input :funding_source, :label => "Funding Source:", :as => :select, :collection => all_funding_sources
   = render :partial => "funding_source_allocations/programs", :locals => { :form => form}
   
   - group = MultiElementGroup.find_for_model_or_super FundingSourceAllocation, 'board_authorities'
   - authority_options = group ? group.elements_to_dropdown : []
-  = form.input :authority, :label => "Authority", :as => :select, :collection => authority_options
-  = form.input :amount, :label => "Amount"
-  = form.input :retired, :as => :boolean
+  = form.input :authority, :label => "Authority:", :as => :select, :collection => authority_options
+  = form.input :amount, :label => "Amount Allocated:"
+  = form.input :retired, :as => :boolean, :label => "Retired:"
+  - # TODO ESH: need to make a callback to find out how much is available for the selected funding source
+  %div.funding-source-amount-available
+    - if model.funding_source
+      = "#{number_to_currency(model.funding_source.amount_available || 0)} available"
   
   = form.commit_button

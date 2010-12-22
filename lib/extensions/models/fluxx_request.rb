@@ -139,7 +139,8 @@ module FluxxRequest
                          LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
                          LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
                          LEFT OUTER JOIN request_funding_sources ON request_funding_sources.request_id = requests.id
-                         LEFT OUTER JOIN funding_sources ON funding_sources.id = request_funding_sources.funding_source_id
+                         LEFT OUTER JOIN funding_source_allocations ON funding_source_allocations.id = request_funding_sources.funding_source_allocation_id
+                         LEFT OUTER JOIN funding_sources ON funding_sources.id = funding_source_allocations.funding_source_id
                          left outer join geo_states as program_org_country_states on program_org_country_states.id = program_organization.geo_state_id
                          left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
                          left outer join geo_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.geo_state_id
