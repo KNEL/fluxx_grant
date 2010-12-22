@@ -38,4 +38,4 @@
 - funding_source_allocations = [] unless funding_source_allocations
 
 - # TODO Drew: need to find a way so that choosing sub-program, initiative, sub-initiative each limit the pool of funding source allocations
-= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.title, fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
+= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.title, fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-require-parent-id' => 'true', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
