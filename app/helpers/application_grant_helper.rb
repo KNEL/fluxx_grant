@@ -123,6 +123,14 @@ module ApplicationGrantHelper
     links.join ",\n"
   end
   
+  def build_adminlink
+    if current_user.is_admin?
+      "'#{link_to 'admin', admin_card_path(:id => 1), :class => 'new-detail'}',"
+    else
+      ""
+    end
+  end
+  
   def build_quicklinks
     links = []
     links << "{

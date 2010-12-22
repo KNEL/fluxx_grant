@@ -30,7 +30,7 @@
             },
             header: {
               actions: [
-              '#{link_to 'admin', admin_card_path(:id => 1), :class => 'new-detail'}',
+              #{build_adminlink}
               '#{link_to current_user.full_name.blank? ? (current_user.email.blank? ? current_user.login : current_user.email) : current_user.full_name, current_user, :class => 'new-detail'}',
                 '#{link_to 'Logout', logout_path}'
               ]

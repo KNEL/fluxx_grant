@@ -7,6 +7,7 @@ module FluxxGrant
     initializer 'fluxx_engine.add_compass_hooks', :after=> :disable_dependency_loading do |app|
       Sass::Plugin.add_template_location "#{File.dirname(__FILE__).to_s}/../../app/stylesheets", "public/stylesheets/compiled/fluxx_grant"
       # Make sure that sphinx indices are loaded properly
+      # In thinking sphinx's ThinkingSphinx::Context#add_indexed_models method, I ran rails console and then watched what order the classes are loaded
       Organization rescue nil
       RequestTransaction rescue nil
       RequestReport rescue nil
