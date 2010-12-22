@@ -528,7 +528,6 @@ module FluxxRequest
     end
     
     def add_sphinx
-      p "ESH: adding sphinx index definition"
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
       define_index :request_first do
         # fields

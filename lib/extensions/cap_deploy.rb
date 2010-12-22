@@ -2,7 +2,7 @@ set :stages, %w(standalone staging production)
 set :default_stage, 'standalone'
 require 'capistrano/ext/multistage'
 
-fluxx_application_name = "shakti"
+fluxx_application_name = FLUXX_APPLICATION_NAME
 set :application, fluxx_application_name
 
 set :user, "fluxx"
