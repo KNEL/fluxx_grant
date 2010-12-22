@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101220170429) do
+ActiveRecord::Schema.define(:version => 20101222195540) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -81,8 +81,7 @@ ActiveRecord::Schema.define(:version => 20101220170429) do
     t.integer  "sub_initiative_id"
     t.integer  "authority_id"
     t.integer  "amount"
-    t.integer  "retired"
-    t.integer  "boolean"
+    t.boolean  "retired"
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
@@ -792,6 +791,7 @@ ActiveRecord::Schema.define(:version => 20101220170429) do
     t.datetime "last_login_at"
     t.string   "current_login_ip"
     t.string   "last_login_ip"
+    t.boolean  "test_user_flag",                               :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

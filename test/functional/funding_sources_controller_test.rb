@@ -83,18 +83,6 @@ class FundingSourcesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-  test "should not be allowed to edit if somebody else is editing" do
-    @FundingSource.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    get :edit, :id => @FundingSource.to_param
-    assert assigns(:not_editable)
-  end
-
-  test "should not be allowed to update if somebody else is editing" do
-    @FundingSource.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    put :update, :id => @FundingSource.to_param, :funding_source => {}
-    assert assigns(:not_editable)
-  end
-
   test "should update funding_source" do
     put :update, :id => @FundingSource.to_param, :funding_source => {}
     assert flash[:info]
@@ -104,7 +92,8 @@ class FundingSourcesControllerTest < ActionController::TestCase
   end
 
   test "should destroy funding_source" do
-    delete :destroy, :id => @FundingSource.to_param
-    assert_not_nil @FundingSource.reload().deleted_at 
+    assert_difference('FundingSource.count', -1) do
+      delete :destroy, :id => @FundingSource.to_param
+    end
   end
 end

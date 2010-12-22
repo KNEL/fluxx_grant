@@ -117,7 +117,7 @@ module ApplicationGrantHelper
     links << "  '#{link_to 'Organizations', organizations_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_organizations]
     links << "  '#{link_to 'People', users_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_people]
     links << "  '#{link_to 'Requests', grant_requests_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_requests]
-    links << "  '#{link_to 'Grants', granted_requests_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_grants]
+    links << "  '#{link_to "Grants / #{I18n.t(:fip_name).pluralize}", granted_requests_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_grants]
     links << "  '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_grantee_reports]
     links << "  '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_transactions]
     links.join ",\n"

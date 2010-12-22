@@ -14,7 +14,7 @@ module FluxxGrant
       Request rescue nil
       User rescue nil
       Project rescue nil
-      Request.sphinx_index_names
+      Request.sphinx_index_names rescue nil
     end
     
     rake_tasks do

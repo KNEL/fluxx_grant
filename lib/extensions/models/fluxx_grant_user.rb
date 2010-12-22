@@ -1,5 +1,5 @@
 module FluxxGrantUser
-  SEARCH_ATTRIBUTES = [:program_ids, :grant_program_ids, :grant_sub_program_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
+  SEARCH_ATTRIBUTES = [:program_ids, :grant_program_ids, :test_user_flag, :grant_sub_program_ids, :organization_id, :state, :updated_at, :request_ids, :favorite_user_ids]
   
   def self.included(base)
     base.has_many :request_users
@@ -69,8 +69,8 @@ module FluxxGrantUser
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at
-
+        has created_at, updated_at, deleted_at, test_user_flag
+        
         has role_users_programs.program(:id), :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids
 
@@ -91,7 +91,7 @@ module FluxxGrantUser
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at
+        has created_at, updated_at, deleted_at, test_user_flag
 
         has 'null', :type => :multi, :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids

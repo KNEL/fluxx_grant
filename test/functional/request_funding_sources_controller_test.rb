@@ -8,7 +8,7 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
     @org = Organization.make
     @program = Program.make
     @request1 = GrantRequest.make :program => @program, :program_organization => @org, :base_request_id => nil
-    @funding_source = FundingSource.make
+    @funding_source = FundingSourceAllocation.make
   end
   
   test "should get new" do
@@ -18,13 +18,13 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
   
   test "should create request funding source" do
     assert_difference('RequestFundingSource.count') do
-      post :create, :request_funding_source => {:request_id => @request1.id, :funding_source_id => @funding_source.id}
+      post :create, :request_funding_source => {:request_id => @request1.id, :funding_source_allocation_id => @funding_source.id}
     end
 
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object
     # assert_redirected_to user_organization_path(assigns(:user_organization))
     
-    assert_equal @funding_source, assigns(:request_funding_source).funding_source
+    assert_equal @funding_source, assigns(:request_funding_source).funding_source_allocation
     assert_equal @request1, assigns(:request_funding_source).request
   end
 
@@ -47,10 +47,10 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
 
   test "should update organization" do
     rfs = RequestFundingSource.make
-    put :update, :id => rfs.id, :request_funding_source => {:funding_source_id => @funding_source.id}
+    put :update, :id => rfs.id, :request_funding_source => {:funding_source_allocation_id => @funding_source.id}
     assert 201, @response.status
     assert @response.header["Location"] =~ /#{request_funding_source_url(assigns(:request_funding_source))}$/
-    assert_equal @funding_source, assigns(:request_funding_source).funding_source
+    assert_equal @funding_source, assigns(:request_funding_source).funding_source_allocation
   end
   
   test "should destroy request_funding_source" do

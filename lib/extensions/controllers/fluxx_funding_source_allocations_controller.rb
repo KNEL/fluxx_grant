@@ -10,6 +10,7 @@ module FluxxFundingSourceAllocationsController
       insta.include_relation = :funding_source
       insta.order_clause = 'funding_sources.name asc'
       insta.icon_style = ICON_STYLE
+      insta.suppress_model_iteration = true
     end
     base.insta_show FundingSourceAllocation do |insta|
       insta.template = 'funding_source_allocation_show'
