@@ -35,7 +35,7 @@ module FluxxRequestReportsController
       insta.icon_style = ICON_STYLE
     end
     base.insta_role RequestReport do |insta|
-      # Define who is allowd to perform which events
+      # Define who is allowed to perform which events
       insta.add_event_roles RequestReport.submit_report_event, Program, Program.request_roles
       insta.add_event_roles RequestReport.lead_approve_event, Program, [Program.program_officer_role_name, Program.program_director_role_name]
       insta.add_event_roles RequestReport.lead_send_back_event, Program, [Program.program_director_role_name, Program.program_officer_role_name]

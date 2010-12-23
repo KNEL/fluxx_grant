@@ -267,26 +267,6 @@ module FluxxRequestReport
     def finance_send_back_event
       'finance_send_back'
     end
-    def send_back_events
-      [RequestReport.lead_send_back_event.to_sym, RequestReport.grant_team_send_back_event.to_sym, RequestReport.finance_send_back_event.to_sym]
-    end
-    def promotion_events
-      [RequestReport.submit_report_event.to_sym, RequestReport.lead_approve_event.to_sym, RequestReport.grant_team_approve_event.to_sym, RequestReport.finance_approve_event.to_sym]
-    end
-
-    def event_to_english_translation event_name
-      case event_name.to_s
-      when RequestReport.submit_report_event then 'Submit Report'
-      when RequestReport.lead_approve_event then 'Approve'
-      when RequestReport.lead_send_back_event then 'Send Back'
-      when RequestReport.grant_team_approve_event then 'Approve'
-      when RequestReport.grant_team_send_back_event then 'Send Back'
-      when RequestReport.finance_approve_event then 'Approve'
-      when RequestReport.finance_send_back_event then 'Send Back'
-      else
-        event_name.to_s
-      end
-    end
 
     def new_state
       'new'
@@ -313,31 +293,6 @@ module FluxxRequestReport
       'sent_back_to_grant_team'
     end
 
-    def states
-      [RequestReport.new_state.to_sym, RequestReport.pending_lead_approval_state.to_sym, RequestReport.pending_grant_team_approval_state.to_sym, 
-        RequestReport.pending_finance_approval_state.to_sym, RequestReport.approved_state.to_sym, RequestReport.sent_back_to_pa_state.to_sym, 
-        RequestReport.sent_back_to_lead_state.to_sym, RequestReport.sent_back_to_grant_team_state.to_sym]
-    end
-
-    def state_to_english
-      RequestReport.state_to_english_translation self.state
-    end
-
-    def state_to_english_translation state_name
-      case state_name.to_s
-      when RequestReport.new_state then 'New'
-      when RequestReport.pending_lead_approval_state then 'Pending Lead Approval'
-      when RequestReport.pending_grant_team_approval_state then 'Pending Grants Team Approval'
-      when RequestReport.pending_finance_approval_state then 'Pending Finance Approval'
-      when RequestReport.approved_state then 'Approved'
-      when RequestReport.sent_back_to_pa_state then 'Sent Back to PA'
-      when RequestReport.sent_back_to_lead_state then 'Sent Back to Lead'
-      when RequestReport.sent_back_to_grant_team_state then 'Sent Back to Grants Team'
-      else
-        state_name.to_s
-      end
-    end
-    
     def document_title_name
       'Report'
     end
