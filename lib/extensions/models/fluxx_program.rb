@@ -93,7 +93,7 @@ module FluxxProgram
     end
 
     def load_users
-      User.joins(:role_users).where({:role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
+      User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
     end
     
     def autocomplete_to_s

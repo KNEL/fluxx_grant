@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101208215651) do
+ActiveRecord::Schema.define(:version => 20101220170429) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -68,6 +68,34 @@ ActiveRecord::Schema.define(:version => 20101208215651) do
 
   add_index "favorites", ["favorable_type", "favorable_id"], :name => "index_favorites_on_favorable_type_and_favorable_id"
   add_index "favorites", ["user_id"], :name => "favorites_user_id"
+
+  create_table "funding_source_allocations", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "funding_source_id"
+    t.integer  "program_id"
+    t.integer  "sub_program_id"
+    t.integer  "initiative_id"
+    t.integer  "sub_initiative_id"
+    t.integer  "authority_id"
+    t.integer  "amount"
+    t.integer  "retired"
+    t.integer  "boolean"
+    t.integer  "locked_by_id"
+    t.datetime "locked_until"
+    t.datetime "deleted_at"
+  end
+
+  add_index "funding_source_allocations", ["authority_id"], :name => "funding_source_allocations_authority_id"
+  add_index "funding_source_allocations", ["created_by_id"], :name => "funding_source_allocations_created_by_id"
+  add_index "funding_source_allocations", ["funding_source_id"], :name => "funding_source_allocations_funding_source_id"
+  add_index "funding_source_allocations", ["initiative_id"], :name => "funding_source_allocations_initiative_id"
+  add_index "funding_source_allocations", ["program_id"], :name => "funding_source_allocations_program_id"
+  add_index "funding_source_allocations", ["sub_initiative_id"], :name => "funding_source_allocations_sub_initiative_id"
+  add_index "funding_source_allocations", ["sub_program_id"], :name => "funding_source_allocations_sub_program_id"
+  add_index "funding_source_allocations", ["updated_by_id"], :name => "funding_source_allocations_updated_by_id"
 
   create_table "funding_sources", :force => true do |t|
     t.datetime "created_at"
@@ -656,7 +684,7 @@ ActiveRecord::Schema.define(:version => 20101208215651) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",           :null => false
+    t.string   "name",          :null => false
     t.text     "description"
     t.integer  "sub_program_id", :null => false
   end
@@ -771,6 +799,7 @@ ActiveRecord::Schema.define(:version => 20101208215651) do
     t.datetime "last_login_at"
     t.string   "current_login_ip"
     t.string   "last_login_ip"
+    t.boolean  "test_user_flag",                               :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

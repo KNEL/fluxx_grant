@@ -124,7 +124,7 @@ RequestReport.blueprint do
 end
 
 RequestFundingSource.blueprint do
-  funding_source {FundingSource.make}
+  funding_source_allocation {FundingSourceAllocation.make}
   request {GrantRequest.make}
 end
 
