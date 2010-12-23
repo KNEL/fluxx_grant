@@ -1,3 +1,6 @@
+# NOTE: to deploy a branch you need to do something like this:
+# cap staging deploy --set-before branch=shakti-1.0-rc1 --set-before engine_branch=fluxx_engine-1.0-rc1 --set-before crm_branch=fluxx_crm-1.0-rc1 --set-before grant_branch=fluxx_grant-1.0-rc1 deploy:migrations
+
 set :stages, %w(standalone staging production)
 set :default_stage, 'standalone'
 require 'capistrano/ext/multistage'
@@ -9,9 +12,9 @@ set :user, "fluxx"
 set :scm_user, Proc.new { Capistrano::CLI.ui.ask("Subversion user: ") }
 set :scm_password, Proc.new { Capistrano::CLI.password_prompt("Subversion password for #{scm_user}: ") }
 set :branch, (variables.include?(:branch) ? branch : 'master')
-set :engine_branch, (variables.include?(:engine_branch) ? branch : 'master')
-set :crm_branch, (variables.include?(:crm_branch) ? branch : 'master')
-set :grant_branch, (variables.include?(:grant_branch) ? branch : 'master')
+set :engine_branch, (variables.include?(:engine_branch) ? engine_branch : 'master')
+set :crm_branch, (variables.include?(:crm_branch) ? crm_branch : 'master')
+set :grant_branch, (variables.include?(:grant_branch) ? grant_branch : 'master')
 set :deploy_via, :remote_cache
 
 set :try_sudo, 'sudo'
@@ -59,8 +62,7 @@ namespace :fluxx do
       gem_cache = "#{gem_name}_cache"
       local_git = Capistrano::Deploy::SCM.new('git', {:repository => gem_path, :branch => gem_branch})
 
-      git_revision = local_git.query_revision(revision){ |cmd| with_env("LC_ALL", "C") { run_locally("cd ../#{gem_name}; #{cmd}") } }
-      p "ESH: have git_revision=#{git_revision} for #{gem_name}"
+      git_revision = local_git.query_revision(gem_branch){ |cmd| with_env("LC_ALL", "C") { run_locally("cd ../#{gem_name}; #{cmd}") } }
       
       repo_cache = "#{shared_path}/#{gem_cache}"
       command = "if [ -d #{repo_cache} ]; then " +
