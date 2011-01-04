@@ -21,6 +21,8 @@ class ReportVisualizationsController < ApplicationController
     case params[:id]
     when "1" then
       year = Time.new.year.to_s
+      # Temporily force year to 2010 while I rewrite the query
+      year = "2010"
       plot[:title] = "#{year} Monthly Grants By Program"
       plot[:axes] = { :xaxis => { :min => 1, :max => 12, :pad => 1.0, :numberTicks => 12 }, :yaxis => { :numberTicks => 5, :min => 0 }}
       plot[:seriesDefaults] = { :fill => true, :showMarker => true, :shadow => false }
