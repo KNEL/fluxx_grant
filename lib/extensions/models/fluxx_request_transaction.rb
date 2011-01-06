@@ -23,7 +23,7 @@ module FluxxRequestTransaction
                 where rt.id IN (?)"
     end
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids]
+      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids, :funder_type_id]
       insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, request_params, name, value|
         value = value.first if value && value.is_a?(Array)
           if value.to_s.is_numeric?
@@ -93,7 +93,7 @@ module FluxxRequestTransaction
 
   module ModelClassMethods
     def add_sphinx
-      define_index do
+      define_index :request_transaction_first do
         # fields
         indexes request.program_organization.name, :as => :request_org_name, :sortable => true
         indexes request.program_organization.acronym, :as => :request_org_acronym, :sortable => true
@@ -110,6 +110,7 @@ module FluxxRequestTransaction
         has request(:type), :type => :string, :crc => true, :as => :request_type
         has "IF(request_transactions.state = 'paid' OR (paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
+        has grant.multi_element_choices.multi_element_value_id, :type => :multi, :as => :grant_multi_element_value_ids
         # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
         # has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
         has group_members.group(:id), :type => :multi, :as => :group_ids
