@@ -76,7 +76,10 @@ module FluxxRequest
           block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
             'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL',
             'Lead PO/PD', 'Program', 'Sub Program', ['Date Request Received', :date], ['Duration', :integer], 
-            'Geo Focus (States)', 'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 'Request Summary']
+            'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date], 
+            'Primary Contact First Name', 'Primary Contact Last Name', 'Primary Contact Email',
+            'Signatory First Name', 'Signatory Last Name', 'Signatory Email',
+            'Request Summary']
           if with_clause && with_clause[:granted]==1
             block1 + grant_block + block2
           else
@@ -111,14 +114,14 @@ module FluxxRequest
           requests.duration_in_months,
           (select replace(group_concat(mev.value, ', '), ', ', '')
           from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
-          WHERE   meg.name = 'constituents'
+          WHERE   meg.name = 'constituents' and meg.target_class_name = 'Request'
           and multi_element_group_id = meg.id
           and multi_element_value_id = mev.id
           and target_id = requests.id
           group by requests.id) constituents,
           (select replace(group_concat(mev.value, ', '), ', ', '')
           from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
-          WHERE   (meg.name = 'usa_means' OR meg.name = 'china_means')
+          WHERE   (meg.name = 'usa_means' OR meg.name = 'china_means') and meg.target_class_name = 'Request'
           and multi_element_group_id = meg.id
           and multi_element_value_id = mev.id
           and target_id = requests.id
@@ -126,7 +129,7 @@ module FluxxRequest
           (select mev_tax_class.value from
            multi_element_groups meg_tax_class,
            multi_element_values mev_tax_class 
-           WHERE meg_tax_class.name = 'tax_classes' and
+           WHERE meg_tax_class.name = 'tax_classes' and meg_tax_class.target_class_name = 'Request' and
            multi_element_group_id = meg_tax_class.id and program_organization.tax_class_id = mev_tax_class.id) org_tax_class,
           replace(group_concat(funding_sources.name, ', '), ', ', '') funding_source_name,
           requests.created_at, requests.updated_at, 
@@ -818,6 +821,24 @@ module FluxxRequest
         self.grant_begins_at = Time.parse((grant_agreement_at + 1.month).strftime('%Y/%m/1')).next_business_day
       end
     end
+    
+    # This is a method meant to be run on requests that are currently in pending_secondary_pd_approval state
+    # It figures out when it was switched to pending secondary approval, and if it's more than 5 days, it will promote it automatically
+    def check_for_secondary_promotion
+      we = workflow_events.find :first, :conditions => {:new_state => 'pending_secondary_pd_approval'}, :order => 'id desc'
+      if we.created_at < (Time.now - 5.days)
+        # Time to promote this puppy!!
+        pending_request_programs = request_programs.select{|rp| !rp.is_approved? }
+        unless pending_request_programs.empty?
+          pending_request_programs.each{|rp| rp.approve}
+        end
+        if self.state == 'pending_secondary_pd_approval'
+          self.secondary_pd_approve
+        end
+        self.save
+      end
+    end
+    
 
     def request_prefix
       'R'
@@ -926,6 +947,13 @@ module FluxxRequest
     
     def address_org
       fiscal_organization || program_organization || Organization.new
+    end
+    
+    def all_request_programs_approved? program=nil
+      return force_all_request_programs_approved if force_all_request_programs_approved # for event_timeline purposes
+      checking_programs = request_programs.reject{|rp| rp.program == program}
+      result = checking_programs.select {|rp| rp.state != 'approved'}.empty?
+      result
     end
   end
 end

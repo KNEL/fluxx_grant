@@ -78,9 +78,9 @@ class ActiveSupport::TestCase
   def setup_fixtures
     unless TestHelper.loaded_meg
       TestHelper.loaded_meg = true
-      setup_multi_element_groups
-      setup_org_tax_classes
-      setup_fip_types
+      setup_grant_multi_element_groups
+      setup_grant_org_tax_classes
+      setup_grant_fip_types
     end
     super
   end
