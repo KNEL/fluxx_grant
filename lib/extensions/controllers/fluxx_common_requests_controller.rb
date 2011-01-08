@@ -46,6 +46,7 @@ module FluxxCommonRequestsController
 
     def grant_request_index_format_html controller_dsl, outcome, default_block
       if params[:view_funnel]
+        # TODO AML: @models is paged, we need the complete set
         local_models = instance_variable_get '@models'
         funnel_map = WorkflowEvent.workflow_funnel local_models.map(&:id), funnel_allowed_states, Request.sent_back_state_mapping_to_workflow, request.format.csv?
         funnel = funnel_allowed_states.map {|state| funnel_map[:workflow_results][state.to_s]}.compact
@@ -54,9 +55,10 @@ module FluxxCommonRequestsController
         # TODO ESH: make sure we do skip_favorites
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/funnel', :footer_template => 'grant_requests/funnel_footer'}
       elsif params[:visualizations]
+        # TODO AML: @models is paged, we need the complete set
         local_models = instance_variable_get '@models'
-        instance_variable_set '@request_ids', local_models.map(&:id).join(",")
-        instance_variable_set '@reports', ReportVisualizationsController.reports
+        instance_variable_set '@reports', ReportHelper.visualizations
+        instance_variable_set '@plot', ReportHelper.data(params[:visualizations].to_i, local_models)
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/report_visualizations', :footer_template => 'grant_requests/report_visualizations_footer'}
       else
         default_block.call

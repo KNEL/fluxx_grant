@@ -1,4 +1,3 @@
 .visualizations
-  - data_src_url = url_for(report_visualizations_path()) + "/1"
-  %div{'data-src' => data_src_url, :class => "chart", 'request-ids' => @request_ids}
-
+  %div{:class => "chart"}
+    #{@plot}
