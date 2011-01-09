@@ -117,7 +117,7 @@ module ReportHelper
     if (axis.last[0] != i -1)
       axis << [i-1, xaxis[i-1]]
     end
-    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis }, :yaxis => { :min => 0, :max => max_grants }}
+    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max_grants }}
     if plot[:data].count == 0
       plot[:data] << [0]
       plot.delete(:series)

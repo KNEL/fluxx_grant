@@ -13,6 +13,9 @@
         =javascript_include_tag filename
       - Dir.glob("#{Rails.root}/public/javascripts/fluxx_engine/src/fluxx.visualizations.js").sort.map{|filename| filename.gsub("#{Rails.root}/public", '')}.each do |filename|
         =javascript_include_tag filename
+      - Dir.glob("#{Rails.root}/public/javascripts/fluxx_engine/lib/jqplot.*.js").sort.map{|filename| filename.gsub("#{Rails.root}/public", '')}.each do |filename|
+        =javascript_include_tag filename
+
 
 
 
