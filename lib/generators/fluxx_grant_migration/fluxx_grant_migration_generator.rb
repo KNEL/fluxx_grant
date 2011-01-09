@@ -2,6 +2,7 @@ require 'rails/generators'
 require 'rails/generators/migration'
 
 class FluxxGrantMigrationGenerator < Rails::Generators::Base
+
   include Rails::Generators::Migration
 
   def self.source_root
@@ -47,6 +48,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'populate_funding_source_allocations.rb', 'db/migrate/fluxx_grant_populate_funding_source_allocations.rb'
     handle_migration 'add_program_geo_zone_meg.rb', 'db/migrate/fluxx_grant_add_program_geo_zone_meg.rb'
     handle_migration 'create_request_program.rb', 'db/migrate/fluxx_grant_create_request_program.rb'
+    handle_migration 'add_retired_to_program_etc.rb', 'db/migrate/fluxx_grant_add_retired_to_program_etc.rb'
   end
   
   private
