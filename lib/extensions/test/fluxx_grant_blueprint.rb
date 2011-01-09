@@ -109,6 +109,10 @@ module FluxxGrantBlueprint
     FundingSourceAllocation.blueprint do
       funding_source {FundingSource.make}
     end
+    
+    RequestProgram.blueprint do
+    end
+    
   
     base.extend(ModelClassMethods)
     base.class_eval do

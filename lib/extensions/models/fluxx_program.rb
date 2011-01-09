@@ -95,7 +95,7 @@ module FluxxProgram
 
     def load_users role_name=nil
       user_query = User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => self.id}})
-      user_query.where({:role_users => {:name => role_name}}) if role_name
+      user_query = user_query.where({:role_users => {:name => role_name}}) if role_name
       user_query.group("users.id").compact
     end
     

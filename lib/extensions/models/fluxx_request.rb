@@ -56,6 +56,12 @@ module FluxxRequest
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL'
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
+    
+    base.has_many :request_programs
+    base.has_many :un_approved_request_programs, :class_name => 'RequestProgram', :foreign_key => 'request_id', :conditions => {:state => 'new'}
+    base.accepts_nested_attributes_for :request_programs, :allow_destroy => true
+    base.has_many :secondary_programs, :class_name => 'Program', :through => :request_programs, :source => :program
+    
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     
