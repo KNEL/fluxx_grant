@@ -62,6 +62,10 @@
   .pairs
     .key Sub-Program:
     .value= model.sub_program.name if model.sub_program
+  - if model.secondary_programs
+    .pairs
+      .key Secondary Programs:
+      .value= model.secondary_programs.map(&:name).to_sentence
   .pairs
     .key Lead Program Officer/Director:
     .value= model.program_lead.full_name if model.program_lead

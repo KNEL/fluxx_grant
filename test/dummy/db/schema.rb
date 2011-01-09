@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101222195540) do
+ActiveRecord::Schema.define(:version => 20110109040916) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -202,6 +202,7 @@ ActiveRecord::Schema.define(:version => 20101222195540) do
     t.string   "name",           :null => false
     t.text     "description"
     t.integer  "sub_program_id"
+    t.boolean  "retired"
   end
 
   add_index "initiatives", ["created_by_id"], :name => "sub_programs_created_by_id"
@@ -358,8 +359,11 @@ ActiveRecord::Schema.define(:version => 20101222195540) do
     t.string   "description"
     t.integer  "parent_id"
     t.boolean  "rollup"
+    t.integer  "geo_zone_id"
+    t.boolean  "retired"
   end
 
+  add_index "programs", ["geo_zone_id"], :name => "program_geo_zone_id"
   add_index "programs", ["parent_id"], :name => "index_programs_on_parent_id"
 
   create_table "project_list_items", :force => true do |t|
@@ -533,6 +537,23 @@ ActiveRecord::Schema.define(:version => 20101222195540) do
   add_index "request_organizations", ["organization_id"], :name => "request_organizations_organization_id"
   add_index "request_organizations", ["request_id", "organization_id"], :name => "index_request_organizations_on_request_id_and_organization_id", :unique => true
 
+  create_table "request_programs", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "request_id"
+    t.integer  "program_id"
+    t.string   "state",               :default => "new"
+    t.datetime "approved_at"
+    t.integer  "approved_by_user_id"
+  end
+
+  add_index "request_programs", ["created_by_id"], :name => "request_programs_created_by_id"
+  add_index "request_programs", ["program_id"], :name => "request_programs_program_id"
+  add_index "request_programs", ["request_id", "program_id"], :name => "index_request_programs_on_request_id_and_program_id", :unique => true
+  add_index "request_programs", ["updated_by_id"], :name => "request_programs_updated_by_id"
+
   create_table "request_reports", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -681,6 +702,7 @@ ActiveRecord::Schema.define(:version => 20101222195540) do
     t.string   "name",          :null => false
     t.text     "description"
     t.integer  "initiative_id"
+    t.boolean  "retired"
   end
 
   add_index "sub_initiatives", ["created_by_id"], :name => "sub_initiatives_created_by_id"
@@ -695,6 +717,7 @@ ActiveRecord::Schema.define(:version => 20101222195540) do
     t.string   "name"
     t.string   "description"
     t.integer  "program_id"
+    t.boolean  "retired"
   end
 
   add_index "sub_programs", ["program_id"], :name => "index_initiatives_on_program_id"

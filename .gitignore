@@ -6,3 +6,4 @@ tmtags
 .bundle
 test/dummy/config/database.yml
 pkg
+test/dummy/public/system

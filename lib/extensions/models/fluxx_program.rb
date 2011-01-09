@@ -12,6 +12,7 @@ module FluxxProgram
     base.insta_search
     base.insta_export
     base.insta_realtime
+    base.insta_multi
     base.insta_template do |insta|
       insta.entity_name = 'program'
       insta.add_methods []
@@ -92,8 +93,10 @@ module FluxxProgram
       SubProgram.find :all, :select => select_field_sql, :conditions => ['program_id = ?', id], :order => :name
     end
 
-    def load_users
-      User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => self.id}}).group("users.id").compact
+    def load_users role_name=nil
+      user_query = User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => self.id}})
+      user_query = user_query.where({:role_users => {:name => role_name}}) if role_name
+      user_query.group("users.id").compact
     end
     
     def funding_source_allocations show_retired=false

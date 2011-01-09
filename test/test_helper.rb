@@ -22,50 +22,8 @@ ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
-class TestHelper
-  def self.loaded_meg= val
-    @loaded_meg = val
-  end
-  
-  def self.loaded_meg
-    @loaded_meg
-  end
-end
 
-def add_perms user
-  user.has_role! 'listview_all'
-  user.has_role! 'view_all'
-  user.has_role! 'create_all'
-  user.has_role! 'update_all'
-  user.has_role! 'delete_all'
-end
-
-def login_as user
-  add_perms user
-  
-  @controller.current_user = user
-end
-
-def login_as_user_with_role role_name, program=@program
-  @alternate_user = User.make
-  @alternate_user.has_role! role_name, program 
-  login_as @alternate_user
-  @alternate_user
-end
-
-class ActionController::Base
-  attr_accessor :current_user
-end
-
-def current_user
-  @current_user unless @current_user == false
-end
-
-# Store the given user id in the session.
-def current_user=(new_user)
-  @current_user = new_user || false
-end
-
+include FluxxGrantTestHelper
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
   #
@@ -76,25 +34,14 @@ class ActiveSupport::TestCase
   # Add more helper methods to be used by all tests here...
 
   def setup_fixtures
-    unless TestHelper.loaded_meg
-      TestHelper.loaded_meg = true
-      setup_multi_element_groups
-      setup_org_tax_classes
-      setup_fip_types
-    end
+    TestHelper.load_megs
     super
   end
 
   setup :clear_out_blueprint_attributes
 
   def clear_out_blueprint_attributes
-    @entered = {} unless @entered
-    unless @entered["#{self.class.name}::#{@method_name}"]
-      @entered["#{self.class.name}::#{@method_name}"] = true
-
-      # It's possible to run out of faker values (such as last name), so if you don't reset your shams you could run out of unique values
-      Sham.reset
-    end
+    TestHelper.clear_blueprint
   end
 end
 
