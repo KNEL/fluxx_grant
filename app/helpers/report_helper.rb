@@ -111,11 +111,11 @@ module ReportHelper
     axis = []
     xaxis.each_index do |x|
       if x == 0 || x % tick_at == 0
-        axis << [x, xaxis[x]]
+        axis << [x + 1, xaxis[x]]
       end
     end
     if (axis.last[0] != i -1)
-      axis << [i-1, xaxis[i-1]]
+      axis << [i, xaxis[i]]
     end
     plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max_grants }}
     if plot[:data].count == 0
