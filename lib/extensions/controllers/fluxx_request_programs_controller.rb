@@ -38,7 +38,7 @@ module FluxxRequestProgramsController
       insta.add_related do |related|
       end
     end
-    
+
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
