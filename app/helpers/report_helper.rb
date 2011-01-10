@@ -53,7 +53,7 @@ module ReportHelper
     else
       aggregate = "SUM(requests.amount_recommended)"
     end
-    query = "select #{aggregate} as num, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
+    query = "select #{aggregate} as num, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, local_models.map(&:id)]))
     req.each_hash do |row|
       year = row["year"].to_i
@@ -112,7 +112,8 @@ module ReportHelper
         axis << [x + 1, xaxis[x]]
       end
     end
-    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max_grants }}
+    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}}
+#     , :yaxis => { :min => 0, :max => max_grants }}
     if plot[:data].count == 0
       plot[:data] << [0]
       plot.delete(:series)
