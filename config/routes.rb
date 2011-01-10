@@ -24,6 +24,5 @@ Rails.application.routes.draw do
   resources :initiatives
   resources :request_reports
   resources :project_requests
-  resources :report_visualizations
 
 end
