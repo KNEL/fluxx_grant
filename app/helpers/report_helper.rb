@@ -55,9 +55,7 @@ module ReportHelper
     end
     query = "select #{aggregate} as num, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, local_models.map(&:id)]))
-    foo = []
     req.each_hash do |row|
-      foo << row
       year = row["year"].to_i
       month = row["month"].to_i
       program_id = row["program_id"].to_i
