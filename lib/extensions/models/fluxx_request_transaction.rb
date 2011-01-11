@@ -23,7 +23,7 @@ module FluxxRequestTransaction
                 where rt.id IN (?)"
     end
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids, :funder_type_id]
+      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids]
       insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, request_params, name, value|
         value = value.first if value && value.is_a?(Array)
           if value.to_s.is_numeric?
