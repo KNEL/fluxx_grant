@@ -18,29 +18,72 @@ module ReportHelper
       plot = by_month_report reportID, local_models
     when 3 then
       # Simulate user entered filter data
-      start_string = '7/4/2009'
+      start_string = '7/4/2010'
       stop_string = '1/1/2011'
       program_ids = (1..23)
 
+      # Array of states that define a request as being in the pipline
+      # TODO AML: Need to verify these with Eric
+      # TODO AML: Once this report is correctly integrated, need to create an extension point for this
+      pipeline_states = ['complete_ierf', 'grant_team_approve', 'po_approve', 'president_approve', 'grant_team_send_back', 'po_send_back', 'president_send_back', 'un_reject', 'become_grant']
+
       start_date = Date.parse(start_string)
       stop_date = Date.parse(stop_string)
-      # Total Granted
-      query = "select sum(amount_recommended) as amount, YEAR(grant_agreement_at) as year, MONTH(grant_agreement_at) as month from requests where granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
 
-      req = Request.connection.execute(Request.send(:sanitize_sql, [query, start_date, stop_date, program_ids]))
-      total_granted = normalize_month_year(start_date, stop_date, req, "amount")
+      # Some helper queries
+
+      # Funding sources for selected programs
+      query = "select id from funding_source_allocations where program_id in (?)"
+      allocation_ids = extract_ids [query, program_ids]
+
+      # Never include these requests
+      allways_exclude = "requests.deleted_at IS NULL AND requests.state <> 'rejected'"
+
+      # Series
+
+      # Total Granted
+      query = "select sum(amount_recommended) as amount, YEAR(grant_agreement_at) as year, MONTH(grant_agreement_at) as month from requests where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
+      total_granted = normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
       # Granted
+      query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 1 and requests.grant_agreement_at >= ? and requests.grant_agreement_at <= ? and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.grant_agreement_at), MONTH(requests.grant_agreement_at)"
+      granted = normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
+
+      #Pipeline
+      query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.request_received_at) as year, MONTH(requests.request_received_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state in (?) and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.request_received_at), MONTH(requests.request_received_at)"
+      pipeline = normalize_month_year_query([query, start_date, stop_date, pipeline_states, allocation_ids], start_date, stop_date, "amount")
+
+      #Paid
+      # TODO: requires additional columns
+
+      # Yearly rollups
+      #Budgeted
+      xaxis = get_xaxis(start_date, stop_date)
+      xaxis << [xaxis.count + 1, "Total"]
+      total_granted << 1000000
+      granted  << 1000000
+      pipeline << 1000000
+
+
+
 
       plot = {:library => "jqplot"}
       plot[:title] = "Funding Allocations (date range)"
-      plot[:data] = [total_granted]
-      plot[:axes] = { :xaxis => {:ticks => get_xaxis(start_date, stop_date), :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0}}
-      plot[:series] = [ {:label => "Total Granted"}, {:granted => "Total Granted"} ]
+      plot[:data] = [total_granted, granted, pipeline]
+      plot[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0}}
+      plot[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"} ]
+      plot[:stackSeries] = true;
       plot[:type] = "bar"
 
     end
     plot.to_json
+  end
+
+  def self.extract_ids(options)
+    req = Request.connection.execute(Request.send(:sanitize_sql, options))
+    ids = []
+    req.each_hash{ |res| ids << res["id"].to_i }
+    return ids
   end
 
   def self.get_xaxis(start_date, stop_date)
@@ -49,11 +92,12 @@ module ReportHelper
   end
 
   # Return query data with values for all months within a range
-  def self.normalize_month_year(start_date, stop_date, req, field)
+  def self.normalize_month_year_query(query, start_date, stop_date, result_field)
+    req = Request.connection.execute(Request.send(:sanitize_sql, query))
     data = get_months_and_years(start_date, stop_date)
     req.each_hash do |row|
       i = data.index([row["month"].to_i, row["year"].to_i])
-      data[i] << row[field]
+      data[i] << row[result_field]
     end
     data.collect { |point| point[2].to_i }
   end
@@ -65,6 +109,7 @@ module ReportHelper
     plot = {:library => "jqplot"}
     plot[:title] = ReportHelper.visualizations[type - 1][:label]
     plot[:seriesDefaults] = { :fill => true, :showMarker => true, :shadow => false }
+    plot[:stackSeries] = true;
     plot[:series] = []
     plot[:data] = []
 
