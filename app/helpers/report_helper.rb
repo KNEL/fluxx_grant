@@ -22,10 +22,10 @@ module ReportHelper
       stop_string = '1/1/2011'
       program_ids = (1..23)
 
-      # Array of states that define a request as being in the pipline
+      # Array of states that define a request as being pre pipline
       # TODO AML: Need to verify these with Eric
       # TODO AML: Once this report is correctly integrated, need to create an extension point for this
-      pipeline_states = ['complete_ierf', 'grant_team_approve', 'po_approve', 'president_approve', 'grant_team_send_back', 'po_send_back', 'president_send_back', 'un_reject', 'become_grant']
+      pre_pipeline_states = ['new', 'funding_recommended']
 
       start_date = Date.parse(start_string)
       stop_date = Date.parse(stop_string)
@@ -33,7 +33,7 @@ module ReportHelper
       # Some helper queries
 
       # Funding sources for selected programs
-      query = "select id from funding_source_allocations where program_id in (?)"
+      query = "select id from funding_source_allocations where program_id in (?) AND retired IS NULL AND deleted_at IS NULL"
       allocation_ids = extract_ids [query, program_ids]
 
       # Never include these requests
@@ -50,28 +50,41 @@ module ReportHelper
       granted = normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
 
       #Pipeline
-      query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.request_received_at) as year, MONTH(requests.request_received_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state in (?) and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.request_received_at), MONTH(requests.request_received_at)"
-      pipeline = normalize_month_year_query([query, start_date, stop_date, pipeline_states, allocation_ids], start_date, stop_date, "amount")
+      query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.request_received_at) as year, MONTH(requests.request_received_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state not in (?) and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.request_received_at), MONTH(requests.request_received_at)"
+      pipeline = normalize_month_year_query([query, start_date, stop_date, pre_pipeline_states, allocation_ids], start_date, stop_date, "amount")
 
       #Paid
       # TODO: requires additional columns
 
-      # Yearly rollups
       #Budgeted
+      query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ?"
+      req = Request.connection.execute(Request.send(:sanitize_sql, [query, program_ids, stop_date, start_date]))
+
+      budgeted = Array.new.fill(0, 0, granted.length)
+      req.each_hash { |row| budgeted << row["amount"].to_i }
+
+      # Rollups
       xaxis = get_xaxis(start_date, stop_date)
       xaxis << [xaxis.count + 1, "Total"]
-      total_granted << 1000000
-      granted  << 1000000
-      pipeline << 1000000
+      total_granted << total_granted.inject {|sum, amount| sum + amount }
+      granted  << granted.inject {|sum, amount| sum + amount }
+      pipeline << pipeline.inject {|sum, amount| sum + amount }
 
-
+      # Informational
+      #TODO: Query
+      grants = 32
+      grants_total = 50000
+      fips = 10
+      fips_total = 80000
 
 
       plot = {:library => "jqplot"}
+      plot[:description] = "#{grants} totalling $#{grants_total} and #{fips} totalling $#{fips_total} from #{start_date.strftime('%m/%d/%Y')} to #{stop_date.strftime('%m/%d/%Y')}."
+
       plot[:title] = "Funding Allocations (date range)"
-      plot[:data] = [total_granted, granted, pipeline]
-      plot[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0}}
-      plot[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"} ]
+      plot[:data] = [total_granted, granted, pipeline, budgeted]
+      plot[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :showLabel => true }}}
+      plot[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"}, {:label => "Budgeted"} ]
       plot[:stackSeries] = true;
       plot[:type] = "bar"
 
