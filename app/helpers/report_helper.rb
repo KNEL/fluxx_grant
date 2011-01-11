@@ -1,7 +1,8 @@
 module ReportHelper
   def self.visualizations
     [{:label => 'Monthly Grants By Program', :value => 1},
-     {:label => 'Grant Dollars By Month', :value => 2}]
+     {:label => 'Grant Dollars By Month', :value => 2},
+      {:label => 'Funding Allocations (date range)', :value => 3}]
   end
   def self.data reportID, local_models
     # Define each report and it's options
@@ -15,10 +16,51 @@ module ReportHelper
       plot = by_month_report reportID, local_models
     when 2 then
       plot = by_month_report reportID, local_models
+    when 3 then
+      # Simulate user entered filter data
+      start_string = '7/4/2009'
+      stop_string = '1/1/2011'
+      program_ids = (1..23)
+
+      start_date = Date.parse(start_string)
+      stop_date = Date.parse(stop_string)
+      # Total Granted
+      query = "select sum(amount_recommended) as amount, YEAR(grant_agreement_at) as year, MONTH(grant_agreement_at) as month from requests where granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
+
+      req = Request.connection.execute(Request.send(:sanitize_sql, [query, start_date, stop_date, program_ids]))
+      total_granted = normalize_month_year(start_date, stop_date, req, "amount")
+
+      # Granted
+
+      plot = {:library => "jqplot"}
+      plot[:title] = "Funding Allocations (date range)"
+      plot[:data] = [total_granted]
+      plot[:axes] = { :xaxis => {:ticks => get_xaxis(start_date, stop_date), :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0}}
+      plot[:series] = [ {:label => "Total Granted"}, {:granted => "Total Granted"} ]
+      plot[:type] = "bar"
+
     end
     plot.to_json
   end
 
+  def self.get_xaxis(start_date, stop_date)
+    i = 0
+    get_months_and_years(start_date, stop_date).collect{ |date| [i = i + 1, date[0].to_s + "/" + date[1].to_s] }
+  end
+
+  # Return query data with values for all months within a range
+  def self.normalize_month_year(start_date, stop_date, req, field)
+    data = get_months_and_years(start_date, stop_date)
+    req.each_hash do |row|
+      i = data.index([row["month"].to_i, row["year"].to_i])
+      data[i] << row[field]
+    end
+    data.collect { |point| point[2].to_i }
+  end
+
+  def self.get_months_and_years(start_date, stop_date)
+   (start_date..stop_date).collect { |date| [date.month, date.year] }.uniq
+  end
   def self.by_month_report type, local_models
     plot = {:library => "jqplot"}
     plot[:title] = ReportHelper.visualizations[type - 1][:label]
