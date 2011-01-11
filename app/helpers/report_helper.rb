@@ -71,15 +71,16 @@ module ReportHelper
       pipeline << pipeline.inject {|sum, amount| sum + amount }
 
       # Informational
-      #TODO: Query
-      grants = 32
-      grants_total = 50000
-      fips = 10
-      fips_total = 80000
-
+      query = "select count(id) as num, sum(amount_recommended) as amount from requests where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = (?)"
+      res = single_value_query([query, start_date, stop_date, program_ids, "GrantRequest"])
+      grants = res["num"]
+      grants_total = res["amount"]
+      res = single_value_query([query, start_date, stop_date, program_ids, "FipRequest"])
+      fips = res["num"]
+      fips_total = res["amount"]
 
       plot = {:library => "jqplot"}
-      plot[:description] = "#{grants} totalling $#{grants_total} and #{fips} totalling $#{fips_total} from #{start_date.strftime('%m/%d/%Y')} to #{stop_date.strftime('%m/%d/%Y')}."
+      plot[:description] = "#{grants} grants totalling $#{grants_total} and #{fips} fips totalling $#{fips_total} from #{start_date.strftime('%m/%d/%Y')} to #{stop_date.strftime('%m/%d/%Y')}."
 
       plot[:title] = "Funding Allocations (date range)"
       plot[:data] = [total_granted, granted, pipeline, budgeted]
@@ -92,6 +93,10 @@ module ReportHelper
     plot.to_json
   end
 
+  def self.single_value_query(query)
+    req = Request.connection.execute(Request.send(:sanitize_sql, query))
+    req.each_hash{ |res| return res}
+  end
   def self.extract_ids(options)
     req = Request.connection.execute(Request.send(:sanitize_sql, options))
     ids = []
