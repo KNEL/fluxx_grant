@@ -104,7 +104,7 @@ module ReportHelper
 
       # Selected Programs
       query = "select name, id from programs where id in (?)"
-      programs = query_map_to_array([query, program_ids], program_ids, "id", "name")
+      programs = query_map_to_array([query, program_ids], program_ids, "id", "name", false)
       xaxis = []
       i = 0
       programs.each { |program| xaxis << [i = i + 1, program] }
@@ -151,13 +151,13 @@ module ReportHelper
     plot.to_json
   end
 
-  def self.query_map_to_array query, array, map_field, result_field
+  def self.query_map_to_array query, array, map_field, result_field, convert_to_integer = true
     req = Request.connection.execute(Request.send(:sanitize_sql, query))
     results = Array.new.fill(0, 0, array.length)
     req.each_hash do |res|
       i = array.index(res[map_field].to_i)
       if i
-        results[i] = res[result_field]
+        results[i] = (convert_to_integer ? res[result_field].to_i : res[result_field])
       end
     end
     results
