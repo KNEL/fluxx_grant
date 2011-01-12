@@ -1,8 +1,14 @@
 module ReportHelper
+
+  # Array of states that define a request as being pre pipline
+  # TODO AML: Once this report is correctly integrated, need to create an extension point for this
+  PRE_PIPELINE_STATES = ['new', 'funding_recommended']
+
   def self.visualizations
     [{:label => 'Monthly Grants By Program', :value => 1},
      {:label => 'Grant Dollars By Month', :value => 2},
-      {:label => 'Funding Allocations (date range)', :value => 3}]
+     {:label => 'Funding Allocations (date range)', :value => 3},
+     {:label => 'Funding Allocations by Program', :value => 4}]
   end
   def self.data reportID, local_models
     # Define each report and it's options
@@ -21,11 +27,6 @@ module ReportHelper
       start_string = '7/4/2010'
       stop_string = '1/1/2011'
       program_ids = (1..23)
-
-      # Array of states that define a request as being pre pipline
-      # TODO AML: Need to verify these with Eric
-      # TODO AML: Once this report is correctly integrated, need to create an extension point for this
-      pre_pipeline_states = ['new', 'funding_recommended']
 
       start_date = Date.parse(start_string)
       stop_date = Date.parse(stop_string)
@@ -50,25 +51,25 @@ module ReportHelper
       granted = normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
 
       #Pipeline
-      query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.request_received_at) as year, MONTH(requests.request_received_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state not in (?) and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.request_received_at), MONTH(requests.request_received_at)"
-      pipeline = normalize_month_year_query([query, start_date, stop_date, pre_pipeline_states, allocation_ids], start_date, stop_date, "amount")
+      query = "select sum(request_funding_sources.funding_amount) as amount from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state not in (?) and request_funding_sources.funding_source_allocation_id in (?)"
+      res = single_value_query([query, start_date, stop_date, PRE_PIPELINE_STATES, allocation_ids])
+      pipeline = Array.new.fill(0, 0, granted.length)
+      pipeline << res["amount"].to_i
 
       #Paid
       # TODO: requires additional columns
 
       #Budgeted
       query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ?"
-      req = Request.connection.execute(Request.send(:sanitize_sql, [query, program_ids, stop_date, start_date]))
-
+      res = single_value_query([query, program_ids, stop_date, start_date])
       budgeted = Array.new.fill(0, 0, granted.length)
-      req.each_hash { |row| budgeted << row["amount"].to_i }
+      budgeted << res["amount"].to_i
 
       # Rollups
       xaxis = get_xaxis(start_date, stop_date)
       xaxis << [xaxis.count + 1, "Total"]
       total_granted << total_granted.inject {|sum, amount| sum + amount }
       granted  << granted.inject {|sum, amount| sum + amount }
-      pipeline << pipeline.inject {|sum, amount| sum + amount }
 
       # Informational
       query = "select count(id) as num, sum(amount_recommended) as amount from requests where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = (?)"
@@ -89,8 +90,84 @@ module ReportHelper
       plot[:stackSeries] = true;
       plot[:type] = "bar"
 
+    when 4
+      # Simulate user entered filter data
+      start_string = '7/4/2010'
+      stop_string = '1/1/2011'
+      program_ids = [1,2,3,4,5]
+
+      start_date = Date.parse(start_string)
+      stop_date = Date.parse(stop_string)
+
+      # Never include these requests
+      allways_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+
+      # Selected Programs
+      query = "select name, id from programs where id in (?)"
+      programs = query_map_to_array([query, program_ids], program_ids, "id", "name")
+      xaxis = []
+      i = 0
+      programs.each { |program| xaxis << [i = i + 1, program] }
+      #Total Granted
+      query = "select sum(amount_recommended) as amount, program_id from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by program_id"
+      total_granted = query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
+
+      #Granted
+      query = "select sum(rs.funding_amount) as amount, fa.program_id as program_id from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{allways_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) group by fa.program_id"
+      granted = query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
+
+      #Paid
+      #TODO
+
+      #Budgeted
+      query = "SELECT sum(fa.amount) as amount, fa.program_id as program_id FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ? GROUP BY fa.program_id"
+      budgeted = query_map_to_array([query, program_ids, stop_date, start_date], program_ids, "program_id", "amount")
+
+      #Pipeline
+      #TODO: Check this
+      query = "select sum(rs.funding_amount) as amount, fa.program_id as program_id from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where r.deleted_at IS NULL AND r.state <> 'rejected' and r.granted = 0 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) and r.state not in (?) group by fa.program_id ORDER BY fa.program_id"
+      pipeline = query_map_to_array([query, start_date, stop_date, program_ids, PRE_PIPELINE_STATES], program_ids, "program_id", "amount")
+
+      # Informational
+      query = "select count(id) as num, sum(amount_recommended) as amount from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = (?)"
+      res = single_value_query([query, start_date, stop_date, program_ids, "GrantRequest"])
+      grants = res["num"]
+      grants_total = res["amount"]
+      res = single_value_query([query, start_date, stop_date, program_ids, "FipRequest"])
+      fips = res["num"]
+      fips_total = res["amount"]
+
+      plot = {:library => "jqplot"}
+      plot[:description] = "#{grants} grants totalling $#{grants_total} and #{fips} fips totalling $#{fips_total} from #{start_date.strftime('%m/%d/%Y')} to #{stop_date.strftime('%m/%d/%Y')}."
+
+      plot[:title] = "Funding Allocations by Program"
+      plot[:data] = [total_granted, granted, budgeted, pipeline]
+      plot[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :showLabel => true }}}
+      plot[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"}, {:label => "Budgeted"} ]
+      plot[:stackSeries] = true;
+      plot[:type] = "bar"
+
     end
     plot.to_json
+  end
+
+  def self.query_map_to_array query, array, map_field, result_field
+    req = Request.connection.execute(Request.send(:sanitize_sql, query))
+    results = Array.new.fill(0, 0, array.length)
+    req.each_hash do |res|
+      i = array.index(res[map_field].to_i)
+      if i
+        results[i] = res[result_field]
+      end
+    end
+    results
+  end
+
+  def self.array_query(query, result_field)
+    req = Request.connection.execute(Request.send(:sanitize_sql, query))
+    results = []
+    req.each_hash{ |res| results << res[result_field]}
+    return results
   end
 
   def self.single_value_query(query)
