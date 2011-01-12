@@ -18,4 +18,22 @@ class GrantedRequestsControllerTest < ActionController::TestCase
     get :show, :id => @request1.to_param
     assert_response :success
   end
+  
+  test "should get index with monthly grants count plot" do
+    controller = GrantedRequestsController.new
+    reports = controller.insta_index_report_list
+    grant_count_rep = reports.select{|rep| rep.is_a? MonthlyGrantsCountReport}.first
+    get :index, :fluxxreport_id => grant_count_rep.report_id
+    assert @response.body =~ /visualizations/
+    assert @response.body =~ /#{grant_count_rep.report_label}/
+  end
+  
+  test "should get index with monthly grants money plot" do
+    controller = GrantedRequestsController.new
+    reports = controller.insta_index_report_list
+    grant_money_rep = reports.select{|rep| rep.is_a? MonthlyGrantsMoneyReport}.first
+    get :index, :fluxxreport_id => grant_money_rep.report_id
+    assert @response.body =~ /visualizations/
+    assert @response.body =~ /#{grant_money_rep.report_label}/
+  end
 end

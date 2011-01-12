@@ -20,6 +20,10 @@ module FluxxGrantedRequestsController
         end
       end
     end
+    base.insta_report do |insta|
+      insta.report_name_path = 'granted_requests'
+    end
+    
     base.insta_show Request do |insta|
       insta.template = 'grant_requests/grant_request_show'
       insta.icon_style = ICON_STYLE
