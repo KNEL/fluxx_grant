@@ -58,6 +58,9 @@ module FluxxCommonRequestsController
         instance_variable_set '@reports', ReportHelper.visualizations
         instance_variable_set '@plot', ReportHelper.data(params[:visualizations].to_i, local_models)
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/report_visualizations', :footer_template => 'grant_requests/report_visualizations_footer'}
+      elsif params[:adhoc]
+        # AML: Temporary way to launch the reports modal, to be removed
+        render :partial => (params[:adhoc] == "1" ? 'grant_requests/adhoc' : 'grant_requests/adhoc_filter')
       else
         default_block.call
       end

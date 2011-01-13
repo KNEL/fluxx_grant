@@ -1,0 +1,19 @@
+.report-modal
+  .report-modal-title
+    Custom Reports
+  .report-list
+    .report-info{'data-filter-url' => grant_requests_path(:adhoc => 2)}
+      .report-title
+        Funding Allocations (date range)
+      .report-description
+        View current status of each allocation - amount spent, in the pipeline and allocated
+      %span.open-report-filter
+        = link_to image_tag('/images/fluxx_engine/theme/default/modal/arrow-right.png')
+    .report-info{'data-filter-url' => grant_requests_path(:adhoc => 2)}
+      .report-title
+        Funding Allocations (by program)
+      .report-description
+        View current status of each allocation - amount spent, in the pipeline and allocated
+      %span.open-report-filter
+        = link_to image_tag('/images/fluxx_engine/theme/default/modal/arrow-right.png')
+  .report-filter
