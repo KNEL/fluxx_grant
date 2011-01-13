@@ -5,7 +5,7 @@ class FundingSourceAllocationsControllerTest < ActionController::TestCase
   def setup
     @user1 = User.make
     login_as @user1
-    @FundingSourceAllocation = FundingSourceAllocation.make
+    @funding_source_allocation = FundingSourceAllocation.make
   end
   
   test "should get index" do
@@ -36,55 +36,75 @@ class FundingSourceAllocationsControllerTest < ActionController::TestCase
   end
 
   test "should show funding_source_allocation" do
-    get :show, :id => @FundingSourceAllocation.to_param
+    get :show, :id => @funding_source_allocation.to_param
     assert_response :success
   end
 
   test "should show funding_source_allocation with documents" do
-    model_doc1 = ModelDocument.make(:documentable => @FundingSourceAllocation)
-    model_doc2 = ModelDocument.make(:documentable => @FundingSourceAllocation)
-    get :show, :id => @FundingSourceAllocation.to_param
+    model_doc1 = ModelDocument.make(:documentable => @funding_source_allocation)
+    model_doc2 = ModelDocument.make(:documentable => @funding_source_allocation)
+    get :show, :id => @funding_source_allocation.to_param
     assert_response :success
   end
   
   test "should show funding_source_allocation with groups" do
     group = Group.make
-    group_member1 = GroupMember.make :groupable => @FundingSourceAllocation, :group => group
-    group_member2 = GroupMember.make :groupable => @FundingSourceAllocation, :group => group
-    get :show, :id => @FundingSourceAllocation.to_param
+    group_member1 = GroupMember.make :groupable => @funding_source_allocation, :group => group
+    group_member2 = GroupMember.make :groupable => @funding_source_allocation, :group => group
+    get :show, :id => @funding_source_allocation.to_param
     assert_response :success
   end
   
+  test "autocomplete" do
+    lookup_funding_source_allocation = FundingSourceAllocation.make
+    get :index, :format => :autocomplete
+    assert_response :success
+  end
+  
+  test "autocomplete with enough balance" do
+    lookup_funding_source_allocation = FundingSourceAllocation.make :amount => 150000
+    get :index, :format => :autocomplete, :amount => 50000
+    assert_response :success
+    assert @response.body.index("#{lookup_funding_source_allocation.amount_remaining.to_currency}")
+  end
+  
+  test "autocomplete without enough balance" do
+    lookup_funding_source_allocation = FundingSourceAllocation.make :amount => 150000
+    get :index, :format => :autocomplete, :amount => 250000
+    assert_response :success
+    assert @response.body.index("Less than #{250000.to_currency}")
+  end
+  
   test "should show funding_source_allocation with audits" do
-    Audit.make :auditable_id => @FundingSourceAllocation.to_param, :auditable_type => @FundingSourceAllocation.class.name
-    get :show, :id => @FundingSourceAllocation.to_param
+    Audit.make :auditable_id => @funding_source_allocation.to_param, :auditable_type => @funding_source_allocation.class.name
+    get :show, :id => @funding_source_allocation.to_param
     assert_response :success
   end
   
   test "should show funding_source_allocation audit" do
-    get :show, :id => @FundingSourceAllocation.to_param, :audit_id => @FundingSourceAllocation.audits.first.to_param
+    get :show, :id => @funding_source_allocation.to_param, :audit_id => @funding_source_allocation.audits.first.to_param
     assert_response :success
   end
   
   test "should get edit" do
-    get :edit, :id => @FundingSourceAllocation.to_param
+    get :edit, :id => @funding_source_allocation.to_param
     assert_response :success
   end
 
   test "should not be allowed to edit if somebody else is editing" do
-    @FundingSourceAllocation.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    get :edit, :id => @FundingSourceAllocation.to_param
+    @funding_source_allocation.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
+    get :edit, :id => @funding_source_allocation.to_param
     assert assigns(:not_editable)
   end
 
   test "should not be allowed to update if somebody else is editing" do
-    @FundingSourceAllocation.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    put :update, :id => @FundingSourceAllocation.to_param, :funding_source_allocation => {}
+    @funding_source_allocation.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
+    put :update, :id => @funding_source_allocation.to_param, :funding_source_allocation => {}
     assert assigns(:not_editable)
   end
 
   test "should update funding_source_allocation" do
-    put :update, :id => @FundingSourceAllocation.to_param, :funding_source_allocation => {}
+    put :update, :id => @funding_source_allocation.to_param, :funding_source_allocation => {}
     assert flash[:info]
     
     assert 201, @response.status
@@ -92,7 +112,7 @@ class FundingSourceAllocationsControllerTest < ActionController::TestCase
   end
 
   test "should destroy funding_source_allocation" do
-    delete :destroy, :id => @FundingSourceAllocation.to_param
-    assert_not_nil @FundingSourceAllocation.reload().deleted_at 
+    delete :destroy, :id => @funding_source_allocation.to_param
+    assert_not_nil @funding_source_allocation.reload().deleted_at 
   end
 end

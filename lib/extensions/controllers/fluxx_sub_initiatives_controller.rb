@@ -1,5 +1,5 @@
 module FluxxSubInitiativesController
-  ICON_STYLE = 'style-sub-initiatives'
+  ICON_STYLE = 'style-admin-cards'
   def self.included(base)
     base.insta_index SubInitiative do |insta|
       insta.template = 'sub_initiative_list'

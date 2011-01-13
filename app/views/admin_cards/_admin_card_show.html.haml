@@ -2,5 +2,7 @@
 
 = render :partial => 'funding_sources/list_funding_sources'
   
-= render :partial => 'funding_source_allocations/list_funding_source_allocations'
-
+= link_to 'Programs', programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Programs'
+= link_to 'Sub-Programs', sub_programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Programs'
+= link_to 'Initiatives', initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Initiatives'
+= link_to 'Sub-Initiatives', sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Initiatives'

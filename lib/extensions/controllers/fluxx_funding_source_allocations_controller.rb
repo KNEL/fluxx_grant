@@ -3,14 +3,33 @@ module FluxxFundingSourceAllocationsController
   def self.included(base)
     base.insta_index FundingSourceAllocation do |insta|
       insta.template = 'funding_source_allocation_list'
-      insta.filter_title = "FundingSourceAllocations Filter"
-      insta.filter_template = 'funding_source_allocations/funding_source_allocation_filter'
       insta.order_clause = 'updated_at desc'
       insta.results_per_page = 500
       insta.include_relation = :funding_source
       insta.order_clause = 'funding_sources.name asc'
       insta.icon_style = ICON_STYLE
       insta.suppress_model_iteration = true
+      insta.format do |format|
+        format.autocomplete do |triple|
+          controller_dsl, outcome, default_block = triple
+          out_text = @models.map do |model|
+              amount_remaining = model.amount_remaining
+              request_amount = params[:amount].to_i if params[:amount] && params[:amount].to_i > 0
+              funds_available = if request_amount
+                if amount_remaining > request_amount
+                  amount_remaining.to_currency
+                else
+                  "Less than #{request_amount.to_currency} available"
+                end
+              else
+                amount_remaining.to_currency
+              end
+              controller_url = url_for(model)
+              {:label => "#{model.funding_source ? model.funding_source.name : ''}: #{funds_available}", :value => model.id, :url => controller_url}
+            end.to_json
+          render :text => out_text
+        end
+      end
     end
     base.insta_show FundingSourceAllocation do |insta|
       insta.template = 'funding_source_allocation_show'

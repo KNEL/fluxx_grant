@@ -53,5 +53,13 @@ module FluxxInitiative
       end
       fsas.all
     end
+    
+    def program_id
+      program.id if program
+    end
+    
+    def program
+      sub_program.program if sub_program
+    end
   end
 end

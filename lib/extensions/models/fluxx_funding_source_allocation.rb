@@ -48,6 +48,10 @@ module FluxxFundingSourceAllocation
     def amount_granted
       request_funding_sources.select{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + rfs.funding_amount}
     end
+    
+    def amount_remaining
+      (amount || 0) - (amount_granted || 0)
+    end
 
     def amount_granted_in_queue
       request_funding_sources.reject{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + rfs.funding_amount}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110110215335) do
+ActiveRecord::Schema.define(:version => 20110113174511) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -85,6 +85,7 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
+    t.integer  "spending_year"
   end
 
   add_index "funding_source_allocations", ["authority_id"], :name => "funding_source_allocations_authority_id"

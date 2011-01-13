@@ -38,5 +38,21 @@ module FluxxSubInitiative
     def to_s
       autocomplete_to_s
     end
+    
+    def program_id
+      program.id if program
+    end
+    
+    def program
+      sub_program.program if sub_program
+    end
+    
+    def sub_program_id
+      sub_program.id if sub_program
+    end
+    
+    def sub_program
+      initiative.sub_program if initiative
+    end
   end
 end

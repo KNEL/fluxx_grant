@@ -1,1 +1,9 @@
+- spending_year = Time.now.year
 %h1= model.name
+%h4
+  = model.sub_program.program.name if model.sub_program && model.sub_program.program
+  |
+  = model.sub_program.name if model.sub_program
+%h4 
+  = FundingSourceAllocation.where(:initiative_id => model.id, :spending_year => spending_year).sum('amount').to_currency
+  Total Funding

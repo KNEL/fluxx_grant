@@ -13,6 +13,7 @@ module FluxxRequestFundingSource
     base.send :attr_accessor, :sub_program_id
     base.send :attr_accessor, :sub_initiative
     base.send :attr_accessor, :sub_initiative_id
+    base.send :attr_accessor, :spending_year
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
