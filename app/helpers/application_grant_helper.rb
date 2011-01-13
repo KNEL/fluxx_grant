@@ -2,29 +2,29 @@ module ApplicationGrantHelper
   def dollars_format amount
     number_to_currency amount, :precision => 0
   end
-  
+
   def mdy_date_format value
     (value && value.is_a?(Time)) ? value.to_s(:mdy) : value
   end
-  
+
   def show_path_for_model model, options={}
     send("#{model.class.name.tableize.pluralize.downcase}_path", options)
   end
-  
+
   def render_grant_id request
-    if request.is_grant? 
-      request.grant_id 
+    if request.is_grant?
+      request.grant_id
     end
   end
 
   def render_request_id request
-    request.request_id 
+    request.request_id
   end
-  
+
   def render_grant_or_request_id request
     render_grant_id(request) || render_request_id(request)
   end
-  
+
   def render_text_program_name request, include_fiscal=true
     if request.is_a? FipRequest
       request.fip_title
@@ -38,7 +38,7 @@ module ApplicationGrantHelper
       [org_name, fiscal_org_name].compact.join ', '
     end
   end
-  
+
   def render_program_name request, include_fiscal=true
     if request.is_a? FipRequest
      raw "<span class=\"minimize-detail-pull\">#{request.fip_title}</span> <br />"
@@ -52,19 +52,19 @@ module ApplicationGrantHelper
       raw "<span class=\"minimize-detail-pull\">#{org_name + fiscal_org_name}</span> <br />"
     end
   end
-  
+
   def render_grant_amount request, grant_text='Granted'
-    if request.is_grant? 
+    if request.is_grant?
       "#{number_to_currency request.amount_recommended, :precision => 0} #{grant_text}"
     end
   end
-  
+
   def render_request_amount request, request_text
-    if request.amount_requested && request.amount_requested != 0 
+    if request.amount_requested && request.amount_requested != 0
       "#{request_text} <span class='minimize-detail-pull'>#{number_to_currency request.amount_requested, :precision => 0}</span> <br />"
     end
   end
-  
+
   def render_request_or_grant_amount request, grant_text='Granted', request_text='Request for'
     raw render_grant_amount(request, grant_text) || render_request_amount(request, request_text)
   end
@@ -92,7 +92,7 @@ module ApplicationGrantHelper
   def generate_html(form_builder, method, options = {})
     options[:object] ||= form_builder.object.class.reflect_on_association(method).klass.new
     options[:partial] ||= method.to_s.singularize
-    options[:form_builder_local] ||= :f  
+    options[:form_builder_local] ||= :f
 
     form_builder.fields_for(method, options[:object], :child_index => '{{ record_index }}') do |f|
       render(:partial => options[:partial], :locals => { options[:form_builder_local] => f })
@@ -102,7 +102,7 @@ module ApplicationGrantHelper
   def generate_template(form_builder, method, options = {})
     escape_carriage_returns(single_quote_html(generate_html(form_builder, method, options)))
   end
-  
+
   def single_quote_html html
     html.gsub '"', "'"
   end
@@ -110,7 +110,7 @@ module ApplicationGrantHelper
   def escape_carriage_returns html
     html.gsub "\n", '\\n'
   end
-  
+
   def build_add_card_links
     links = []
     links << "  '#{link_to 'Projects', projects_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_projects]
@@ -122,7 +122,7 @@ module ApplicationGrantHelper
     links << "  '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_transactions]
     links.join ",\n"
   end
-  
+
   def build_adminlink
     if current_user.is_admin?
       "'#{link_to 'admin', admin_card_path(:id => 1), :class => 'new-detail'}',"
@@ -130,15 +130,15 @@ module ApplicationGrantHelper
       ""
     end
   end
-  
+
   def build_reportlink
     if current_user.has_view_for_model? RequestReport
-      "'#{link_to 'report', modal_reports_path, :class => 'to-modal'}',"
+      "'#{link_to 'report', modal_reports_path, :class => 'reports-modal'}',"
     else
       ""
     end
   end
-  
+
   def build_quicklinks
     links = []
     links << "{
@@ -153,11 +153,11 @@ module ApplicationGrantHelper
       className: 'new-detail',
       type: 'style-ql-user small'
     }" unless FLUXX_CONFIGURATION[:hide_people]
-    
+
     request_links = []
     request_links << "  '#{link_to 'New Grant Request', new_grant_request_path, :class => 'new-detail'}'\n" unless FLUXX_CONFIGURATION[:hide_requests]
     request_links << "  '#{link_to 'New ' + I18n.t(:fip_name) + ' Request', new_fip_request_path, :class => 'new-detail'}'\n" unless FLUXX_CONFIGURATION[:hide_requests]
-    
+
     links << "{
       label: 'New Request',
       url: '#',
