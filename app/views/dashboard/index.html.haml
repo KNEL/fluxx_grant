@@ -31,6 +31,7 @@
             header: {
               actions: [
               #{build_adminlink}
+              #{build_reportlink}
               '#{link_to current_user.full_name.blank? ? (current_user.email.blank? ? current_user.login : current_user.email) : current_user.full_name, current_user, :class => 'new-detail'}',
                 '#{link_to 'Logout', logout_path}'
               ]
