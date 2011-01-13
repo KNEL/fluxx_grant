@@ -81,9 +81,14 @@ module FluxxProgram
     def all_program_users
       User.joins(:role_users).where({:role_users => {:roleable_type => self.name}}).group("users.id").compact
     end
+
+    def load_all
+      Program.where(:retired => 0).all
+    end
   end
 
   module ModelInstanceMethods
+    
     def load_sub_programs minimum_fields=true
       select_field_sql = if minimum_fields
         'description, name, id, program_id'

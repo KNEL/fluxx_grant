@@ -131,6 +131,14 @@ module ApplicationGrantHelper
     end
   end
   
+  def build_reportlink
+    if current_user.has_view_for_model? RequestReport
+      "'#{link_to 'report', modal_reports_path, :class => 'to-modal'}',"
+    else
+      ""
+    end
+  end
+  
   def build_quicklinks
     links = []
     links << "{

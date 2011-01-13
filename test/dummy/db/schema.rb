@@ -105,7 +105,7 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.integer  "amount"
     t.datetime "start_at"
     t.datetime "end_at"
-    t.boolean  "retired"
+    t.boolean  "retired",       :default => false, :null => false
   end
 
   create_table "geo_cities", :force => true do |t|
@@ -199,10 +199,10 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",           :null => false
+    t.string   "name",                              :null => false
     t.text     "description"
     t.integer  "sub_program_id"
-    t.boolean  "retired"
+    t.boolean  "retired",        :default => false, :null => false
   end
 
   add_index "initiatives", ["created_by_id"], :name => "sub_programs_created_by_id"
@@ -361,7 +361,7 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.integer  "parent_id"
     t.boolean  "rollup"
     t.integer  "geo_zone_id"
-    t.boolean  "retired"
+    t.boolean  "retired",       :default => false, :null => false
   end
 
   add_index "programs", ["geo_zone_id"], :name => "program_geo_zone_id"
@@ -700,10 +700,10 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",          :null => false
+    t.string   "name",                             :null => false
     t.text     "description"
     t.integer  "initiative_id"
-    t.boolean  "retired"
+    t.boolean  "retired",       :default => false, :null => false
   end
 
   add_index "sub_initiatives", ["created_by_id"], :name => "sub_initiatives_created_by_id"
@@ -718,7 +718,7 @@ ActiveRecord::Schema.define(:version => 20110110215335) do
     t.string   "name"
     t.string   "description"
     t.integer  "program_id"
-    t.boolean  "retired"
+    t.boolean  "retired",       :default => false, :null => false
   end
 
   add_index "sub_programs", ["program_id"], :name => "index_initiatives_on_program_id"
