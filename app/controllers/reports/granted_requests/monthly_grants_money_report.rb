@@ -8,7 +8,7 @@ class MonthlyGrantsMoneyReport < ActionController::ReportBase
 
   def compute_index_plot_data controller, index_object, params, models
     hash = by_month_report models.map(&:id), :sum_amount
-    hash[:title] = 'Grant Dollars By Month'
+    hash[:title] = report_label
     hash.to_json
   end
 end
