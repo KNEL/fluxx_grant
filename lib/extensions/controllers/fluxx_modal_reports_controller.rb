@@ -19,7 +19,7 @@ module FluxxModalReportsController
     base.insta_report do |insta|
       insta.report_name_path = 'modal_reports'
     end
-    
+
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

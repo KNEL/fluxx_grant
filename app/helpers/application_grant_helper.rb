@@ -133,7 +133,7 @@ module ApplicationGrantHelper
 
   def build_reportlink
     if current_user.has_view_for_model? RequestReport
-      "'#{link_to 'report', modal_reports_path, :class => 'reports-modal'}',"
+      "'#{link_to 'reports', modal_reports_path, :class => 'reports-modal'}',"
     else
       ""
     end
