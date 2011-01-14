@@ -7,11 +7,11 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
   end
 
   def report_label
-    "Funding Allocations (date range)"
+    "Funding Allocations by date"
   end
 
   def report_description
-    "View current status of each allocation - amount spent, in the pipeline and allocated"
+    "View current status of each allocation - amount spent, in the pipeline and allocated organized by month"
   end
 
   def compute_show_plot_data controller, index_object, params
@@ -20,7 +20,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     hash[:title] = report_label
 
     start_string = '1/1/' + filter["funding_year"]
-    program_ids = filter["program_id"]
+    program_ids = filter["program_id"].map {|program| program.to_i}
 
     start_date = Date.parse(start_string)
     stop_date = start_date.end_of_year()
