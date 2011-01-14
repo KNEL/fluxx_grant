@@ -20,7 +20,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     hash[:title] = report_label
 
     start_string = '1/1/' + filter["funding_year"]
-    program_ids = filter["program_id"].map {|program| program.to_i}
+    program_ids= ReportUtility.get_program_ids filter["program_id"]
 
     start_date = Date.parse(start_string)
     stop_date = start_date.end_of_year()
