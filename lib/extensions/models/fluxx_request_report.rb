@@ -1,5 +1,7 @@
 module FluxxRequestReport
   SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids] 
+  LIQUID_METHODS = [:type_to_english, :due_at]
+
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => true}
@@ -81,6 +83,7 @@ module FluxxRequestReport
       insta.add_methods [:type_to_english]
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
 
     base.send :include, AASM
     base.aasm_column :state

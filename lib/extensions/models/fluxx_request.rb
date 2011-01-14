@@ -27,6 +27,9 @@ module FluxxRequest
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
+  # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
+  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics]  
+
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
     base.send :attr_accessor, :program_organization_lookup
@@ -175,6 +178,7 @@ module FluxxRequest
       insta.add_list_method :request_reports, RequestReport
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
     
     
     base.insta_search do |insta|
@@ -950,6 +954,15 @@ module FluxxRequest
     def signatory_contact
       fiscal_signatory  || fiscal_org_owner || grantee_signatory ||  grantee_org_owner || User.new
     end
+    
+    def signatory_user_org
+      return nil if signatory_contact.nil? || address_org.nil?
+      signatory_contact.user_organizations.where(:organization_id => address_org.id).first
+    end
+    
+    def signatory_user_org_title
+      signatory_user_org ? signatory_user_org.title : nil
+    end  
     
     def address_org
       fiscal_organization || program_organization || Organization.new

@@ -1,4 +1,6 @@
 module FluxxProgram
+  LIQUID_METHODS = [:name]
+
   def self.included(base)
     base.acts_as_audited
 
@@ -18,6 +20,7 @@ module FluxxProgram
       insta.add_methods []
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
 
     base.extend(ModelClassMethods)
     base.class_eval do

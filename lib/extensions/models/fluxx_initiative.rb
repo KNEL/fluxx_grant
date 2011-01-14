@@ -1,5 +1,7 @@
 module FluxxInitiative
   SEARCH_ATTRIBUTES = [:sub_program_id]
+  LIQUID_METHODS = [:name]
+    
   def self.included(base)
     base.belongs_to :sub_program
     base.acts_as_audited
@@ -18,6 +20,7 @@ module FluxxInitiative
       insta.add_methods []
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
     
     base.extend(ModelClassMethods)
     base.class_eval do
