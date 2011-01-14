@@ -1,1 +1,6 @@
+- spending_year = Time.now.year
+
 %h1= model.name
+%h4 
+  = model.total_allocation.to_currency
+  Total Funding

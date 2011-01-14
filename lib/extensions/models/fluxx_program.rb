@@ -1,4 +1,6 @@
 module FluxxProgram
+  LIQUID_METHODS = [:name]
+
   def self.included(base)
     base.acts_as_audited
 
@@ -18,6 +20,7 @@ module FluxxProgram
       insta.add_methods []
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
 
     base.extend(ModelClassMethods)
     base.class_eval do
@@ -105,14 +108,29 @@ module FluxxProgram
     end
     
     def funding_source_allocations options={}
-      fsas = FundingSourceAllocation.where(:program_id => self.id, :deleted_at => nil)
-      if options[:show_retired]
-        fsas = fsas.where(["retired != ? or retired is null", 1])
-      end
-      if options[:spending_year]
-        fsas = fsas.where(:spending_year => options[:spending_year])
-      end
-      fsas.all
+      spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
+      retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
+
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select funding_source_allocations.* from funding_source_allocations where 
+        #{spending_year_clause}
+          (program_id = ?
+          or sub_program_id in (select id from sub_programs where program_id = ?)
+          or initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
+          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?))", 
+        self.id, self.id, self.id, self.id]))
+    end
+    
+    def total_allocation options={}
+      spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
+      total_amount = FundingSourceAllocation.connection.execute(
+          FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations where 
+            #{spending_year_clause}
+            (program_id = ?
+              or sub_program_id in (select id from sub_programs where program_id = ?)
+              or initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
+              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?))", 
+            self.id, self.id, self.id, self.id]))
+      total_amount.fetch_row.first.to_i
     end
     
     def autocomplete_to_s

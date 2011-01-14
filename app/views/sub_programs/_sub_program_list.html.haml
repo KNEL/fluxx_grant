@@ -4,5 +4,5 @@
 %h4
   = model.program.name if model.program
 %h4 
-  = FundingSourceAllocation.where(:sub_program_id => model.id, :spending_year => spending_year).sum('amount').to_currency
+  = model.total_allocation.to_currency
   Total Funding

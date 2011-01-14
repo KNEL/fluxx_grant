@@ -1,6 +1,11 @@
-%h2
-  = model.name
+- spending_year = Time.now.year
+%h1= model.name
 %h4
-  secondary
-%p
-  tertiary
+  = model.program.name if model.program
+  |
+  = model.sub_program.name if model.sub_program
+  |
+  = model.initiative.name if model.initiative
+%h4 
+  = model.total_allocation.to_currency
+  Total Funding

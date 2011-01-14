@@ -1,4 +1,5 @@
 = form.input :name, :label => "Name"
 = form.input :program_id, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select"}
+= form.input :retired, :as => :boolean, :label => "Retired:"
 
 = form.commit_button

@@ -1,5 +1,7 @@
 module FluxxRequestTransaction
   SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state]
+  LIQUID_METHODS = [:amount_due, :due_at]
+  
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :grant, :class_name => 'GrantRequest', :foreign_key => 'request_id', :conditions => {:granted => 1}
@@ -80,6 +82,7 @@ module FluxxRequestTransaction
       insta.add_methods []
       insta.remove_methods [:id]
     end
+    base.liquid_methods *( LIQUID_METHODS )
 
     base.extend(ModelClassMethods)
     base.class_eval do
