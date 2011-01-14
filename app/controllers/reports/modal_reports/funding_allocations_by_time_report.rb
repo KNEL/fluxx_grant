@@ -11,7 +11,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
   end
 
   def report_description
-    "View current status of each allocation - amount spent, in the pipeline and allocated organized by month"
+    "View current status of each allocation - amount spent, in the pipeline and allocated"
   end
 
   def compute_show_plot_data controller, index_object, params
