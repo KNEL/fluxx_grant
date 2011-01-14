@@ -1,14 +1,24 @@
+- program_id ||= grab_param(:funding_source_allocation, :program_id)
+- sub_program_id ||= grab_param(:funding_source_allocation, :sub_program_id)
+- initiative_id ||= grab_param(:funding_source_allocation, :initiative_id)
+- sub_initiative_id ||= grab_param(:funding_source_allocation, :sub_initiative_id)
 %h3 
   Funding Source Allocations
-  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_allocation_path, :class => 'to-modal', 'data-on-success' => 'refreshNamed,close', 'target' => '.funding-source-allocation-partial-span', :title => "Add Funding Source Allocation"
+  %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Funding Source Allocation"
 - if !models || models.empty?
   %p.caption= "There are no funding source allocations."
 - else
   - models.each do |model|
     - funding_source_name = model.funding_source.name if model.funding_source
-    %ul.list
-      %li
-        %div.action-item
-          %strong= link_to model.composite_name, edit_funding_source_allocation_path(model), :class => 'to-modal', :title => 'Update Funding Source Allocation', 'data-on-success' => 'refreshCaller,close'
-          - if current_user.has_delete_for_model? model
-            %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_allocation_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+    %div
+      - if current_user.has_delete_for_model? model
+        %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_allocation_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
+      %dl.inline
+        %dt= 'Amount:'
+        %dd= link_to (model.amount ? model.amount.to_currency : 'NONE'), edit_funding_source_allocation_path(model), :class => 'to-modal', :title => 'Update Funding Source Allocation', 'data-on-success' => 'refreshCaller,close'
+        %dt= 'Source:'
+        %dd= model.funding_source.name if model.funding_source
+        %dt= 'Authority:'
+        %dd= model.authority
+        %dt= 'Spending Year:'
+        %dd= model.spending_year

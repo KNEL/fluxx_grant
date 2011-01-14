@@ -45,4 +45,4 @@
 -# TODO Drew: we need to:
 -#   #1 find a way to only make the call to load the funding source allocations after the amount, program, sub-program, initiative and spending year have been supplied.
 -#   #2 find a way to pass in the amount in the URL to load up the funding source allocations.  It should be passed in as amount=25000 for example
-= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.title, fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-require-parent-id' => 'true', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
+= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.funding_source_title(form.object.funding_amount), fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-require-parent-id' => 'true', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}

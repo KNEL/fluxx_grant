@@ -57,6 +57,10 @@ module FluxxInitiative
       fsas.all
     end
     
+    def program_id= program_id
+      # no-op to make the form happy ;)
+    end
+    
     def program_id
       program.id if program
     end

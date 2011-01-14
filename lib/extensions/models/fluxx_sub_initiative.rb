@@ -45,6 +45,9 @@ module FluxxSubInitiative
     def program_id
       program.id if program
     end
+    def program_id= program_id
+      # no-op to make the form happy ;)
+    end
     
     def program
       sub_program.program if sub_program
@@ -52,6 +55,9 @@ module FluxxSubInitiative
     
     def sub_program_id
       sub_program.id if sub_program
+    end
+    def sub_program_id= sub_program_id
+      # no-op to make the form happy ;)
     end
     
     def sub_program

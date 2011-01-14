@@ -1,5 +1,5 @@
 module FluxxFundingSourceAllocation
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :sub_program_id, :initiative_id, :sub_initiative_id, :authority_id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :sub_program_id, :initiative_id, :sub_initiative_id, :authority_id, :spending_year]
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -66,6 +66,20 @@ module FluxxFundingSourceAllocation
     end
     def title
       "#{composite_name}; Total: #{amount}, Remaining: #{(amount || 0) - (amount_granted || 0)}"
+    end
+    
+    def funding_source_title request_amount
+      current_amount_remaining = self.amount_remaining
+      funds_available = if request_amount
+        if current_amount_remaining > request_amount
+          current_amount_remaining.to_currency
+        else
+          "Less than #{request_amount.to_currency} available"
+        end
+      else
+        current_amount_remaining.to_currency
+      end
+      "#{self.funding_source ? self.funding_source.name : ''}: #{funds_available}"
     end
     
     def autocomplete_to_s

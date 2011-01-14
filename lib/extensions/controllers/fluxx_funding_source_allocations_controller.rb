@@ -13,19 +13,9 @@ module FluxxFundingSourceAllocationsController
         format.autocomplete do |triple|
           controller_dsl, outcome, default_block = triple
           out_text = @models.map do |model|
-              amount_remaining = model.amount_remaining
               request_amount = params[:amount].to_i if params[:amount] && params[:amount].to_i > 0
-              funds_available = if request_amount
-                if amount_remaining > request_amount
-                  amount_remaining.to_currency
-                else
-                  "Less than #{request_amount.to_currency} available"
-                end
-              else
-                amount_remaining.to_currency
-              end
               controller_url = url_for(model)
-              {:label => "#{model.funding_source ? model.funding_source.name : ''}: #{funds_available}", :value => model.id, :url => controller_url}
+              {:label => model.funding_source_title(request_amount), :value => model.id, :url => controller_url}
             end.to_json
           render :text => out_text
         end

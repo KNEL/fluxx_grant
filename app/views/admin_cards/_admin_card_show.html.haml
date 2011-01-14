@@ -1,8 +1,15 @@
 %h1 Budgeting
 
 = render :partial => 'funding_sources/list_funding_sources'
-  
-= link_to 'Programs', programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Programs'
-= link_to 'Sub-Programs', sub_programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Programs'
-= link_to 'Initiatives', initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Initiatives'
-= link_to 'Sub-Initiatives', sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Initiatives'
+
+%ul
+  %li= link_to 'New Program', new_program_path, :class => 'to-modal'
+  %li= link_to 'New Sub-Program', new_sub_program_path, :class => 'to-modal'
+  %li= link_to 'New Initiative', new_initiative_path, :class => 'to-modal'
+  %li= link_to 'New Sub-Initiative', new_sub_initiative_path, :class => 'to-modal'
+
+%ul
+  %li= link_to 'Programs', programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Programs'
+  %li= link_to 'Sub-Programs', sub_programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Programs'
+  %li= link_to 'Initiatives', initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Initiatives'
+  %li= link_to 'Sub-Initiatives', sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => 'Sub-Initiatives'
