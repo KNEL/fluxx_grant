@@ -46,17 +46,6 @@ module FluxxInitiative
       SubInitiative.find :all, :select => select_field_sql, :conditions => ['initiative_id = ?', id], :order => :name
     end
     
-    def funding_source_allocations options={}
-      fsas = FundingSourceAllocation.where(:initiative_id => self.id, :deleted_at => nil)
-      if options[:show_retired]
-        fsas = fsas.where(["retired != ? or retired is null", 1])
-      end
-      if options[:spending_year]
-        fsas = fsas.where(:spending_year => options[:spending_year])
-      end
-      fsas.all
-    end
-    
     def program_id= program_id
       # no-op to make the form happy ;)
     end
@@ -67,6 +56,28 @@ module FluxxInitiative
     
     def program
       sub_program.program if sub_program
+    end
+
+    def funding_source_allocations options={}
+      spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
+      retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
+
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select funding_source_allocations.* from funding_source_allocations where 
+        #{spending_year_clause}
+        (initiative_id = ?
+          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?))",
+          self.id, self.id]))
+    end
+
+    def total_allocation options={}
+      spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
+      total_amount = FundingSourceAllocation.connection.execute(
+          FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations where 
+            #{spending_year_clause}
+            (initiative_id = ?
+              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?))", 
+            self.id, self.id]))
+      total_amount.fetch_row.first.to_i
     end
   end
 end
