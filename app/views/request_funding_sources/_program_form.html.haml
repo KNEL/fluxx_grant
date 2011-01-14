@@ -19,11 +19,11 @@
       - if form.object.funding_source_allocation.initiative
         - sub_initiatives = form.object.initiative.load_sub_initiatives
 
-= form.input :funding_amount
+= form.input :funding_amount, :input_html => {:class => 'funding-amount-input'}
 - current_year = Time.now.year
 - year_range = ((current_year-25)..(current_year + 2))
 - form.object.spending_year = form.object.funding_source_allocation ? form.object.funding_source_allocation.spending_year : current_year
-= form.input :spending_year, :label => "Spending Year", :as => :select, :collection => year_range.to_a.reverse
+= form.input :spending_year, :label => "Spending Year", :as => :select, :collection => year_range.to_a.reverse, :input_html => {:class => 'spending-year-input'}
 = form.input :program_id, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select,.funding-source-allocation-select"}
 - unless FLUXX_CONFIGURATION[:hide_request_funding_source_sub_program]
   = form.input :sub_program_id, :label => "Sub Program", :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.description || sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-related-child-param' => 'sub_program_id', 'data-related-child' => ".funding-source-allocation-select,.initiative-select", 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete')}
@@ -42,7 +42,4 @@
   - form.object.program.funding_source_allocations
 - funding_source_allocations = [] unless funding_source_allocations
 
--# TODO Drew: we need to:
--#   #1 find a way to only make the call to load the funding source allocations after the amount, program, sub-program, initiative and spending year have been supplied.
--#   #2 find a way to pass in the amount in the URL to load up the funding source allocations.  It should be passed in as amount=25000 for example
-= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.funding_source_title(form.object.funding_amount), fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-require-parent-id' => 'true', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
+= form.input :funding_source_allocation, :label => "Funding Source", :as => :select, :collection => funding_source_allocations.map{|fsa| [fsa.funding_source_title(form.object.funding_amount), fsa.id]}, :input_html => {:class => 'funding-source-allocation-select', 'data-require-parent-id' => 'true', 'data-param-list'.to_sym => 'program_id=.program-dropdown-select,sub_program_id=.sub-program-select,initiative_id=.initiative-select,sub_initiative_id=.sub-initiative-select,spending_year=.spending-year-input,funding_amount=.funding-amount-input', 'data-src'.to_sym => funding_source_allocations_path(:format => 'autocomplete')}
