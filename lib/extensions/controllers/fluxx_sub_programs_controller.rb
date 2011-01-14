@@ -1,5 +1,5 @@
 module FluxxSubProgramsController
-  ICON_STYLE = 'style-sub-programs'
+  ICON_STYLE = 'style-admin-cards'
   def self.included(base)
     base.insta_index SubProgram do |insta|
       insta.template = 'sub_program_list'

@@ -8,6 +8,9 @@
   - authority_options = group ? group.elements_to_dropdown : []
   = form.input :authority, :label => "Authority:", :as => :select, :collection => authority_options
   = form.input :amount, :label => "Amount Allocated:"
+  - current_year = Time.now.year
+  - year_range = ((current_year-25)..(current_year + 2))
+  = form.input :spending_year, :label => "Spending Year", :as => :select, :collection => year_range.to_a.reverse, :input_html => {:value => current_year}
   = form.input :retired, :as => :boolean, :label => "Retired:"
   - # TODO ESH: need to make a callback to find out how much is available for the selected funding source
   %div.funding-source-amount-available

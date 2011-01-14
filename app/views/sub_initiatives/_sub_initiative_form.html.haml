@@ -1,4 +1,11 @@
-%fieldset.inputs
-  %ol
-  = form.input :name, :label => "Name"
-  = form.commit_button
+- if form.object.program
+  - sub_programs = form.object.program.load_sub_programs
+- if form.object.sub_program
+  - initiatives = form.object.sub_program.load_initiatives
+= form.input :name, :label => "Name"
+= form.input :program_id, :label => "Program", :as => :select, :collection => Program.all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select"}
+= form.input :sub_program_id, :label => "Sub Program", :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.description || sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-related-child-param' => 'sub_program_id', 'data-related-child' => ".initiative-select", 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete')}
+= form.input :initiative_id, :label => "Initiative", :as => :select, :collection => initiatives.map{|initiative| [initiative.description || initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-related-child-param' => 'initiative_id', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete')}
+
+
+= form.commit_button
