@@ -125,7 +125,7 @@ module ApplicationGrantHelper
 
   def build_adminlink
     if current_user.is_admin?
-      "'#{link_to 'admin', admin_card_path(:id => 1), :class => 'new-detail'}',"
+      "'#{link_to 'Admin', admin_card_path(:id => 1), :class => 'new-detail'}',"
     else
       ""
     end
@@ -133,7 +133,7 @@ module ApplicationGrantHelper
 
   def build_reportlink
     if current_user.has_view_for_model? RequestReport
-      "'#{link_to 'reports', modal_reports_path, :class => 'reports-modal'}',"
+      "'#{link_to 'Live Reports', modal_reports_path, :class => 'reports-modal'}',"
     else
       ""
     end

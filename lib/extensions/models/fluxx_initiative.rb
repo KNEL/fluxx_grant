@@ -46,10 +46,13 @@ module FluxxInitiative
       SubInitiative.find :all, :select => select_field_sql, :conditions => ['initiative_id = ?', id], :order => :name
     end
     
-    def funding_source_allocations show_retired=false
-      fsas = FundingSourceAllocation.where(:initiative_id => self.id)
-      unless show_retired 
+    def funding_source_allocations options={}
+      fsas = FundingSourceAllocation.where(:initiative_id => self.id, :deleted_at => nil)
+      if options[:show_retired]
         fsas = fsas.where(["retired != ? or retired is null", 1])
+      end
+      if options[:spending_year]
+        fsas = fsas.where(:spending_year => options[:spending_year])
       end
       fsas.all
     end
