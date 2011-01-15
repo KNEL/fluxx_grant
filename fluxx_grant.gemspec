@@ -5,30 +5,39 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fluxx_grant}
-  s.version = "0.0.13"
+  s.version = "0.0.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eric Hansen"]
-  s.date = %q{2010-12-09}
+  s.date = %q{2011-01-14}
   s.email = %q{fluxx@acesfconsulting.com}
   s.extra_rdoc_files = [
     "LICENSE",
     "README.textile"
   ]
   s.files = [
+    "app/controllers/admin_cards_controller.rb",
     "app/controllers/application_controller.rb",
     "app/controllers/dashboard_controller.rb",
     "app/controllers/fip_requests_controller.rb",
+    "app/controllers/funding_source_allocations_controller.rb",
+    "app/controllers/funding_sources_controller.rb",
     "app/controllers/grant_requests_controller.rb",
     "app/controllers/granted_requests_controller.rb",
     "app/controllers/initiatives_controller.rb",
+    "app/controllers/modal_reports_controller.rb",
     "app/controllers/organizations_controller.rb",
     "app/controllers/programs_controller.rb",
     "app/controllers/project_requests_controller.rb",
     "app/controllers/projects_controller.rb",
+    "app/controllers/reports/granted_requests/monthly_grants_count_report.rb",
+    "app/controllers/reports/granted_requests/monthly_grants_money_report.rb",
+    "app/controllers/reports/modal_reports/funding_allocations_by_program_report.rb",
+    "app/controllers/reports/modal_reports/funding_allocations_by_time_report.rb",
     "app/controllers/request_evaluation_metrics_controller.rb",
     "app/controllers/request_funding_sources_controller.rb",
     "app/controllers/request_organizations_controller.rb",
+    "app/controllers/request_programs_controller.rb",
     "app/controllers/request_reports_controller.rb",
     "app/controllers/request_transactions_controller.rb",
     "app/controllers/request_users_controller.rb",
@@ -39,8 +48,10 @@ Gem::Specification.new do |s|
     "app/helpers/application_grant_helper.rb",
     "app/models/fip_request.rb",
     "app/models/funding_source.rb",
+    "app/models/funding_source_allocation.rb",
     "app/models/grant_request.rb",
     "app/models/initiative.rb",
+    "app/models/liquid_filters.rb",
     "app/models/organization.rb",
     "app/models/program.rb",
     "app/models/project.rb",
@@ -50,6 +61,7 @@ Gem::Specification.new do |s|
     "app/models/request_funding_source.rb",
     "app/models/request_geo_state.rb",
     "app/models/request_organization.rb",
+    "app/models/request_program.rb",
     "app/models/request_report.rb",
     "app/models/request_transaction.rb",
     "app/models/request_user.rb",
@@ -62,12 +74,23 @@ Gem::Specification.new do |s|
     "app/models/workflow_event.rb",
     "app/stylesheets/theme/default/funnel.sass",
     "app/stylesheets/theme/default/style.sass",
+    "app/views/admin_cards/_admin_card_show.html.haml",
     "app/views/dashboard/index.html.haml",
     "app/views/doc_templates/grant_agreement_letter.html",
     "app/views/doc_templates/grant_award_letter.html",
     "app/views/fip_requests/_fip_request_filter.html.haml",
     "app/views/fip_requests/_fip_request_form.html.haml",
+    "app/views/funding_source_allocations/_funding_source_allocation_form.html.haml",
+    "app/views/funding_source_allocations/_funding_source_allocation_list.html.haml",
+    "app/views/funding_source_allocations/_funding_source_allocation_show.html.haml",
+    "app/views/funding_source_allocations/_list_funding_source_allocations.html.haml",
+    "app/views/funding_source_allocations/_programs.html.haml",
+    "app/views/funding_sources/_funding_source_form.html.haml",
+    "app/views/funding_sources/_funding_source_list.html.haml",
+    "app/views/funding_sources/_funding_source_show.html.haml",
+    "app/views/funding_sources/_list_funding_sources.html.haml",
     "app/views/grant_requests/_approve_grant_details.html.haml",
+    "app/views/grant_requests/_edit_request_program.html.haml",
     "app/views/grant_requests/_edit_request_report.html.haml",
     "app/views/grant_requests/_edit_request_transaction.html.haml",
     "app/views/grant_requests/_fiscal_org.html.haml",
@@ -78,14 +101,17 @@ Gem::Specification.new do |s|
     "app/views/grant_requests/_grant_request_list.html.haml",
     "app/views/grant_requests/_grant_request_show.html.haml",
     "app/views/grant_requests/_grant_request_show_relationships.html.haml",
+    "app/views/grant_requests/_more_grant_request_filter.html.haml",
     "app/views/grant_requests/_org_lookup.html.haml",
     "app/views/grant_requests/_program.html.haml",
     "app/views/grant_requests/_program_org.html.haml",
     "app/views/grant_requests/_related_request.html.haml",
     "app/views/grant_requests/_request_became_grant.html.haml",
+    "app/views/grant_requests/_secondary_programs.html.haml",
     "app/views/grant_requests/_view_states.html.haml",
     "app/views/granted_requests/_grant_request_list.html.haml",
     "app/views/granted_requests/_granted_request_filter.html.haml",
+    "app/views/initiatives/_initiative_filter.html.haml",
     "app/views/initiatives/_initiative_form.html.haml",
     "app/views/initiatives/_initiative_list.html.haml",
     "app/views/initiatives/_initiative_show.html.haml",
@@ -103,9 +129,16 @@ Gem::Specification.new do |s|
     "app/views/letter_templates/ga_multiyear.html.erb",
     "app/views/letter_templates/ga_public_charity.html.erb",
     "app/views/letter_templates/ga_us_er.html.erb",
+    "app/views/modal_reports/_funding_year_and_program_filter.html.haml",
+    "app/views/modal_reports/_modal_report_filter.html.haml",
+    "app/views/modal_reports/_modal_report_list.html.haml",
+    "app/views/notes/_note_list.html.haml",
+    "app/views/organizations/_more_org_filter.html.haml",
+    "app/views/organizations/_more_org_form.html.haml",
     "app/views/organizations/_organization_filter.html.haml",
     "app/views/organizations/_organization_form.html.haml",
     "app/views/organizations/_related_organization.html.haml",
+    "app/views/programs/_program_filter.html.haml",
     "app/views/programs/_program_form.html.haml",
     "app/views/programs/_program_list.html.haml",
     "app/views/programs/_program_show.html.haml",
@@ -132,12 +165,16 @@ Gem::Specification.new do |s|
     "app/views/request_organizations/_request_organization_form.html.haml",
     "app/views/request_organizations/_request_organization_list.html.haml",
     "app/views/request_organizations/_request_organization_show.html.haml",
+    "app/views/request_programs/_request_program_form.html.haml",
+    "app/views/request_programs/_request_program_list.html.haml",
+    "app/views/request_programs/_request_program_show.html.haml",
     "app/views/request_reports/_list_item1.html.haml",
     "app/views/request_reports/_related_documents.html.haml",
     "app/views/request_reports/_request_report_filter.html.haml",
     "app/views/request_reports/_request_report_form.html.haml",
     "app/views/request_reports/_request_report_list.html.haml",
     "app/views/request_reports/_request_report_show.html.haml",
+    "app/views/request_transactions/_more_trans_filter.html.haml",
     "app/views/request_transactions/_related_request_transactions.html.haml",
     "app/views/request_transactions/_request_transaction_filter.html.haml",
     "app/views/request_transactions/_request_transaction_form.html.haml",
@@ -149,9 +186,11 @@ Gem::Specification.new do |s|
     "app/views/request_users/_request_user_show.html.haml",
     "app/views/request_users/_user_add.html.haml",
     "app/views/role_users/_role_user_form.html.haml",
+    "app/views/sub_initiatives/_sub_initiative_filter.html.haml",
     "app/views/sub_initiatives/_sub_initiative_form.html.haml",
     "app/views/sub_initiatives/_sub_initiative_list.html.haml",
     "app/views/sub_initiatives/_sub_initiative_show.html.haml",
+    "app/views/sub_programs/_sub_program_filter.html.haml",
     "app/views/sub_programs/_sub_program_form.html.haml",
     "app/views/sub_programs/_sub_program_list.html.haml",
     "app/views/sub_programs/_sub_program_show.html.haml",
@@ -160,27 +199,35 @@ Gem::Specification.new do |s|
     "app/views/users/_user_filter.html.haml",
     "app/views/users/_user_form_header.html.haml",
     "config/routes.rb",
+    "lib/extensions/cap_deploy.rb",
+    "lib/extensions/controllers/fluxx_admin_cards_controller.rb",
     "lib/extensions/controllers/fluxx_common_requests_controller.rb",
     "lib/extensions/controllers/fluxx_fip_requests_controller.rb",
+    "lib/extensions/controllers/fluxx_funding_source_allocations_controller.rb",
+    "lib/extensions/controllers/fluxx_funding_sources_controller.rb",
     "lib/extensions/controllers/fluxx_grant_organizations_controller.rb",
     "lib/extensions/controllers/fluxx_grant_projects_controller.rb",
     "lib/extensions/controllers/fluxx_grant_requests_controller.rb",
     "lib/extensions/controllers/fluxx_grant_users_controller.rb",
     "lib/extensions/controllers/fluxx_granted_requests_controller.rb",
     "lib/extensions/controllers/fluxx_initiatives_controller.rb",
+    "lib/extensions/controllers/fluxx_modal_reports_controller.rb",
     "lib/extensions/controllers/fluxx_programs_controller.rb",
     "lib/extensions/controllers/fluxx_project_requests_controller.rb",
     "lib/extensions/controllers/fluxx_request_evaluation_metrics_controller.rb",
     "lib/extensions/controllers/fluxx_request_funding_sources_controller.rb",
     "lib/extensions/controllers/fluxx_request_organizations_controller.rb",
+    "lib/extensions/controllers/fluxx_request_programs_controller.rb",
     "lib/extensions/controllers/fluxx_request_reports_controller.rb",
     "lib/extensions/controllers/fluxx_request_transactions_controller.rb",
     "lib/extensions/controllers/fluxx_request_users_controller.rb",
     "lib/extensions/controllers/fluxx_sub_initiatives_controller.rb",
     "lib/extensions/controllers/fluxx_sub_programs_controller.rb",
+    "lib/extensions/gem_handler.rb",
     "lib/extensions/hgrant_rack.rb",
     "lib/extensions/models/fluxx_fip_request.rb",
     "lib/extensions/models/fluxx_funding_source.rb",
+    "lib/extensions/models/fluxx_funding_source_allocation.rb",
     "lib/extensions/models/fluxx_grant_organization.rb",
     "lib/extensions/models/fluxx_grant_project.rb",
     "lib/extensions/models/fluxx_grant_request.rb",
@@ -196,18 +243,28 @@ Gem::Specification.new do |s|
     "lib/extensions/models/fluxx_request_funding_source.rb",
     "lib/extensions/models/fluxx_request_geo_state.rb",
     "lib/extensions/models/fluxx_request_organization.rb",
+    "lib/extensions/models/fluxx_request_program.rb",
     "lib/extensions/models/fluxx_request_report.rb",
     "lib/extensions/models/fluxx_request_transaction.rb",
     "lib/extensions/models/fluxx_request_user.rb",
     "lib/extensions/models/fluxx_sub_initiative.rb",
     "lib/extensions/models/fluxx_sub_program.rb",
+    "lib/extensions/reports/monthly_grants_base_report.rb",
+    "lib/extensions/reports/report_utility.rb",
+    "lib/extensions/test/fluxx_grant_blueprint.rb",
+    "lib/extensions/test/fluxx_grant_test_helper.rb",
     "lib/fluxx_grant.rb",
     "lib/fluxx_grant/engine.rb",
     "lib/generators/fluxx_grant_migration/fluxx_grant_migration_generator.rb",
     "lib/generators/fluxx_grant_migration/templates/add_board_authority_to_request_funding_source.rb",
     "lib/generators/fluxx_grant_migration/templates/add_description_to_project_relationships.rb",
     "lib/generators/fluxx_grant_migration/templates/add_grant_fields_to_organization.rb",
+    "lib/generators/fluxx_grant_migration/templates/add_new_fields_to_funding_source.rb",
+    "lib/generators/fluxx_grant_migration/templates/add_program_geo_zone_meg.rb",
+    "lib/generators/fluxx_grant_migration/templates/add_retired_to_program_etc.rb",
+    "lib/generators/fluxx_grant_migration/templates/add_spending_year_to_funding_source_allocation.rb",
     "lib/generators/fluxx_grant_migration/templates/add_sub_initiative_program_to_request_funding_source.rb",
+    "lib/generators/fluxx_grant_migration/templates/create_funding_source_allocation.rb",
     "lib/generators/fluxx_grant_migration/templates/create_funding_sources.rb",
     "lib/generators/fluxx_grant_migration/templates/create_initiatives.rb",
     "lib/generators/fluxx_grant_migration/templates/create_letter_templates.rb",
@@ -218,6 +275,7 @@ Gem::Specification.new do |s|
     "lib/generators/fluxx_grant_migration/templates/create_request_geo_states.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_letters.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_organizations.rb",
+    "lib/generators/fluxx_grant_migration/templates/create_request_program.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_reports.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_transactions.rb",
     "lib/generators/fluxx_grant_migration/templates/create_request_users.rb",
@@ -225,6 +283,10 @@ Gem::Specification.new do |s|
     "lib/generators/fluxx_grant_migration/templates/create_sub_initiative.rb",
     "lib/generators/fluxx_grant_migration/templates/create_sub_program.rb",
     "lib/generators/fluxx_grant_migration/templates/drop_request_letters.rb",
+    "lib/generators/fluxx_grant_migration/templates/limit_allocation_program_designation_to_one_field.rb",
+    "lib/generators/fluxx_grant_migration/templates/populate_funding_source_allocations.rb",
+    "lib/generators/fluxx_grant_migration/templates/switch_around_program_initiative_etc.rb",
+    "lib/generators/fluxx_grant_migration/templates/switch_request_funding_source_authorities_to_allocation.rb",
     "lib/generators/fluxx_grant_public/fluxx_grant_public_generator.rb",
     "lib/generators/fluxx_grant_seed/fluxx_grant_seed_generator.rb",
     "lib/tasks.rb",
@@ -309,17 +371,34 @@ Gem::Specification.new do |s|
     "test/dummy/db/migrate/20101208192056_fluxx_grant_create_sub_program.rb",
     "test/dummy/db/migrate/20101208194137_fluxx_grant_create_sub_initiative.rb",
     "test/dummy/db/migrate/20101208215651_fluxx_grant_add_sub_initiative_program_to_request_funding_source.rb",
+    "test/dummy/db/migrate/20101215231237_fluxx_grant_add_new_fields_to_funding_source.rb",
+    "test/dummy/db/migrate/20101215231239_fluxx_grant_switch_around_program_initiative_etc.rb",
+    "test/dummy/db/migrate/20101215232013_fluxx_grant_create_funding_source_allocation.rb",
+    "test/dummy/db/migrate/20101220050809_fluxx_grant_switch_request_funding_source_authorities_to_allocation.rb",
+    "test/dummy/db/migrate/20101220170429_fluxx_grant_populate_funding_source_allocations.rb",
+    "test/dummy/db/migrate/20101222195540_fluxx_crm_user_add_column_for_test_user_flag.rb",
+    "test/dummy/db/migrate/20110107223330_fluxx_grant_add_program_geo_zone_meg.rb",
+    "test/dummy/db/migrate/20110108181208_fluxx_grant_create_request_program.rb",
+    "test/dummy/db/migrate/20110109040916_fluxx_grant_add_retired_to_program_etc.rb",
+    "test/dummy/db/migrate/20110110215335_fluxx_crm_add_fields_to_organization.rb",
+    "test/dummy/db/migrate/20110113174511_fluxx_grant_add_spending_year_to_funding_source_allocation.rb",
+    "test/dummy/db/migrate/20110114213334_fluxx_grant_limit_allocation_program_designation_to_one_field.rb",
     "test/dummy/db/schema.rb",
     "test/dummy/db/seeds.rb",
     "test/fluxx_grant_test.rb",
+    "test/functional/admin_cards_controller_test.rb",
     "test/functional/fip_requests_controller_test.rb",
+    "test/functional/funding_source_allocations_controller_test.rb",
+    "test/functional/funding_sources_controller_test.rb",
     "test/functional/grant_requests_controller_test.rb",
     "test/functional/granted_requests_controller_test.rb",
+    "test/functional/modal_reports_controller_test.rb",
     "test/functional/project_requests_controller_test.rb",
     "test/functional/projects_controller_test.rb",
     "test/functional/request_evaluation_metrics_controller_test.rb",
     "test/functional/request_funding_sources_controller_test.rb",
     "test/functional/request_organizations_controller_test.rb",
+    "test/functional/request_programs_controller_test.rb",
     "test/functional/request_reports_controller_test.rb",
     "test/functional/request_transactions_controller_test.rb",
     "test/functional/request_users_controller_test.rb",
@@ -329,6 +408,7 @@ Gem::Specification.new do |s|
     "test/integration/navigation_test.rb",
     "test/support/integration_case.rb",
     "test/test_helper.rb",
+    "test/unit/funding_source_allocation_test.rb",
     "test/unit/models/funding_source_test.rb",
     "test/unit/models/grant_request_test.rb",
     "test/unit/models/initiative_test.rb",
@@ -341,6 +421,7 @@ Gem::Specification.new do |s|
     "test/unit/models/request_report_test.rb",
     "test/unit/models/request_transaction_test.rb",
     "test/unit/models/request_user_test.rb",
+    "test/unit/request_program_test.rb",
     "test/unit/sub_initiative_test.rb",
     "test/unit/sub_program_test.rb"
   ]
@@ -363,7 +444,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<machinist>, [">= 1.0.6"])
       s.add_runtime_dependency(%q<faker>, [">= 0.3.1"])
       s.add_runtime_dependency(%q<rcov>, [">= 0"])
-      s.add_runtime_dependency(%q<thinking-sphinx>, ["= 2.0.1"])
+      s.add_runtime_dependency(%q<thinking-sphinx>, [">= 2.0.2"])
       s.add_runtime_dependency(%q<delayed_job>, [">= 0"])
       s.add_runtime_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
       s.add_runtime_dependency(%q<paperclip>, [">= 0"])
@@ -373,6 +454,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<paperclip>, [">= 0"])
       s.add_runtime_dependency(%q<mysql>, [">= 0"])
       s.add_runtime_dependency(%q<compass>, [">= 0"])
+      s.add_runtime_dependency(%q<liquid>, [">= 0"])
     else
       s.add_dependency(%q<rails>, ["= 3.0.3"])
       s.add_dependency(%q<capybara>, ["= 0.3.7"])
@@ -387,7 +469,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<machinist>, [">= 1.0.6"])
       s.add_dependency(%q<faker>, [">= 0.3.1"])
       s.add_dependency(%q<rcov>, [">= 0"])
-      s.add_dependency(%q<thinking-sphinx>, ["= 2.0.1"])
+      s.add_dependency(%q<thinking-sphinx>, [">= 2.0.2"])
       s.add_dependency(%q<delayed_job>, [">= 0"])
       s.add_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
       s.add_dependency(%q<paperclip>, [">= 0"])
@@ -397,6 +479,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<paperclip>, [">= 0"])
       s.add_dependency(%q<mysql>, [">= 0"])
       s.add_dependency(%q<compass>, [">= 0"])
+      s.add_dependency(%q<liquid>, [">= 0"])
     end
   else
     s.add_dependency(%q<rails>, ["= 3.0.3"])
@@ -412,7 +495,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<machinist>, [">= 1.0.6"])
     s.add_dependency(%q<faker>, [">= 0.3.1"])
     s.add_dependency(%q<rcov>, [">= 0"])
-    s.add_dependency(%q<thinking-sphinx>, ["= 2.0.1"])
+    s.add_dependency(%q<thinking-sphinx>, [">= 2.0.2"])
     s.add_dependency(%q<delayed_job>, [">= 0"])
     s.add_dependency(%q<ts-delayed-delta>, [">= 1.1.0"])
     s.add_dependency(%q<paperclip>, [">= 0"])
@@ -422,6 +505,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<paperclip>, [">= 0"])
     s.add_dependency(%q<mysql>, [">= 0"])
     s.add_dependency(%q<compass>, [">= 0"])
+    s.add_dependency(%q<liquid>, [">= 0"])
   end
 end
 
