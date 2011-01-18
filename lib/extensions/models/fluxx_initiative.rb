@@ -1,5 +1,5 @@
 module FluxxInitiative
-  SEARCH_ATTRIBUTES = [:sub_program_id]
+  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id]
   LIQUID_METHODS = [:name]
     
   def self.included(base)

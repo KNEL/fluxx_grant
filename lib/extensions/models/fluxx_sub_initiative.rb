@@ -1,5 +1,5 @@
 module FluxxSubInitiative
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :initiative_id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :sub_program_id, :initiative_id]
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
