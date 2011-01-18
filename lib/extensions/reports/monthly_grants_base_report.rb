@@ -1,4 +1,23 @@
 module MonthlyGrantsBaseReport
+
+  def report_filter_text controller, index_object, params
+    filter = params["request"]
+    filter.to_json
+
+    start_date = ""
+    end_date = ""
+    if filter
+      if (filter["request_from_date"])
+        start_date = Date.parse(filter["request_from_date"]).strftime("%B %d, %Y")
+      end
+      if (filter["request_to_date"])
+        date = Date.parse(filter['request_to_date']).strftime("%B %d, %Y")
+        end_date = " to #{date}"
+      end
+    end
+    start_date + end_date
+  end
+
   def by_month_report request_ids, aggregate_type=:count
     plot = {:library => "jqplot"}
     plot[:title] = 'override this in the calling class...'
@@ -69,7 +88,7 @@ module MonthlyGrantsBaseReport
       end
       plot[:data] << row
     end
-    num_ticks = 10
+    num_ticks = 14
     tick_at = xaxis.count / num_ticks
     if tick_at < 1
       tick_at = 1
@@ -88,7 +107,7 @@ module MonthlyGrantsBaseReport
     end
     plot
   end
-  
+
   def store_hash data, year, month, program, number
     if !data[year]
       data[year] = {}
