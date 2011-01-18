@@ -1,16 +1,4 @@
 module ApplicationGrantHelper
-  def dollars_format amount
-    number_to_currency amount, :precision => 0
-  end
-
-  def mdy_date_format value
-    (value && value.is_a?(Time)) ? value.to_s(:mdy) : value
-  end
-
-  def show_path_for_model model, options={}
-    send("#{model.class.name.tableize.pluralize.downcase}_path", options)
-  end
-
   def render_grant_id request
     if request.is_grant?
       request.grant_id
@@ -67,48 +55,6 @@ module ApplicationGrantHelper
 
   def render_request_or_grant_amount request, grant_text='Granted', request_text='Request for'
     raw render_grant_amount(request, grant_text) || render_request_amount(request, request_text)
-  end
-
-  def plural_by_list list, singular, plural=nil
-    count = list ? list.size : 0
-    ((count == 1) ? singular : (plural || singular.pluralize))
-  end
-
-  # This method demonstrates the use of the :child_index option to render a
-  # form partial for, for instance, client side addition of new nested
-  # records.
-  #
-  # This specific example creates a link which uses javascript to add a new
-  # form partial to the DOM.
-  #
-  #   <% form_for @project do |project_form| -%>
-  #     <div id="tasks">
-  #       <% project_form.fields_for :tasks do |task_form| %>
-  #         <%= render :partial => 'task', :locals => { :f => task_form } %>
-  #       <% end %>
-  #     </div>
-  #   <% end -%>
-  # Citation: http://github.com/alloy/complex-form-examples
-  def generate_html(form_builder, method, options = {})
-    options[:object] ||= form_builder.object.class.reflect_on_association(method).klass.new
-    options[:partial] ||= method.to_s.singularize
-    options[:form_builder_local] ||= :f
-
-    form_builder.fields_for(method, options[:object], :child_index => '{{ record_index }}') do |f|
-      render(:partial => options[:partial], :locals => { options[:form_builder_local] => f })
-    end
-  end
-
-  def generate_template(form_builder, method, options = {})
-    escape_carriage_returns(single_quote_html(generate_html(form_builder, method, options)))
-  end
-
-  def single_quote_html html
-    html.gsub '"', "'"
-  end
-
-  def escape_carriage_returns html
-    html.gsub "\n", '\\n'
   end
 
   def build_add_card_links

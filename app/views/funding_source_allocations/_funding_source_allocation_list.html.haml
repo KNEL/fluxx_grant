@@ -22,6 +22,6 @@
         %dd= model.authority
         %dt= 'Spending Year:'
         %dd= model.spending_year
-- total_funding = models.inject(0) {|acc, model|acc + model.amount}
+- total_funding = models.inject(0) {|acc, model|acc + (model.amount || 0)}
 %h4
   %strong= "#{total_funding.to_currency} Total Funding"

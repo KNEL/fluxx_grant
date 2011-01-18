@@ -29,7 +29,7 @@ gem 'paperclip'
 gem 'mysql'
 gem 'compass'
 gem 'liquid'
-
+gem 'writeexcel', '>=0.6.1'
 
 if RUBY_VERSION < '1.9'
   gem "ruby-debug", ">= 0.10.3"

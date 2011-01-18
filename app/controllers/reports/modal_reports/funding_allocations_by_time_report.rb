@@ -19,7 +19,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     hash = {}
     hash[:title] = report_label
 
-    start_string = '1/1/' + filter["funding_year"]
+    start_string = '1/1/' + (filter["funding_year"] || '')
     program_ids= ReportUtility.get_program_ids filter["program_id"]
 
     start_date = Date.parse(start_string)

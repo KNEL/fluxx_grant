@@ -15,10 +15,9 @@ class SubInitiativesControllerTest < ActionController::TestCase
   end
   
   test "autocomplete" do
-    lookup_instance = SubInitiative.make
-    get :index, :name => lookup_instance.name, :format => :autocomplete
+    get :index, :name => @SubInitiative.name, :format => :autocomplete
     a = @response.body.de_json # try to deserialize the JSON to an array
-    assert_equal lookup_instance.id, a.last['value']
+    assert_equal @SubInitiative.id, a.last['value']
   end
 
   test "should confirm that name_exists" do

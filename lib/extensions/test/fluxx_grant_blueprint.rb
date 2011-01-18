@@ -129,7 +129,7 @@ module FluxxGrantBlueprint
         bp_attrs[:executed_setup_multi_element_groups] = true
         MultiElementValue.delete_all
         MultiElementGroup.delete_all
-        project_type_group = MultiElementGroup.create :name => 'project_types', :description => 'ProjectType', :target_class_name => 'Project'
+        project_type_group = MultiElementGroup.create :name => 'project_type', :description => 'ProjectType', :target_class_name => 'Project'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Program'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'IT'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Grants'
@@ -139,7 +139,7 @@ module FluxxGrantBlueprint
         ProjectList.add_multi_elements
 
         # project list types 
-        project_list_type_group = MultiElementGroup.create :name => 'list_types', :description => 'ListType', :target_class_name => 'ProjectList'
+        project_list_type_group = MultiElementGroup.create :name => 'list_type', :description => 'ListType', :target_class_name => 'ProjectList'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Numbers'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Bulleted'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'To-Do'
@@ -188,7 +188,7 @@ module FluxxGrantBlueprint
         RequestFundingSource.add_multi_elements
         User.add_multi_elements
 
-        project_type_group = MultiElementGroup.create :name => 'project_types', :description => 'ProjectType', :target_class_name => 'Project'
+        project_type_group = MultiElementGroup.create :name => 'project_type', :description => 'ProjectType', :target_class_name => 'Project'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Program'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'IT'
         MultiElementValue.create :multi_element_group_id => project_type_group.id, :value => 'Grants'
@@ -198,14 +198,14 @@ module FluxxGrantBlueprint
         ProjectList.add_multi_elements
 
         # project list types 
-        project_list_type_group = MultiElementGroup.create :name => 'list_types', :description => 'ListType', :target_class_name => 'ProjectList'
+        project_list_type_group = MultiElementGroup.create :name => 'list_type', :description => 'ListType', :target_class_name => 'ProjectList'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Numbers'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'Bulleted'
         MultiElementValue.create :multi_element_group_id => project_list_type_group.id, :value => 'To-Do'
         Project.add_multi_elements
 
         # Request funding source board authority
-        board_authority_group = MultiElementGroup.create :name => 'board_authorities', :description => 'Board Authorities', :target_class_name => 'RequestFundingSource'
+        board_authority_group = MultiElementGroup.create :name => 'board_authority', :description => 'Board Authorities', :target_class_name => 'RequestFundingSource'
         MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '3/1/2010', :description => 'March 2010'
         MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '6/1/2010', :description => 'June 2010'
         MultiElementValue.create :multi_element_group_id => board_authority_group.id, :value => '11/1/2010', :description => 'November 2010'
