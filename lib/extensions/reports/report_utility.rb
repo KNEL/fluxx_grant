@@ -3,8 +3,10 @@ module ReportUtility
 
  # TODO AML: Instead of assuming the Request object is available, just use the ActiveRecord class directly
  # TODO AML: Create a better hook for PRE_PIPELINE_STATES
+ # TODO AML: Document each helper function
   PRE_PIPELINE_STATES = ['new', 'funding_recommended']
 
+  # General helpers
   def self.pre_pipeline_states
     PRE_PIPELINE_STATES
   end
@@ -68,6 +70,37 @@ module ReportUtility
 
   def self.get_months_and_years(start_date, stop_date)
    (start_date..stop_date).collect { |date| [date.month, date.year] }.uniq
+  end
+
+  # Helpers specific to visualizations
+  def self.get_date_range_string params
+    filter = params["request"]
+    filter.to_json
+
+    start_date = ""
+    end_date = ""
+    if filter
+      if (filter["request_from_date"])
+        start_date = Date.parse(filter["request_from_date"]).strftime("%B %d, %Y")
+      end
+      if (filter["request_to_date"])
+        date = Date.parse(filter['request_to_date']).strftime("%B %d, %Y")
+        end_date = " to #{date}"
+      end
+    end
+    start_date + end_date
+  end
+
+  def self.get_report_totals request_ids
+    hash = {}
+    query = "select count(id) as num, sum(amount_recommended) as amount from requests r where id in (?) and type = (?)"
+    res = ReportUtility.single_value_query([query, request_ids, "GrantRequest"])
+    hash[:grants] = res["num"]
+    hash[:grants_total] = res["amount"]
+    res = ReportUtility.single_value_query([query, request_ids, "FipRequest"])
+    hash[:fips] = res["num"]
+    hash[:fips_total] = res["amount"]
+    hash
   end
 
 end

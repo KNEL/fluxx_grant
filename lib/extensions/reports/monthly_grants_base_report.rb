@@ -1,21 +1,13 @@
 module MonthlyGrantsBaseReport
+  include ActionView::Helpers::NumberHelper
 
-  def report_filter_text controller, index_object, params
-    filter = params["request"]
-    filter.to_json
+  def report_filter_text controller, index_object, params, models
+    ReportUtility.get_date_range_string params
+  end
 
-    start_date = ""
-    end_date = ""
-    if filter
-      if (filter["request_from_date"])
-        start_date = Date.parse(filter["request_from_date"]).strftime("%B %d, %Y")
-      end
-      if (filter["request_to_date"])
-        date = Date.parse(filter['request_to_date']).strftime("%B %d, %Y")
-        end_date = " to #{date}"
-      end
-    end
-    start_date + end_date
+  def report_summary controller, index_object, params, models
+    hash = ReportUtility.get_report_totals models.map(&:id)
+    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} FIPS totaling #{number_to_currency(hash[:fips_total])}"
   end
 
   def by_month_report request_ids, aggregate_type=:count
