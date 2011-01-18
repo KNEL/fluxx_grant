@@ -5,7 +5,8 @@ module FluxxInitiativesController
       insta.template = 'initiative_list'
       insta.filter_title = "Initiatives Filter"
       insta.filter_template = 'initiatives/initiative_filter'
-      insta.order_clause = 'name asc'
+      insta.order_clause = 'initiatives.name asc'
+      insta.joins = [:sub_program => :program]
       insta.icon_style = ICON_STYLE
     end
     base.insta_show Initiative do |insta|
