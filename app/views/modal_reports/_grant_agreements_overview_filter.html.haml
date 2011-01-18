@@ -1,0 +1,5 @@
+- current_year = Time.now.year
+- form.object.start_date = Time.parse("1/1/#{current_year}")
+- form.object.end_date = Time.parse("1/1/#{current_year+1}")
+= form.input :start_date, :as => :date
+= form.input :end_date, :as => :date
