@@ -33,7 +33,7 @@ module FluxxFundingSourceAllocationsController
         format.autocomplete do |triple|
           controller_dsl, outcome, default_block = triple
           out_text = @models.map do |model|
-              request_amount = params[:amount].to_i if params[:amount] && params[:amount].to_i > 0
+              request_amount = params[:funding_amount].to_i if params[:funding_amount] && params[:funding_amount].to_i > 0
               controller_url = url_for(model)
               {:label => model.funding_source_title(request_amount), :value => model.id, :url => controller_url}
             end.to_json
