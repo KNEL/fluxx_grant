@@ -50,6 +50,8 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_retired_to_program_etc.rb', 'db/migrate/fluxx_grant_add_retired_to_program_etc.rb'
     handle_migration 'add_spending_year_to_funding_source_allocation.rb', 'db/migrate/fluxx_grant_add_spending_year_to_funding_source_allocation.rb'
     handle_migration 'limit_allocation_program_designation_to_one_field.rb', 'db/migrate/fluxx_grant_limit_allocation_program_designation_to_one_field.rb'
+    handle_migration 'create_request_transaction_funding_source.rb', 'db/migrate/fluxx_grant_create_request_transaction_funding_source.rb'
+    handle_migration 'add_payee_to_request_transaction.rb', 'db/migrate/fluxx_grant_add_payee_to_request_transaction.rb'
   end
   
   private

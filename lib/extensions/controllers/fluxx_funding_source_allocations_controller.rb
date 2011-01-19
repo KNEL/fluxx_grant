@@ -9,6 +9,26 @@ module FluxxFundingSourceAllocationsController
       insta.order_clause = 'funding_sources.name asc'
       insta.icon_style = ICON_STYLE
       insta.suppress_model_iteration = true
+      
+      insta.pre do |controller_dsl|
+        attr = if !params[:sub_initiative_id].blank?
+          :sub_initiative_id
+        elsif !params[:initiative_id].blank?
+          :initiative_id
+        elsif !params[:sub_program_id].blank?
+          :sub_program_id
+        elsif !params[:program_id].blank?
+          :program_id
+        end
+        self.pre_models = if attr
+          search_clause = FundingSourceAllocation.where(attr => params[attr])
+          search_clause = search_clause.where(:spending_year => params[:spending_year]) unless params[:spending_year].blank?
+          search_clause.all
+        else
+          []
+        end
+      end
+      
       insta.format do |format|
         format.autocomplete do |triple|
           controller_dsl, outcome, default_block = triple

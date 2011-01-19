@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110114213334) do
+ActiveRecord::Schema.define(:version => 20110118200059) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -577,6 +577,19 @@ ActiveRecord::Schema.define(:version => 20110114213334) do
 
   add_index "request_reports", ["request_id"], :name => "index_request_reports_on_request_id"
 
+  create_table "request_transaction_funding_sources", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "request_funding_source_id"
+    t.integer  "amount"
+  end
+
+  add_index "request_transaction_funding_sources", ["created_by_id"], :name => "request_transaction_funding_sources_created_by_id"
+  add_index "request_transaction_funding_sources", ["request_funding_source_id"], :name => "request_transaction_funding_sources_fundsrc_id"
+  add_index "request_transaction_funding_sources", ["updated_by_id"], :name => "request_transaction_funding_sources_updated_by_id"
+
   create_table "request_transactions", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -597,10 +610,14 @@ ActiveRecord::Schema.define(:version => 20110114213334) do
     t.datetime "deleted_at"
     t.boolean  "delta",                       :default => true, :null => false
     t.string   "request_document_linked_to"
+    t.integer  "organization_payee_id"
+    t.integer  "user_payee_id"
   end
 
+  add_index "request_transactions", ["organization_payee_id"], :name => "request_transactions_org_payee_id"
   add_index "request_transactions", ["payment_recorded_by_id"], :name => "index_request_transactions_on_payment_recorded_by_id"
   add_index "request_transactions", ["request_id"], :name => "index_request_transactions_on_request_id"
+  add_index "request_transactions", ["user_payee_id"], :name => "request_transactions_user_payee_id"
 
   create_table "request_users", :force => true do |t|
     t.datetime "created_at"

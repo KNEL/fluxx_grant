@@ -5,7 +5,6 @@ module FluxxRequestUser
     base.belongs_to :request
     base.belongs_to :user
     base.acts_as_audited
-    # base.after_commit :update_related_data
 
     base.validates_presence_of :user_id
     base.validates_presence_of :request_id
@@ -28,23 +27,5 @@ module FluxxRequestUser
   end
 
   module ModelInstanceMethods
-    def update_related_data
-      Request.without_realtime do
-        if request_id
-          Request.update_all 'delta = 1', ['id in (?)', request_id]
-          req = Request.find(request_id)
-          req.delta = 1
-          req.save 
-        end
-      end
-      User.without_realtime do
-        if user_id
-          User.update_all 'delta = 1', ['id in (?)', user_id]
-          user = User.find(user_id)
-          user.delta = 1
-          user.save 
-        end
-      end
-    end
   end
 end
