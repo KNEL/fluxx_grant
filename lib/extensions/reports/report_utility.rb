@@ -73,21 +73,6 @@ module ReportUtility
   end
 
   # Helpers specific to visualizations
-  def self.get_date_range_string params
-    filter = params["request"]
-    start_date = ""
-    end_date = ""
-    if filter
-      if (filter["request_from_date"])
-        start_date = Date.parse(filter["request_from_date"]).strftime("%B %d, %Y")
-      end
-      if (filter["request_to_date"])
-        date = Date.parse(filter['request_to_date']).strftime("%B %d, %Y")
-        end_date = " to #{date}"
-      end
-    end
-    start_date + end_date
-  end
 
   def self.get_report_totals request_ids
     hash = {}

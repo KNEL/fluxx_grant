@@ -1,8 +1,11 @@
 module MonthlyGrantsBaseReport
+
+  attr_accessor :start_date, :end_date
+
   include ActionView::Helpers::NumberHelper
 
   def report_filter_text controller, index_object, params, models
-    ReportUtility.get_date_range_string params
+    "#{self.start_date.strftime("%B %d, %Y")} to #{self.end_date.strftime("%B %d, %Y")}"
   end
 
   def report_summary controller, index_object, params, models
@@ -59,9 +62,12 @@ module MonthlyGrantsBaseReport
       start_date = date if !start_date || date < start_date
     end
     filter = params["request"]
-    start_date = Date.parse(filter["request_from_date"]) if (filter["request_from_date"])
-    end_date = Date.parse(filter["request_to_date"]) if (filter["request_to_date"])
+    start_date = Date.parse(filter["request_from_date"]) if (!filter["request_from_date"].blank?)
+    end_date = Date.parse(filter["request_to_date"]) if (!filter["request_to_date"].blank?)
 
+    # Store these calculated dates so we can use them in the filter text
+    self.start_date = start_date
+    self.end_date = end_date
     i = 0
     max_grants = 0
     programs.each do |program_id|
