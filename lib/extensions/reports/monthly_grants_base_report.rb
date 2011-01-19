@@ -2,8 +2,6 @@ module MonthlyGrantsBaseReport
 
   attr_accessor :start_date, :end_date
 
-  include ActionView::Helpers::NumberHelper
-
   def report_filter_text controller, index_object, params, models
     "#{self.start_date.strftime("%B %d, %Y")} to #{self.end_date.strftime("%B %d, %Y")}"
   end

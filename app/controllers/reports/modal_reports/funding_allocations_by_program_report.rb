@@ -1,5 +1,4 @@
 class FundingAllocationsByProgramReport < ActionController::ReportBase
-  include ActionView::Helpers::NumberHelper
   set_type_as_show
 
   def initialize report_id
@@ -71,6 +70,11 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     hash.to_json
   end
 
+  def report_filter_text controller, index_object, params
+    start_date, stop_date = get_date_range params["active_record_base"]
+    "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
+  end
+
   def report_summary controller, index_object, params
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
@@ -79,11 +83,6 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     request_ids = ReportUtility.array_query([query, start_date, stop_date, program_ids])
     hash = ReportUtility.get_report_totals request_ids
     "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} FIPS totaling #{number_to_currency(hash[:fips_total])}"
-  end
-
-  def report_filter_text controller, index_object, params
-    start_date, stop_date = get_date_range params["active_record_base"]
-    "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
   end
 
   def report_legend controller, index_object, params
