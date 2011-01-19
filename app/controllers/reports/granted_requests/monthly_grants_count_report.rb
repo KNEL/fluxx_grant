@@ -5,7 +5,7 @@ class MonthlyGrantsCountReport < ActionController::ReportBase
     "Monthly Grants By Program"
   end
   def compute_index_plot_data controller, index_object, params, models
-    hash = by_month_report models.map(&:id), :count
+    hash = by_month_report models.map(&:id), params, :count
     hash[:title] = report_label
     hash.to_json
   end

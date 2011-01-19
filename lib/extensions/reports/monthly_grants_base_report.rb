@@ -23,7 +23,7 @@ module MonthlyGrantsBaseReport
    return legend
   end
 
-  def by_month_report request_ids, aggregate_type=:count
+  def by_month_report request_ids, params, aggregate_type=:count
     plot = {:library => "jqplot"}
     plot[:title] = 'override this in the calling class...'
     plot[:seriesDefaults] = { :fill => true, :showMarker => true, :shadow => false }
@@ -36,16 +36,15 @@ module MonthlyGrantsBaseReport
     legend = []
     programs = []
     data = {}
-    first_year = 0
-    last_year = 0
-    first_month = 0
-    last_month = 0
+    start_date = false
+    end_date = false
+
     if aggregate_type == :sum_amount
       aggregate = "SUM(requests.amount_recommended)"
     else
       aggregate = "COUNT(requests.id)"
     end
-    query = "select #{aggregate} as num, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
+    query = "select #{aggregate} as num, requests.grant_agreement_at as date, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, request_ids]))
     req.each_hash do |row|
       year = row["year"].to_i
@@ -56,39 +55,27 @@ module MonthlyGrantsBaseReport
         programs << program_id
         plot[:series] << { :label => row["program"]}
       end
+      date = Date.parse(row["date"])
+      end_date = date if !end_date || date > end_date
+      start_date = date if !start_date || date < start_date
+    end
+    filter = params["request"]
+    start_date = Date.parse(filter["request_from_date"]) if (filter["request_from_date"])
+    end_date = Date.parse(filter["request_to_date"]) if (filter["request_to_date"])
 
-      if (year < first_year || first_year == 0)
-        first_year = year
-      end
-      if (year > last_year || last_year == 0)
-        last_year = year
-      end
-      if (month < first_month || first_month == 0)
-        first_month = month
-      end
-      if (month > last_month || last_month == 0)
-        last_month = month
-      end
-    end
-    if (first_year != last_year)
-      first_month = 1
-      last_month = 12
-    end
     i = 0
     max_grants = 0
     programs.each do |program_id|
       row = []
-      (first_year..last_year).each do |year|
-        (first_month..last_month).each do |month|
-          if (program_id == programs.first)
-            xaxis << month.to_s + "/" + year.to_s
-            i = i + 1
-          end
-          grants = get_count(data, year, month, program_id)
-          row << grants
-          if (grants > max_grants)
-            max_grants = grants
-          end
+      ReportUtility.get_months_and_years(start_date, end_date).each do |date|
+        if (program_id == programs.first)
+          xaxis << date[0].to_s + "/" + date[1].to_s
+          i = i + 1
+        end
+        grants = get_count(data, date[1], date[0], program_id)
+        row << grants
+        if (grants > max_grants)
+          max_grants = grants
         end
       end
       plot[:data] << row

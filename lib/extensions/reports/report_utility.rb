@@ -75,8 +75,6 @@ module ReportUtility
   # Helpers specific to visualizations
   def self.get_date_range_string params
     filter = params["request"]
-    filter.to_json
-
     start_date = ""
     end_date = ""
     if filter
