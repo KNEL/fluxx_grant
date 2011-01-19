@@ -94,7 +94,7 @@ module MonthlyGrantsBaseReport
         axis << [x + 1, xaxis[x]]
       end
     end
-    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0}}
+    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => {:formatString => '$%.2f'}}}
     if plot[:data].count == 0
       plot[:data] << [0]
       plot.delete(:series)

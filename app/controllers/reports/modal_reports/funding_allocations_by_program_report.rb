@@ -62,7 +62,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
     hash[:title] = "Funding Allocations by Program"
     hash[:data] = [total_granted, granted, budgeted, pipeline]
-    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :showLabel => true }}}
+    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
     hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"}, {:label => "Budgeted"} ]
     hash[:stackSeries] = true;
     hash[:type] = "bar"
