@@ -27,4 +27,6 @@
     .key Payment Recorded by:
     .value= model.payment_recorded_by.full_name if model.payment_recorded_by
 
+
+= render :partial => "model_documents/list_model_documents", :locals => { :model => model}
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => RequestTransaction.name}

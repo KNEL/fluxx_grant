@@ -113,6 +113,8 @@ module FluxxGrantBlueprint
     RequestProgram.blueprint do
     end
     
+    RequestTransactionFundingSource.blueprint do
+    end
   
     base.extend(ModelClassMethods)
     base.class_eval do

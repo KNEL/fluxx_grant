@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :request_transaction_funding_sources
+
   resources :modal_reports
 
   resources :request_programs
