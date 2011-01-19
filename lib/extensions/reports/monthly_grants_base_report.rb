@@ -13,14 +13,13 @@ module MonthlyGrantsBaseReport
   def report_legend controller, index_object, params, models
     request_ids = models.map(&:id)
     subquery = "SELECT amount_recommended, id FROM requests WHERE type = ? and id in (?)"
-#    fips_subquery = "select sum(amount_recommended) from from requests where id in (?) and type = 'FipRequest'"
     query = "SELECT programs.name AS program, count(grants.id) as grants, sum(grants.amount_recommended) as grant_dollars, count(fips.id) as fips, sum(fips.amount_recommended) as fip_dollars FROM requests LEFT JOIN programs ON programs.id = requests.program_id LEFT JOIN (#{subquery}) as grants ON grants.id = requests.id LEFT JOIN (#{subquery}) as fips ON fips.id = requests.id WHERE requests.id IN (?) GROUP BY requests.program_id ORDER BY program DESC"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, "GrantRequest", request_ids, "FipRequest", request_ids, request_ids]))
     legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
     req.each_hash do |result|
       legend << [result["program"], result["grants"], number_to_currency(result["grant_dollars"]), result["fips"], number_to_currency(result["fip_dollars"])]
     end
-   return legend
+   legend
   end
 
   def by_month_report request_ids, params, aggregate_type=:count

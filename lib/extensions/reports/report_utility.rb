@@ -34,7 +34,7 @@ module ReportUtility
     results
   end
 
-  def self.array_query(query, result_field, convert_to_integer = true)
+  def self.array_query(query, result_field = "id", convert_to_integer = true)
     req = Request.connection.execute(Request.send(:sanitize_sql, query))
     results = []
     req.each_hash{ |res| results << (convert_to_integer ? res[result_field].to_i : res[result_field]) }
