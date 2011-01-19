@@ -11,7 +11,23 @@
   .pairs
     .key Due:
     .value= model.due_at.mdy if model.due_at
+  - if model.user_payee
+    .pairs
+      .key Payee (Person):
+      .value= model.user_payee.full_name
+  - if model.user_payee
+    .pairs
+      .key Payee (Organization):
+      .value= model.organization_payee.name
 
+%h4 Funding Sources
+- model.request.request_funding_sources.each do |rfs|
+  - if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source
+    = "#{rfs.funding_source_allocation.funding_source.name} #{(rfs.amount_remaining || 0).to_currency} available"
+    - rtfs = RequestTransactionFundingSource.where(:request_transaction_id => model.id, :request_funding_source_id => rfs.id).first
+    = (rtfs ? rtfs.amount : 0).to_currency
+  
+%div.partial
   - if model.paid_at
     .pairs
       .key Paid:
