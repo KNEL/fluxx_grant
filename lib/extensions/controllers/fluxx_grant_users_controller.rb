@@ -21,8 +21,8 @@ module FluxxGrantUsersController
     
     # Add in a post method to create a user org if the organization_id param is passed in
     base.insta_post User do |insta|
-      insta.post do |pair|
-        controller_dsl, model = pair
+      insta.post do |triple|
+        controller_dsl, model, outcome = triple
         # Check to see if there was an organization passed in to use to create a user organization
         user = model
         org = Organization.where(:id => user.temp_organization_id).first

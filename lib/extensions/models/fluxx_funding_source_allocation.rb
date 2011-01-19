@@ -46,7 +46,7 @@ module FluxxFundingSourceAllocation
   
   module ModelInstanceMethods
     def amount_granted
-      request_funding_sources.select{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + rfs.funding_amount}
+      request_funding_sources.select{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
     end
     
     def amount_remaining
@@ -54,7 +54,7 @@ module FluxxFundingSourceAllocation
     end
 
     def amount_granted_in_queue
-      request_funding_sources.reject{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + rfs.funding_amount}
+      request_funding_sources.reject{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
     end
     
     def composite_name
@@ -68,7 +68,7 @@ module FluxxFundingSourceAllocation
       "#{composite_name}; Total: #{amount}, Remaining: #{(amount || 0) - (amount_granted || 0)}"
     end
     
-    def funding_source_title request_amount
+    def funding_source_title request_amount=nil
       current_amount_remaining = self.amount_remaining
       funds_available = if request_amount
         if current_amount_remaining > request_amount

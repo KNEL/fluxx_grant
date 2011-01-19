@@ -20,8 +20,10 @@ class RequestTransactionFundingSourcesControllerTest < ActionController::TestCas
   end
 
   test "should create request_transaction_funding_source" do
+    rfs = RequestFundingSource.make
+    rt = RequestTransaction.make
     assert_difference('RequestTransactionFundingSource.count') do
-      post :create, :request_transaction_funding_source => { :name => 'some random name for you' }
+      post :create, :request_transaction_funding_source => { :request_transaction_id => rt.id, :request_funding_source_id => rfs.id }
     end
 
     assert 201, @response.status
@@ -38,18 +40,6 @@ class RequestTransactionFundingSourcesControllerTest < ActionController::TestCas
     assert_response :success
   end
 
-  test "should not be allowed to edit if somebody else is editing" do
-    @RequestTransactionFundingSource.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    get :edit, :id => @RequestTransactionFundingSource.to_param
-    assert assigns(:not_editable)
-  end
-
-  test "should not be allowed to update if somebody else is editing" do
-    @RequestTransactionFundingSource.update_attributes :locked_until => (Time.now + 5.minutes), :locked_by_id => User.make.id
-    put :update, :id => @RequestTransactionFundingSource.to_param, :request_transaction_funding_source => {}
-    assert assigns(:not_editable)
-  end
-
   test "should update request_transaction_funding_source" do
     put :update, :id => @RequestTransactionFundingSource.to_param, :request_transaction_funding_source => {}
     assert flash[:info]
@@ -59,7 +49,8 @@ class RequestTransactionFundingSourcesControllerTest < ActionController::TestCas
   end
 
   test "should destroy request_transaction_funding_source" do
-    delete :destroy, :id => @RequestTransactionFundingSource.to_param
-    assert_not_nil @RequestTransactionFundingSource.reload().deleted_at 
+    assert_difference('RequestTransactionFundingSource.count', -1) do
+      delete :destroy, :id => @RequestTransactionFundingSource.to_param
+    end
   end
 end

@@ -4,6 +4,7 @@ module FluxxRequestFundingSource
   def self.included(base)
     base.belongs_to :request
     base.belongs_to :funding_source_allocation
+    base.has_many :request_transaction_funding_sources
 
     base.send :attr_accessor, :program
     base.send :attr_accessor, :program_id
@@ -35,6 +36,10 @@ module FluxxRequestFundingSource
   module ModelInstanceMethods
     def funding_amount= new_amount
       write_attribute(:funding_amount, filter_amount(new_amount))
+    end
+    
+    def amount_remaining
+      funding_amount - request_transaction_funding_sources.inject(0){|acc, rtfs| acc - rtfs.amount}
     end
   end
 end

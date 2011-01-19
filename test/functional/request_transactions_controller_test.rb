@@ -19,7 +19,7 @@ class RequestTransactionsControllerTest < ActionController::TestCase
   end
 
   test "should get new" do
-    get :new
+    get :new, :request_id => @request1.id
     assert_response :success
   end
 

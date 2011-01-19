@@ -15,7 +15,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
   end
 
   def compute_show_plot_data controller, index_object, params
-    filter = params["active_record_base"]
+    filter = params["active_record_base"] || {}
     hash = {}
     hash[:title] = report_label
 

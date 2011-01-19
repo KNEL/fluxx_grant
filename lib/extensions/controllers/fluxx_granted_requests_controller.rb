@@ -34,8 +34,8 @@ module FluxxGrantedRequestsController
           grant_request_show_format_html controller_dsl, outcome, default_block
         end
       end
-      insta.post do |pair|
-        controller_dsl, model = pair
+      insta.post do |triple|
+        controller_dsl, model, outcome = triple
         set_enabled_variables controller_dsl
       end
     end

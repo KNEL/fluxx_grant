@@ -583,11 +583,13 @@ ActiveRecord::Schema.define(:version => 20110118200059) do
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
     t.integer  "request_funding_source_id"
+    t.integer  "request_transaction_id"
     t.integer  "amount"
   end
 
   add_index "request_transaction_funding_sources", ["created_by_id"], :name => "request_transaction_funding_sources_created_by_id"
   add_index "request_transaction_funding_sources", ["request_funding_source_id"], :name => "request_transaction_funding_sources_fundsrc_id"
+  add_index "request_transaction_funding_sources", ["request_transaction_id"], :name => "request_transaction_funding_sources_transaction_id"
   add_index "request_transaction_funding_sources", ["updated_by_id"], :name => "request_transaction_funding_sources_updated_by_id"
 
   create_table "request_transactions", :force => true do |t|

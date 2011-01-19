@@ -14,18 +14,6 @@ class SubInitiativesControllerTest < ActionController::TestCase
     assert_not_nil assigns(:sub_initiatives)
   end
   
-  test "autocomplete" do
-    get :index, :name => @SubInitiative.name, :format => :autocomplete
-    a = @response.body.de_json # try to deserialize the JSON to an array
-    assert_equal @SubInitiative.id, a.last['value']
-  end
-
-  test "should confirm that name_exists" do
-    get :index, :name => @SubInitiative.name, :format => :autocomplete
-    a = @response.body.de_json # try to deserialize the JSON to an array
-    assert_equal @SubInitiative.id, a.first['value']
-  end
-
   test "should get new" do
     get :new
     assert_response :success

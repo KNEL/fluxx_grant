@@ -8,12 +8,16 @@ module FluxxRequestTransaction
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.belongs_to :payment_recorded_by, :class_name => 'User', :foreign_key => 'payment_recorded_by_id'
+    base.belongs_to :user_payee, :class_name => 'User', :foreign_key => 'user_payee_id'
+    base.belongs_to :organization_payee, :class_name => 'Organization', :foreign_key => 'organization_payee_id'
+    base.has_many :request_transaction_funding_sources
     base.has_many :workflow_events, :as => :workflowable
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
     base.has_many :model_documents, :as => :documentable
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.has_many :group_members, :as => :groupable
     base.has_many :groups, :through => :group_members
+    base.send :attr_accessor, :organization_lookup
     
     base.insta_favorite
     base.insta_export do |insta|
@@ -143,6 +147,10 @@ module FluxxRequestTransaction
         transitions :from => :tentatively_due, :to => :paid
         transitions :from => :actually_due, :to => :paid
       end
+    end
+    
+    def document_title_name
+      "Invoice"
     end
   end
 

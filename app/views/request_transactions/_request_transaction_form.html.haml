@@ -1,12 +1,29 @@
-= raw "<input type='hidden' name='event_action' value='#{params['hidden_event_action']}'>"
-- model.amount_paid = model.amount_due
-- model.payment_recorded_by_id = current_user.id
-= form.input :amount_paid, :as => :hidden
-= form.input :payment_recorded_by_id, :as => :hidden
+- if model.new_record?
+  = form.input :amount_due
 
-= form.input :payment_type, {:label => 'Payment Type:', :as => :select, :collection => ['Check', 'Wire']}
-= form.input :paid_at, :label => 'Date Paid'
-= form.input :payment_confirmation_number, :label => 'Check/Confirmation Number:'
-= form.input :comment, :label => 'Comment:', :as => :text
+= form.input :request_id, :as => :hidden
+= form.input :user_payee, :label => "Payee (Person)", :as => :autocomplete, :autocomplete_url => users_path(:format => :autocomplete), :related_attribute_name => :full_name, :aft => (link_to 'Add New', new_user_path, :class => 'to-modal', 'data-on-success' => 'close,populateField')
+
+= render :partial => "organizations/single_org_lookup", :locals => { :model => model, :form => form, :organization_name => :organization_payee, :organization_label => 'Payee (Organization):' }
+  
+    
+%h4 Funding Sources
+- model.request.request_funding_sources.each do |rfs|
+  - if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source
+    = "#{rfs.funding_source_allocation.funding_source.name} #{(rfs.amount_remaining || 0).to_currency} available"
+    - rtfs = RequestTransactionFundingSource.where(:request_transaction_id => model.id, :request_funding_source_id => rfs.id).first
+    = raw "<input type='text' name='funding_source_value_#{rfs.id}' value='#{rtfs ? rtfs.amount : ''}'>"
+
+- if params['hidden_event_action']
+  = raw "<input type='hidden' name='event_action' value='#{params['hidden_event_action']}'>"
+  - model.amount_paid = model.amount_due
+  - model.payment_recorded_by_id = current_user.id
+  = form.input :amount_paid, :as => :hidden
+  = form.input :payment_recorded_by_id, :as => :hidden
+
+  = form.input :payment_type, {:label => 'Payment Type:', :as => :select, :collection => ['Check', 'Wire']}
+  = form.input :paid_at, :label => 'Date Paid'
+  = form.input :payment_confirmation_number, :label => 'Check/Confirmation Number:'
+  = form.input :comment, :label => 'Comment:', :as => :text
 
 = form.commit_button
