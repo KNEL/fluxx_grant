@@ -34,7 +34,7 @@ module ReportUtility
     results
   end
 
-  def self.array_query(query, result_field, convert_to_integer = true)
+  def self.array_query(query, result_field = "id", convert_to_integer = true)
     req = Request.connection.execute(Request.send(:sanitize_sql, query))
     results = []
     req.each_hash{ |res| results << (convert_to_integer ? res[result_field].to_i : res[result_field]) }
@@ -73,23 +73,6 @@ module ReportUtility
   end
 
   # Helpers specific to visualizations
-  def self.get_date_range_string params
-    filter = params["request"]
-    filter.to_json
-
-    start_date = ""
-    end_date = ""
-    if filter
-      if (filter["request_from_date"])
-        start_date = Date.parse(filter["request_from_date"]).strftime("%B %d, %Y")
-      end
-      if (filter["request_to_date"])
-        date = Date.parse(filter['request_to_date']).strftime("%B %d, %Y")
-        end_date = " to #{date}"
-      end
-    end
-    start_date + end_date
-  end
 
   def self.get_report_totals request_ids
     hash = {}
