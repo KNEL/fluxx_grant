@@ -14,25 +14,6 @@ class RequestTransactionFundingSourcesControllerTest < ActionController::TestCas
     assert_not_nil assigns(:request_transaction_funding_sources)
   end
   
-  test "should get CSV index" do
-    get :index, :format => 'csv'
-    assert_response :success
-    assert_not_nil assigns(:request_transaction_funding_sources)
-  end
-
-  test "autocomplete" do
-    lookup_instance = RequestTransactionFundingSource.make
-    get :index, :name => lookup_instance.name, :format => :autocomplete
-    a = @response.body.de_json # try to deserialize the JSON to an array
-    assert_equal lookup_instance.id, a.last['value']
-  end
-
-  test "should confirm that name_exists" do
-    get :index, :name => @RequestTransactionFundingSource.name, :format => :autocomplete
-    a = @response.body.de_json # try to deserialize the JSON to an array
-    assert_equal @RequestTransactionFundingSource.id, a.first['value']
-  end
-
   test "should get new" do
     get :new
     assert_response :success
@@ -52,32 +33,6 @@ class RequestTransactionFundingSourcesControllerTest < ActionController::TestCas
     assert_response :success
   end
 
-  test "should show request_transaction_funding_source with documents" do
-    model_doc1 = ModelDocument.make(:documentable => @RequestTransactionFundingSource)
-    model_doc2 = ModelDocument.make(:documentable => @RequestTransactionFundingSource)
-    get :show, :id => @RequestTransactionFundingSource.to_param
-    assert_response :success
-  end
-  
-  test "should show request_transaction_funding_source with groups" do
-    group = Group.make
-    group_member1 = GroupMember.make :groupable => @RequestTransactionFundingSource, :group => group
-    group_member2 = GroupMember.make :groupable => @RequestTransactionFundingSource, :group => group
-    get :show, :id => @RequestTransactionFundingSource.to_param
-    assert_response :success
-  end
-  
-  test "should show request_transaction_funding_source with audits" do
-    Audit.make :auditable_id => @RequestTransactionFundingSource.to_param, :auditable_type => @RequestTransactionFundingSource.class.name
-    get :show, :id => @RequestTransactionFundingSource.to_param
-    assert_response :success
-  end
-  
-  test "should show request_transaction_funding_source audit" do
-    get :show, :id => @RequestTransactionFundingSource.to_param, :audit_id => @RequestTransactionFundingSource.audits.first.to_param
-    assert_response :success
-  end
-  
   test "should get edit" do
     get :edit, :id => @RequestTransactionFundingSource.to_param
     assert_response :success
