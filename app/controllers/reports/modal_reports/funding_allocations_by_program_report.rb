@@ -27,9 +27,10 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
     program_ids= ReportUtility.get_program_ids filter["program_id"]
     start_date, stop_date = get_date_range filter
+    years = ReportUtility.get_years start_date, stop_date
 
     # Never include these requests
-    allways_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+    always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
 
     # Selected Programs
     query = "select name, id from programs where id in (?)"
@@ -38,19 +39,19 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     i = 0
     programs.each { |program| xaxis << [i = i + 1, program] }
     #Total Granted
-    query = "select sum(amount_recommended) as amount, program_id from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by program_id"
+    query = "select sum(amount_recommended) as amount, program_id from requests r where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by program_id"
     total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
     #Granted
-    query = "select sum(rs.funding_amount) as amount, fa.program_id as program_id from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{allways_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) group by fa.program_id"
+    query = "select sum(rs.funding_amount) as amount, fa.program_id as program_id from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{always_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) group by fa.program_id"
     granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
     #Paid
     #TODO
 
     #Budgeted
-    query = "SELECT sum(fa.amount) as amount, fa.program_id as program_id FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ? GROUP BY fa.program_id"
-    budgeted = ReportUtility.query_map_to_array([query, program_ids, stop_date, start_date], program_ids, "program_id", "amount")
+    query = "SELECT sum(fa.amount) as amount, fa.program_id as program_id FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?) GROUP BY fa.program_id"
+    budgeted = ReportUtility.query_map_to_array([query, program_ids, years], program_ids, "program_id", "amount")
 
     #Pipeline
     #TODO: Check this
@@ -63,7 +64,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     hash[:title] = "Funding Allocations by Program"
     hash[:data] = [total_granted, granted, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-    hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"}, {:label => "Budgeted"} ]
+    hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
     hash[:stackSeries] = true;
     hash[:type] = "bar"
 
@@ -88,19 +89,20 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
   def report_legend controller, index_object, params
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
+    years = ReportUtility.get_years start_date, stop_date
     program_ids= ReportUtility.get_program_ids filter["program_id"]
-    allways_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+    always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
     categories = ["Total Granted","Granted", "Pipeline", "Budgeted"]
     categories.each do |program|
-      query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
+      query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
       case program
       when "Total Granted"
-        query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
+        query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Granted"
-        query = "select sum(rs.funding_amount) as amount, count(r.id) as count from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{allways_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) and type = ?"
+        query = "select sum(rs.funding_amount) as amount, count(r.id) as count from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{always_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) and type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Pipeline"
@@ -108,9 +110,9 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
-        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ?"
-        grant = [query, program_ids, start_date, stop_date]
-        fip = [query, program_ids, start_date, stop_date]
+        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+        grant = [query, program_ids, years]
+        fip = [query, program_ids, years]
       end
       grant_result = ReportUtility.single_value_query(grant)
       fip_result = ReportUtility.single_value_query(fip)

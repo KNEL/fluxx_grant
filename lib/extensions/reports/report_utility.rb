@@ -72,6 +72,10 @@ module ReportUtility
    (start_date..stop_date).collect { |date| [date.month, date.year] }.uniq
   end
 
+  def self.get_years(start_date, stop_date)
+   (start_date..stop_date).collect { |date| date.year }.uniq
+  end
+
   # Helpers specific to visualizations
 
   def self.get_report_totals request_ids
