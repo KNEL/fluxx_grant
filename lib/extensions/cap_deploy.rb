@@ -1,7 +1,6 @@
 # NOTE: to deploy a branch you need to do something like this:
 # cap staging deploy --set-before branch=shakti-1.0-rc1 --set-before engine_branch=fluxx_engine-1.0-rc1 --set-before crm_branch=fluxx_crm-1.0-rc1 --set-before grant_branch=fluxx_grant-1.0-rc1 deploy:migrations
-
-set :stages, %w(standalone staging production)
+set :stages, %w(standalone staging demo production)
 set :default_stage, 'standalone'
 require 'capistrano/ext/multistage'
 
