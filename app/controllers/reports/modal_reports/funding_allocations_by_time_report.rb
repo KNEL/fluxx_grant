@@ -30,28 +30,29 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
     start_date = Date.parse(start_string)
     stop_date = start_date.end_of_year()
+    years = ReportUtility.get_years start_date, stop_date
 
     # Some helper queries
 
     # Funding sources for selected programs
-    query = "select id from funding_source_allocations where program_id in (?) AND retired IS NULL AND deleted_at IS NULL"
+    query = "select id from funding_source_allocations where program_id in (?) AND retired=0 AND deleted_at IS NULL"
     allocation_ids = ReportUtility.extract_ids [query, program_ids]
 
     # Never include these requests
-    allways_exclude = "requests.deleted_at IS NULL AND requests.state <> 'rejected'"
+    always_exclude = "requests.deleted_at IS NULL AND requests.state <> 'rejected'"
 
     # Series
 
     # Total Granted
-    query = "select sum(amount_recommended) as amount, YEAR(grant_agreement_at) as year, MONTH(grant_agreement_at) as month from requests where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
+    query = "select sum(amount_recommended) as amount, YEAR(grant_agreement_at) as year, MONTH(grant_agreement_at) as month from requests where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) group by YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
     total_granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
     # Granted
-    query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 1 and requests.grant_agreement_at >= ? and requests.grant_agreement_at <= ? and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.grant_agreement_at), MONTH(requests.grant_agreement_at)"
+    query = "select sum(request_funding_sources.funding_amount) as amount, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{always_exclude} and requests.granted = 1 and requests.grant_agreement_at >= ? and requests.grant_agreement_at <= ? and request_funding_sources.funding_source_allocation_id in (?) group by YEAR(requests.grant_agreement_at), MONTH(requests.grant_agreement_at)"
     granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
 
     #Pipeline
-    query = "select sum(request_funding_sources.funding_amount) as amount from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{allways_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state not in (?) and request_funding_sources.funding_source_allocation_id in (?)"
+    query = "select sum(request_funding_sources.funding_amount) as amount from requests left join request_funding_sources on request_funding_sources.request_id = requests.id where #{always_exclude} and requests.granted = 0 and requests.request_received_at >= ? and requests.request_received_at <= ? and requests.state not in (?) and request_funding_sources.funding_source_allocation_id in (?)"
     res = ReportUtility.single_value_query([query, start_date, stop_date, ReportUtility.pre_pipeline_states, allocation_ids])
     pipeline = Array.new.fill(0, 0, granted.length)
     pipeline << res["amount"].to_i
@@ -60,8 +61,8 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     # TODO: requires additional columns
 
     #Budgeted
-    query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ?"
-    res = ReportUtility.single_value_query([query, program_ids, stop_date, start_date])
+    query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+    res = ReportUtility.single_value_query([query, program_ids, years])
     budgeted = Array.new.fill(0, 0, granted.length)
     budgeted << res["amount"].to_i
 
@@ -101,19 +102,20 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
   def report_legend controller, index_object, params
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
+    years = ReportUtility.get_years start_date, stop_date
     program_ids= ReportUtility.get_program_ids filter["program_id"]
-    allways_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+    always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
     categories = ["Total Granted","Granted", "Pipeline", "Budgeted"]
     categories.each do |program|
-      query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
+      query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
       case program
       when "Total Granted"
-        query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{allways_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
+        query = "select sum(r.amount_recommended) as amount, count(r.id) as count from requests r where #{always_exclude} and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?) and type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Granted"
-        query = "select sum(rs.funding_amount) as amount, count(r.id) as count from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{allways_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) and type = ?"
+        query = "select sum(rs.funding_amount) as amount, count(r.id) as count from requests r left join request_funding_sources rs on rs.request_id = r.id left join funding_source_allocations fa on fa.id = rs.funding_source_allocation_id where #{always_exclude} and r.granted = 1 and r.grant_agreement_at >= ? and r.grant_agreement_at <= ? and fa.program_id in (?) and type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Pipeline"
@@ -121,9 +123,9 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
-        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fs.start_at <= ? AND fs.end_at >= ?"
-        grant = [query, program_ids, start_date, stop_date]
-        fip = [query, program_ids, start_date, stop_date]
+        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+        grant = [query, program_ids, years]
+        fip = [query, program_ids, years]
       end
       grant_result = ReportUtility.single_value_query(grant)
       fip_result = ReportUtility.single_value_query(fip)
