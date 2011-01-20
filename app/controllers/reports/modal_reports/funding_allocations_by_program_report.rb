@@ -50,7 +50,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     #TODO
 
     #Budgeted
-    query = "SELECT sum(fa.amount) as amount, fa.program_id as program_id FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?) GROUP BY fa.program_id"
+    query = "SELECT sum(fa.amount) as amount, fa.program_id as program_id FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?) GROUP BY fa.program_id"
     budgeted = ReportUtility.query_map_to_array([query, program_ids, years], program_ids, "program_id", "amount")
 
     #Pipeline
@@ -110,7 +110,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
-        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
         grant = [query, program_ids, years]
         fip = [query, program_ids, years]
       end

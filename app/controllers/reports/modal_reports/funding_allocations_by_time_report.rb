@@ -35,7 +35,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     # Some helper queries
 
     # Funding sources for selected programs
-    query = "select id from funding_source_allocations where program_id in (?) AND retired IS NULL AND deleted_at IS NULL"
+    query = "select id from funding_source_allocations where program_id in (?) AND retired=0 AND deleted_at IS NULL"
     allocation_ids = ReportUtility.extract_ids [query, program_ids]
 
     # Never include these requests
@@ -61,7 +61,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     # TODO: requires additional columns
 
     #Budgeted
-    query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+    query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
     res = ReportUtility.single_value_query([query, program_ids, years])
     budgeted = Array.new.fill(0, 0, granted.length)
     budgeted << res["amount"].to_i
@@ -123,7 +123,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
-        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa LEFT JOIN funding_sources fs ON fs.id = fa.funding_source_id WHERE fa.retired IS NULL AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
+        query = "SELECT sum(fa.amount) as amount FROM funding_source_allocations fa WHERE fa.retired=0 AND fa.deleted_at IS NULL AND fa.program_id in (?) AND fa.spending_year in (?)"
         grant = [query, program_ids, years]
         fip = [query, program_ids, years]
       end
