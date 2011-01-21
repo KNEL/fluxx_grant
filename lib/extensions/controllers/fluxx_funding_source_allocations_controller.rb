@@ -11,22 +11,26 @@ module FluxxFundingSourceAllocationsController
       insta.suppress_model_iteration = true
       
       insta.pre do |controller_dsl|
-        attr = if !params[:sub_initiative_id].blank?
-          :sub_initiative_id
+        # We want to use the most proscriptive search in the case that we get more than one limiter passed in
+        prog_entity = if !params[:sub_initiative_id].blank?
+          SubInitiative.find params[:sub_initiative_id]
         elsif !params[:initiative_id].blank?
-          :initiative_id
+          Initiative.find params[:initiative_id]
         elsif !params[:sub_program_id].blank?
-          :sub_program_id
+          SubProgram.find params[:sub_program_id]
         elsif !params[:program_id].blank?
-          :program_id
+          Program.find params[:program_id]
         end
-        self.pre_models = if attr
-          search_clause = FundingSourceAllocation.where(attr => params[attr])
-          search_clause = search_clause.where(:spending_year => params[:spending_year]) unless params[:spending_year].blank?
-          search_clause.all
+        self.pre_models = if prog_entity
+          if params[:spending_year].blank?
+            prog_entity.funding_source_allocations()
+          else
+            prog_entity.funding_source_allocations(:spending_year => params[:spending_year])
+          end
         else
           []
         end
+        
       end
       
       insta.format do |format|
@@ -37,7 +41,7 @@ module FluxxFundingSourceAllocationsController
               controller_url = url_for(model)
               {:label => model.funding_source_title(request_amount), :value => model.id, :url => controller_url}
             end.to_json
-          render :text => out_text
+          render :text => out_text, :layout => false
         end
       end
     end
