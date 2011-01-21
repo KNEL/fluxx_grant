@@ -7,6 +7,7 @@
     = form.input :name, :label => "Name", :as => :hidden
   - else
     = form.input :name, :label => "Name", :input_html => {"data-duplicate-lookup" => "/organizations.autocomplete?name_method=to_s&parent_org_id=0"}
+  = form.input :acronym, :label => "Alias/Acronym"
   = form.input :street_address, :label => "Street Address"
   = form.input :street_address2, :label => "Street Address 2"
   = form.input :geo_country, :label => 'Country:', :as => :select, :input_html => {:class => 'geo_country_select', 'data-related-child'.to_sym => '.geo-state-select'}, :collection => GeoCountry.order('name asc').all.map {|country| [country.name, country.id]}
@@ -21,7 +22,6 @@
   = form.input :url, :label => "Url"
   = form.input :blog_url, :label => "Blog Url"
   = form.input :twitter_url, :label => "Twitter Url"
-  = form.input :acronym, :label => "Acronym"
   = form.input :tax_class, :label => "Tax Class", :collection => Organization.sorted_tax_classes
   = form.input :tax_id, :label => "Tax ID"
   = render :partial => "organizations/more_org_form", :locals => { :model => model, :form => form}

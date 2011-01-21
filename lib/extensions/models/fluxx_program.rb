@@ -56,6 +56,10 @@ module FluxxProgram
     def program_officer_role_name
       'Program Officer'
     end
+    
+    def self.deputy_director_role_name
+      'Deputy Directory'
+    end
 
     def cr_role_name
       'CR'
@@ -66,7 +70,7 @@ module FluxxProgram
     end
 
     def request_roles
-      [president_role_name, program_associate_role_name, program_officer_role_name, program_director_role_name, cr_role_name, svp_role_name, grants_administrator_role_name, grants_assistant_role_name]
+      [president_role_name, program_associate_role_name, program_officer_role_name, program_director_role_name, cr_role_name, deputy_director_role_name, svp_role_name, grants_administrator_role_name, grants_assistant_role_name]
     end
 
     def grant_roles

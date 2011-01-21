@@ -24,6 +24,8 @@ module FluxxCommonRequestsController
         insta.add_event_roles 'pd_send_back', Program, Program.program_director_role_name
         insta.add_event_roles 'cr_approve', Program, Program.cr_role_name
         insta.add_event_roles 'cr_send_back', Program, Program.cr_role_name
+        insta.add_event_roles 'deputy_director_approve', Program, Program.deputy_director_role_name
+        insta.add_event_roles 'deputy_director_send_back', Program, Program.deputy_director_role_name
         insta.add_event_roles 'svp_approve', Program, Program.svp_role_name
         insta.add_event_roles 'svp_send_back', Program, Program.svp_role_name
         insta.add_event_roles 'president_approve', Program, Program.president_role_name
