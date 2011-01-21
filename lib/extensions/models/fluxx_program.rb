@@ -92,9 +92,17 @@ module FluxxProgram
     def load_all
       Program.where(:retired => 0).all
     end
+    
+    def load_all_without_children_programs
+      Program.where(:retired => 0).where('(select count(*) from programs subprog where subprog.parent_id = programs.id) = 0').all
+    end
   end
 
   module ModelInstanceMethods
+    
+    def has_children_programs?
+      Program.where(:parent_id => self.id).count > 0
+    end
     
     def load_sub_programs minimum_fields=true
       select_field_sql = if minimum_fields
