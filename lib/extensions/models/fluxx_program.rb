@@ -57,7 +57,7 @@ module FluxxProgram
       'Program Officer'
     end
     
-    def self.deputy_director_role_name
+    def deputy_director_role_name
       'Deputy Directory'
     end
 
