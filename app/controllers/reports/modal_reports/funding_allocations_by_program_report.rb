@@ -28,7 +28,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     programs = ReportUtility.query_map_to_array([query, program_ids], program_ids, "id", "name", false)
     xaxis = []
     i = 0
-    programs.each { |program| xaxis << [i = i + 1, program] }
+    programs.each { |program| xaxis << program }
     #Total Granted
     query = "SELECT sum(amount_recommended) as amount, program_id FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY program_id"
     total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")

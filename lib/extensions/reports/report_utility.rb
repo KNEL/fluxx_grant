@@ -52,9 +52,9 @@ module ReportUtility
     return ids
   end
 
-  def self.get_xaxis(start_date, stop_date)
+  def self.get_xaxis(start_date, stop_date, category_only = true)
     i = 0
-    get_months_and_years(start_date, stop_date).collect{ |date| [i = i + 1, date[0].to_s + "/" + date[1].to_s] }
+    get_months_and_years(start_date, stop_date).collect{ |date| category_only ? date[0].to_s + "/" + date[1].to_s : [i = i + 1, date[0].to_s + "/" + date[1].to_s] }
   end
 
   # Return query data with values for all months within a range
