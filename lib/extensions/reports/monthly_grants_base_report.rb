@@ -3,7 +3,9 @@ module MonthlyGrantsBaseReport
   attr_accessor :start_date, :end_date
 
   def report_filter_text controller, index_object, params, models
-    "#{self.start_date.strftime("%B %d, %Y")} to #{self.end_date.strftime("%B %d, %Y")}"
+    if (self.start_date && self.end_date)
+      "#{self.start_date.strftime("%B %d, %Y")} to #{self.end_date.strftime("%B %d, %Y")}"
+    end
   end
 
   def report_summary controller, index_object, params, models
