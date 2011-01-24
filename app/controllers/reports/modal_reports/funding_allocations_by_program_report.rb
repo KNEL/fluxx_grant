@@ -7,7 +7,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
   end
 
   def temp_table_name
-    "drew"
+    "funding_allocations_by_program_temp"
   end
 
   def compute_show_plot_data controller, index_object, params
