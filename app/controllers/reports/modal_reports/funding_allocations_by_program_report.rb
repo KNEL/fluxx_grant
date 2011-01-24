@@ -57,7 +57,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     hash[:data] = [total_granted, granted, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
     hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
-    hash[:stackSeries] = true;
+    hash[:stackSeries] = false;
     hash[:type] = "bar"
 
     hash.to_json
