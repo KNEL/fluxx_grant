@@ -71,6 +71,11 @@ module MonthlyGrantsBaseReport
     # Store these calculated dates so we can use them in the filter text
     self.start_date = start_date
     self.end_date = end_date
+
+    # We need a plot of more than one month to make sense
+    if (start_date.month == end_date.month && start_date.year == end_date.year)
+      end_date =self.end_date = self.end_date >> 1
+    end
     i = 0
     max_grants = 0
     programs.each do |program_id|
