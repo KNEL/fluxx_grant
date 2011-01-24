@@ -65,9 +65,9 @@ module FundingAllocationsBaseReport
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Pipeline"
         query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
-          WHERE #{always_exclude} AND r.granted = 0 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
-        grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
-        fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
+          WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
+        grant = [query, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
+        fip = [query, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
         query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
         grant = [query, program_ids, years]

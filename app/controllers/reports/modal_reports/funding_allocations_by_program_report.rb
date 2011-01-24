@@ -47,9 +47,9 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
     #Pipeline
     #TODO: Check this
-    query = "SELECT SUM(rs.funding_amount) AS amount, tmp.program_id AS program_id FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
-      WHERE r.deleted_at IS NULL AND r.state <> 'rejected' AND r.granted = 0 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND r.state NOT IN (?) GROUP BY tmp.program_id"
-    pipeline = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids, ReportUtility.pre_pipeline_states], program_ids, "program_id", "amount")
+    query = "SELECT SUM(rs.funding_amount) AS amount, tmp.program_id AS program_id FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
+      LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND r.state NOT IN (?) GROUP BY tmp.program_id"
+    pipeline = ReportUtility.query_map_to_array([query, program_ids, ReportUtility.pre_pipeline_states], program_ids, "program_id", "amount")
 
     hash = {:library => "jqPlot"}
 
