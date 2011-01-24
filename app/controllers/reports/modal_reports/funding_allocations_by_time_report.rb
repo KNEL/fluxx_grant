@@ -46,9 +46,9 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
 
     #Pipeline
-    query = "SELECT SUM(rs.funding_amount) AS amount FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id WHERE #{always_exclude} AND r.granted = 0
-      AND r.request_received_at >= ? AND r.request_received_at <= ? AND r.state NOT IN (?) AND rs.funding_source_allocation_id IN (?)"
-    res = ReportUtility.single_value_query([query, start_date, stop_date, ReportUtility.pre_pipeline_states, allocation_ids])
+    query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
+      LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND r.state NOT IN (?)"
+    res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
     pipeline = Array.new.fill(0, 0, granted.length)
     pipeline << res["amount"].to_i
 
