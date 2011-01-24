@@ -17,7 +17,7 @@ module FundingAllocationsBaseReport
 
   def create_temp_funding_allocations_table name
     queries = ["DROP TABLE IF EXISTS #{name}",
-      "CREATE TABLE #{name} SELECT * FROM funding_source_allocations",
+      "CREATE TEMPORARY TABLE #{name} SELECT * FROM funding_source_allocations",
       "UPDATE #{name} tmp LEFT JOIN sub_programs sp ON tmp.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL",
       "UPDATE #{name} tmp LEFT JOIN initiatives i ON tmp.initiative_id = i.id LEFT JOIN sub_programs sp ON i.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL",
       "UPDATE #{name} tmp LEFT JOIN sub_initiatives si ON tmp.sub_initiative_id = si.id LEFT JOIN initiatives i ON si.initiative_id = i.id LEFT JOIN sub_programs sp ON i.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL"]
@@ -65,7 +65,7 @@ module FundingAllocationsBaseReport
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Pipeline"
         query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
-          WHERE r.deleted_at IS NULL AND r.state <> 'rejected' AND r.granted = 0 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
+          WHERE #{always_exclude} AND r.granted = 0 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, start_date, stop_date, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
       when "Budgeted"
