@@ -63,7 +63,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
     # Rollups
     xaxis = ReportUtility.get_xaxis(start_date, stop_date)
-    xaxis << [xaxis.count + 1, "Total"]
+    xaxis << "Year to Date"
     total_granted << total_granted.inject {|sum, amount| sum + amount }
     granted  << granted.inject {|sum, amount| sum + amount }
 
