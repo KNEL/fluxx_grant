@@ -52,19 +52,18 @@ module FundingAllocationsBaseReport
     legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
     categories = ["Total Granted","Granted", "Pipeline", "Budgeted"]
     categories.each do |program|
-      query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id in (?) AND type = ?"
       case program
       when "Total Granted"
         query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) AND type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Granted"
-        query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
+        query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
           WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
       when "Pipeline"
-        query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
+        query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
           WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
         grant = [query, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
         fip = [query, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
