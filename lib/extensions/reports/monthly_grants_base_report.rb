@@ -18,9 +18,9 @@ module MonthlyGrantsBaseReport
     subquery = "SELECT amount_recommended, id FROM requests WHERE type = ? and id in (?)"
     query = "SELECT programs.name AS program, count(grants.id) as grants, sum(grants.amount_recommended) as grant_dollars, count(fips.id) as fips, sum(fips.amount_recommended) as fip_dollars FROM requests LEFT JOIN programs ON programs.id = requests.program_id LEFT JOIN (#{subquery}) as grants ON grants.id = requests.id LEFT JOIN (#{subquery}) as fips ON fips.id = requests.id WHERE requests.id IN (?) GROUP BY requests.program_id ORDER BY program DESC"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, "GrantRequest", request_ids, "FipRequest", request_ids, request_ids]))
-    legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
+    legend = [{ :table => ["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"], :filter => ""}]
     req.each_hash do |result|
-      legend << [result["program"], result["grants"], number_to_currency(result["grant_dollars"]), result["fips"], number_to_currency(result["fip_dollars"])]
+    legend << { :table => [result["program"], result["grants"], number_to_currency(result["grant_dollars"]), result["fips"], number_to_currency(result["fip_dollars"])], :filter => ""}
     end
    legend
   end
