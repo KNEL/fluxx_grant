@@ -4,7 +4,6 @@ class GemHandler
       dev_local, cur_dir, gem_versions = params
       gem 'thinking-sphinx', '>=2.0.1', :require => 'thinking_sphinx'
       gem 'writeexcel', '>=0.6.1'
-      # per https://gist.github.com/346160
       
       # gem "thinking-sphinx", :git => "https://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
       if dev_local 
