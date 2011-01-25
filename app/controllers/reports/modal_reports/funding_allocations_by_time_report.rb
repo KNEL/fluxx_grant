@@ -3,7 +3,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
   set_type_as_show
 
   def report_label
-    "Funding Allocations by date"
+    "Budget Overview by Date Range"
   end
 
   def temp_table_name

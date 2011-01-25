@@ -3,7 +3,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
   set_type_as_show
 
   def report_label
-    "Funding Allocations by program"
+    "Budget Overview by program"
   end
 
   def temp_table_name
