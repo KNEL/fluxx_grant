@@ -39,6 +39,9 @@ after "deploy", "thinking_sphinx:index"
 after "deploy:migrations", "thinking_sphinx:index"
 after "deploy", "fluxx:reload_all_templates"
 after "deploy:migrations", "fluxx:reload_all_templates"
+after "deploy", "fluxx:restart_delayed_job"
+after "deploy:migrations", "fluxx:restart_delayed_job"
+
 
 namespace :uname do
   desc "Invoke uname on remote servers"
@@ -80,6 +83,11 @@ namespace :fluxx do
   desc "reload all letter templates"
   task :reload_all_templates do
     run "cd #{deploy_to}/current && rake fluxx_crm:reload_doc_templates RAILS_ENV=#{rails_env}"
+  end
+  
+  desc "restart delayed job"
+  task :restart_delayed_job do
+    run "export RAILS_ENV=#{rails_env} && cd #{current_path} && ruby script/delayed_job restart"
   end
 end
 

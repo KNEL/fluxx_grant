@@ -18,6 +18,7 @@ module FluxxRequestTransaction
     base.has_many :group_members, :as => :groupable
     base.has_many :groups, :through => :group_members
     base.send :attr_accessor, :organization_lookup
+    base.belongs_to :bank_account
     
     base.insta_favorite
     base.insta_export do |insta|

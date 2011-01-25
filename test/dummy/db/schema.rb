@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110118200059) do
+ActiveRecord::Schema.define(:version => 20110124213141) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -30,6 +30,43 @@ ActiveRecord::Schema.define(:version => 20110118200059) do
   add_index "audits", ["auditable_id", "auditable_type"], :name => "auditable_index"
   add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
+
+  create_table "bank_accounts", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "bank_name"
+    t.string   "account_name"
+    t.string   "account_number"
+    t.string   "special_instructions"
+    t.string   "street_address"
+    t.string   "street_address2"
+    t.string   "city"
+    t.integer  "geo_state_id"
+    t.integer  "geo_country_id"
+    t.string   "postal_code",                          :limit => 100
+    t.string   "phone",                                :limit => 100
+    t.string   "fax",                                  :limit => 100
+    t.string   "bank_code"
+    t.string   "bank_contact_name"
+    t.string   "bank_contact_phone"
+    t.string   "domestic_wire_aba_routing"
+    t.string   "domestic_special_wire_instructions"
+    t.string   "foreign_wire_intermediary_bank_name"
+    t.string   "foreign_wire_intermediary_bank_swift"
+    t.string   "foreign_wire_beneficiary_bank_swift"
+    t.string   "foreign_special_wire_instructions"
+    t.integer  "owner_organization_id"
+    t.integer  "owner_user_id"
+  end
+
+  add_index "bank_accounts", ["created_by_id"], :name => "bank_accounts_created_by_id"
+  add_index "bank_accounts", ["geo_country_id"], :name => "bank_accounts_geo_country_id"
+  add_index "bank_accounts", ["geo_state_id"], :name => "bank_accounts_geo_state_id"
+  add_index "bank_accounts", ["owner_organization_id"], :name => "bank_accounts_owner_organization_id"
+  add_index "bank_accounts", ["owner_user_id"], :name => "bank_accounts_owner_user_id"
+  add_index "bank_accounts", ["updated_by_id"], :name => "bank_accounts_updated_by_id"
 
   create_table "client_stores", :force => true do |t|
     t.datetime "created_at"
@@ -614,6 +651,7 @@ ActiveRecord::Schema.define(:version => 20110118200059) do
     t.string   "request_document_linked_to"
     t.integer  "organization_payee_id"
     t.integer  "user_payee_id"
+    t.integer  "bank_account_id"
   end
 
   add_index "request_transactions", ["organization_payee_id"], :name => "request_transactions_org_payee_id"
