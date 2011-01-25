@@ -49,14 +49,19 @@ module FundingAllocationsBaseReport
     years = ReportUtility.get_years start_date, stop_date
     program_ids= ReportUtility.get_program_ids filter["program_id"]
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
-    legend = [["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"]]
+    legend = [{:table => ["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"], :filter => ""}]
     categories = ["Total Granted","Granted", "Pipeline", "Budgeted"]
+    start_date_string = start_date.strftime('%m/%d/%Y')
+    stop_date_string = stop_date.strftime('%m/%d/%Y')
     categories.each do |program|
+      card_filter = ""
       case program
       when "Total Granted"
         query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) AND type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
+        # TODO AML: Get list of filter vars from fluxx
+        card_filter ="utf8=%E2%9C%93&q%5Bq%5D=&request%5Bsub_program_id%5D=&request%5Bfilter_type%5D=&request%5Bfilter_state%5D=&request%5Blead_user_ids%5D=&request%5Bcreated_by_id%5D=&request%5Bfunding_source_ids%5D=&request%5Bgreater_amount_recommended%5D=&request%5Blesser_amount_recommended%5D=&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5Bhas_been_rejected%5D=&request%5Bfavorite_user_ids%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&filter-text=Funding+Agreement%2C+1%2F1%2F2010%2C+12%2F31%2F2010%2C+Last+Updated+(Default)%2C+Descending&request[program_id][]=" + program_ids.join("&request[program_id][]=")
       when "Granted"
         query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
           WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ?"
@@ -74,7 +79,8 @@ module FundingAllocationsBaseReport
       end
       grant_result = ReportUtility.single_value_query(grant)
       fip_result = ReportUtility.single_value_query(fip)
-      legend << [program, grant_result["count"], number_to_currency(grant_result["amount"] ? grant_result["amount"] : 0 ), fip_result["count"], number_to_currency(fip_result["amount"] ? fip_result["amount"] : 0)]
+      legend << { :table => [program, grant_result["count"], number_to_currency(grant_result["amount"] ? grant_result["amount"] : 0 ), fip_result["count"], number_to_currency(fip_result["amount"] ? fip_result["amount"] : 0)],
+                  :filter => card_filter}
     end
     drop_temp_funding_allocations_table temp_table_name
    legend
