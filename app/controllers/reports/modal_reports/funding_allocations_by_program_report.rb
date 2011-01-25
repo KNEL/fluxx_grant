@@ -6,10 +6,6 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     "Budget Overview by program"
   end
 
-  def temp_table_name
-    "funding_allocations_by_program_temp"
-  end
-
   def compute_show_plot_data controller, index_object, params
     filter = params["active_record_base"]
     hash = {}

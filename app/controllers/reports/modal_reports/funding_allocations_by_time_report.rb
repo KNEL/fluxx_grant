@@ -6,10 +6,6 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     "Budget Overview by Date Range"
   end
 
-  def temp_table_name
-    "funding_allocations_by_date_temp"
-  end
-
   def compute_show_plot_data controller, index_object, params
     filter = params["active_record_base"] || {}
     hash = {}
