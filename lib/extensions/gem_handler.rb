@@ -5,7 +5,6 @@ class GemHandler
       gem 'thinking-sphinx', '>=2.0.1', :require => 'thinking_sphinx'
       gem 'writeexcel', '>=0.6.1'
       # per https://gist.github.com/346160
-      gem "ghazel-daemons", :require => 'daemons'
       
       # gem "thinking-sphinx", :git => "https://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
       if dev_local 
