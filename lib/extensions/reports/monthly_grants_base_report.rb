@@ -27,7 +27,7 @@ module MonthlyGrantsBaseReport
       else
         filter << "request[#{key}]=#{value}"
       end
-    end
+    end if params["request"]
     req.each_hash do |result|
       legend << { :table => [result["program"], result["grants"], number_to_currency(result["grant_dollars"]), result["fips"], number_to_currency(result["fip_dollars"])],
         :filter =>  filter.join("&") + "&request[program_id][]=#{result['program_id']}",
