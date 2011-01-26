@@ -9,6 +9,10 @@ module FundingAllocationsBaseReport
     "View current status of each allocation - amount spent, in the pipeline and allocated"
   end
 
+  def temp_table_name
+    self.class.name.underscore + "_tmp"
+  end
+
   def get_date_range filter
     start_string = '1/1/' + filter["funding_year"]
     start_date = Date.parse(start_string)
@@ -60,13 +64,13 @@ module FundingAllocationsBaseReport
         query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) AND type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
-        # TODO AML: Get list of filter vars from fluxx
-        card_filter ="utf8=%E2%9C%93&q%5Bq%5D=&request%5Bsub_program_id%5D=&request%5Bfilter_type%5D=&request%5Bfilter_state%5D=&request%5Blead_user_ids%5D=&request%5Bcreated_by_id%5D=&request%5Bfunding_source_ids%5D=&request%5Bgreater_amount_recommended%5D=&request%5Blesser_amount_recommended%5D=&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5Bhas_been_rejected%5D=&request%5Bfavorite_user_ids%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&filter-text=Funding+Agreement%2C+1%2F1%2F2010%2C+12%2F31%2F2010%2C+Last+Updated+(Default)%2C+Descending&request[program_id][]=" + program_ids.join("&request[program_id][]=")
       when "Granted"
         query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
           WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ?"
         grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
         fip = [query, start_date, stop_date, program_ids, 'FipRequest']
+        # TODO AML: Get list of filter vars from fluxx
+        card_filter ="utf8=%E2%9C%93&q%5Bq%5D=&request%5Bsub_program_id%5D=&request%5Bfilter_type%5D=&request%5Bfilter_state%5D=&request%5Blead_user_ids%5D=&request%5Bcreated_by_id%5D=&request%5Bfunding_source_ids%5D=&request%5Bgreater_amount_recommended%5D=&request%5Blesser_amount_recommended%5D=&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5Bhas_been_rejected%5D=&request%5Bfavorite_user_ids%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&filter-text=Funding+Agreement%2C+1%2F1%2F2010%2C+12%2F31%2F2010%2C+Last+Updated+(Default)%2C+Descending&request[program_id][]=" + program_ids.join("&request[program_id][]=")
       when "Pipeline"
         query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
           WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
