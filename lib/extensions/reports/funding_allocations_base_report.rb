@@ -40,7 +40,7 @@ module FundingAllocationsBaseReport
     query = "SELECT id FROM requests WHERE deleted_at IS NULL AND state <> 'rejected' and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?)"
     request_ids = ReportUtility.array_query([query, start_date, stop_date, program_ids])
     hash = ReportUtility.get_report_totals request_ids
-    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} FIPS totaling #{number_to_currency(hash[:fips_total])}"
+    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}"
   end
 
   def report_legend controller, index_object, params
@@ -49,7 +49,7 @@ module FundingAllocationsBaseReport
     years = ReportUtility.get_years start_date, stop_date
     program_ids= ReportUtility.get_program_ids filter["program_id"]
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
-    legend = [{:table => ["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"], :filter => ""}]
+    legend = [{:table => ["Program", "Grants", "Grant Dollars", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} Dollars"], :filter => ""}]
     categories = ["Total Granted","Granted", "Pipeline", "Budgeted"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')

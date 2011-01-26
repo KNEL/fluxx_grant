@@ -287,7 +287,7 @@ module FluxxRequest
       insta.add_state_to_english :pending_president_approval, 'Pending President Approval'
       insta.add_state_to_english :rejected, 'Rejected'
       insta.add_state_to_english :funding_recommended, 'Funding Recommended'
-      insta.add_state_to_english :pending_grant_promotion, 'Pending Grant/FIP Promotion'
+      insta.add_state_to_english :pending_grant_promotion, "Pending Grant/#{I18n.t(:fip_name)} Promotion"
       insta.add_state_to_english :sent_back_to_pa, 'Sent back to PA'
       insta.add_state_to_english :sent_back_to_po, 'Sent back to PO'
       insta.add_state_to_english :granted, 'Granted'
