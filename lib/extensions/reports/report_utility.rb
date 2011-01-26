@@ -4,7 +4,7 @@ module ReportUtility
  # TODO AML: Instead of assuming the Request object is available, just use the ActiveRecord class directly
  # TODO AML: Create a better hook for PRE_PIPELINE_STATES
  # TODO AML: Document each helper function
-  PRE_PIPELINE_STATES = ['new', 'funding_recommended']
+  PRE_PIPELINE_STATES = ['new', 'funding_recommended', 'rejected']
 
   # General helpers
   def self.pre_pipeline_states
