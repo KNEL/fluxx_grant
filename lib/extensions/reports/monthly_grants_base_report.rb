@@ -10,7 +10,7 @@ module MonthlyGrantsBaseReport
 
   def report_summary controller, index_object, params, models
     hash = ReportUtility.get_report_totals models.map(&:id)
-    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} FIPS totaling #{number_to_currency(hash[:fips_total])}"
+    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}"
   end
 
   def report_legend controller, index_object, params, models
@@ -18,7 +18,7 @@ module MonthlyGrantsBaseReport
     subquery = "SELECT amount_recommended, id FROM requests WHERE type = ? and id in (?)"
     query = "SELECT programs.name AS program, programs.id as program_id, count(grants.id) as grants, sum(grants.amount_recommended) as grant_dollars, count(fips.id) as fips, sum(fips.amount_recommended) as fip_dollars FROM requests LEFT JOIN programs ON programs.id = requests.program_id LEFT JOIN (#{subquery}) as grants ON grants.id = requests.id LEFT JOIN (#{subquery}) as fips ON fips.id = requests.id WHERE requests.id IN (?) GROUP BY requests.program_id ORDER BY program DESC"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, "GrantRequest", request_ids, "FipRequest", request_ids, request_ids]))
-    legend = [{ :table => ["Program", "Grants", "Grant Dollars", "Fips", "Fip Dollars"], :filter => ""}]
+    legend = [{ :table => ["Program", "Grants", "Grant Dollars", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} Dollars"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
     filter = []
     params["request"].each do |key, value|
       next if key == "program_id"
