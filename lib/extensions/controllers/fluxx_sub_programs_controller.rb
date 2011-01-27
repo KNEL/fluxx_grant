@@ -3,7 +3,7 @@ module FluxxSubProgramsController
   def self.included(base)
     base.insta_index SubProgram do |insta|
       insta.template = 'sub_program_list'
-      insta.filter_title = "SubPrograms Filter"
+      insta.filter_title = "#{I18n.t(:sub_program_name).pluralize} Filter"
       insta.filter_template = 'sub_programs/sub_program_filter'
       insta.order_clause = 'name asc'
       insta.icon_style = ICON_STYLE

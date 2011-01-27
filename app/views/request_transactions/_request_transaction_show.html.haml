@@ -15,7 +15,7 @@
     .pairs
       .key Payee (Person):
       .value= model.user_payee.full_name
-  - if model.user_payee
+  - if model.organization_payee
     .pairs
       .key Payee (Organization):
       .value= model.organization_payee.name

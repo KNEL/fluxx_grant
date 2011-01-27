@@ -1,16 +1,18 @@
 %h1= model.name
 
-.pairs
-  .key= "Program"
-  .value= model.program.name if model.program
+- unless FLUXX_CONFIGURATION[:hide_program]
+  .pairs
+    .key= I18n.t(:program_name)
+    .value= model.program.name if model.program
+- unless FLUXX_CONFIGURATION[:hide_sub_program]
+  .pairs
+    .key= I18n.t(:sub_program_name)
+    .value= model.sub_program.name if model.sub_program
 
-.pairs
-  .key= "Sub-Program"
-  .value= model.sub_program.name if model.sub_program
-
-.pairs
-  .key= "Initiative"
-  .value= model.initiative.name if model.initiative
+- unless FLUXX_CONFIGURATION[:hide_initiative]
+  .pairs
+    .key= I18n.t(:initiative_name)
+    .value= model.initiative.name if model.initiative
 
 - current_year = Time.now.year
 - year_range = ((current_year-25)..(current_year + 2))

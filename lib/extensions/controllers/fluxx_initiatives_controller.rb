@@ -3,7 +3,7 @@ module FluxxInitiativesController
   def self.included(base)
     base.insta_index Initiative do |insta|
       insta.template = 'initiative_list'
-      insta.filter_title = "Initiatives Filter"
+      insta.filter_title = "#{I18n.t(:initiative_name).pluralize} Filter"
       insta.filter_template = 'initiatives/initiative_filter'
       insta.order_clause = 'initiatives.name asc'
       insta.joins = [:sub_program => :program]
