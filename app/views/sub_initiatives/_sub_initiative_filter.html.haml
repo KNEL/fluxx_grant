@@ -1,3 +1,6 @@
-= form.input :program_id, :label => 'Program', :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :sub_program_id, :label => 'Sub Program', :as => :select, :required => false, :collection => SubProgram.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :initiative_id, :label => 'Initiative', :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+- unless FLUXX_CONFIGURATION[:hide_program]
+  = form.input :program_id, :label => I18n.t(:program_name), :as => :select, :required => false, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+- unless FLUXX_CONFIGURATION[:hide_sub_program]
+  = form.input :sub_program_id, :label => I18n.t(:sub_program_name), :as => :select, :required => false, :collection => SubProgram.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+- unless FLUXX_CONFIGURATION[:hide_initiative]
+  = form.input :initiative_id, :label => I18n.t(:initiative_name), :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}

@@ -56,15 +56,17 @@
     .key Main Contact:
     .value
       = model.grantee_org_owner.full_name if model.grantee_org_owner
-  .pairs
-    .key Program:
-    .value= model.program.name if model.program
-  .pairs
-    .key Sub-Program:
-    .value= model.sub_program.name if model.sub_program
+  - unless FLUXX_CONFIGURATION[:hide_program]
+    .pairs
+      .key= "#{I18n.t(:program_name)}:"
+      .value= model.program.name if model.program
+  - unless FLUXX_CONFIGURATION[:hide_sub_program]
+    .pairs
+      .key= "#{I18n.t(:sub_program_name)}:"
+      .value= model.sub_program.name if model.sub_program
   - if model.secondary_programs
     .pairs
-      .key Secondary Programs:
+      .key= "Secondary #{I18n.t(:program_name).pluralize}:"
       .value= model.secondary_programs.map(&:name).to_sentence
   .pairs
     .key Lead Program Officer/Director:
