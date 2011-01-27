@@ -29,7 +29,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     query = "SELECT sum(amount_recommended) as amount, program_id FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY program_id"
     total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
-    #Granted
+    #Total Funded
     query = "SELECT SUM(rs.funding_amount) AS amount, tmp.program_id AS program_id FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
       LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) GROUP BY tmp.program_id"
     granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
@@ -43,16 +43,14 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
     #Pipeline
     #TODO: Check this
-    query = "SELECT SUM(rs.funding_amount) AS amount, tmp.program_id AS program_id FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
-      LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND r.state NOT IN (?) GROUP BY tmp.program_id"
+    query = "SELECT SUM(r.amount_requested) AS amount, r.program_id as program_id FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?) GROUP BY r.program_id"
     pipeline = ReportUtility.query_map_to_array([query, program_ids, ReportUtility.pre_pipeline_states], program_ids, "program_id", "amount")
 
     hash = {:library => "jqPlot"}
 
-    hash[:title] = "Funding Allocations by Program"
     hash[:data] = [total_granted, granted, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-    hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
+    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
     hash[:stackSeries] = false;
     hash[:type] = "bar"
 
