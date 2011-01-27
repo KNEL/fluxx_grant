@@ -10,6 +10,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     filter = params["active_record_base"] || {}
     hash = {}
     hash[:title] = report_label
+    create_temp_funding_allocations_table temp_table_name
 
     start_string = '1/1/' + (filter["funding_year"] || '')
     program_ids= ReportUtility.get_program_ids filter["program_id"]
@@ -35,15 +36,14 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
     total_granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
-    # Granted
-    query = "SELECT SUM(rs.funding_amount) AS amount, YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month FROM requests r
-      LEFT JOIN request_funding_sources rs ON rs.request_id = r.id where #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND rs.funding_source_allocation_id IN (?)
+    # Total Funded
+    query = "SELECT SUM(rs.funding_amount) AS amount, YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
+      LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?)
       GROUP BY YEAR(r.grant_agreement_at), MONTH(r.grant_agreement_at)"
-    granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, allocation_ids], start_date, stop_date, "amount")
+    granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
     #Pipeline
-    query = "SELECT SUM(rs.funding_amount) AS amount, count(r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
-      LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 0 AND tmp.program_id IN (?) AND r.state NOT IN (?)"
+    query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?)"
     res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
     pipeline = Array.new.fill(0, 0, granted.length)
     pipeline << res["amount"].to_i
@@ -65,10 +65,9 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
     plot = {:library => "jqplot"}
 
-    hash[:title] = "Funding Allocations (date range)"
-    hash[:data] = [total_granted, granted, pipeline, budgeted]
+    hash[:data] = [total_granted, granted, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-    hash[:series] = [ {:label => "Total Granted"}, {:label => "Granted"}, {:label => "Pipeline"}, {:label => "Budgeted"} ]
+    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
     hash[:stackSeries] = false;
     hash[:type] = "bar"
 
