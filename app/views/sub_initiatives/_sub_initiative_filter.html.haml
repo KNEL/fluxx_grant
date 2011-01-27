@@ -4,3 +4,4 @@
   = form.input :sub_program_id, :label => I18n.t(:sub_program_name), :as => :select, :required => false, :collection => SubProgram.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 - unless FLUXX_CONFIGURATION[:hide_initiative]
   = form.input :initiative_id, :label => I18n.t(:initiative_name), :as => :select, :required => false, :collection => Initiative.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :not_retired, :as => :boolean, :label => "Not Retired"

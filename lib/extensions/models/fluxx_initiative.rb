@@ -9,6 +9,7 @@ module FluxxInitiative
     base.validates_presence_of     :sub_program
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
+    base.send :attr_accessor, :not_retired
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES

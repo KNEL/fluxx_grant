@@ -3,10 +3,15 @@ module FluxxInitiativesController
   def self.included(base)
     base.insta_index Initiative do |insta|
       insta.template = 'initiative_list'
-      insta.filter_title = "#{I18n.t(:initiative_name).pluralize} Filter"
+      insta.filter_title = "Filter"
       insta.filter_template = 'initiatives/initiative_filter'
       insta.order_clause = 'initiatives.name asc'
       insta.joins = [:sub_program => :program]
+      insta.search_conditions = (lambda do |params, controller_dsl, controller|
+        if params[:initiative] && params[:initiative][:not_retired]
+          '(initiatives.retired is null or initiatives.retired = 0)'
+        end
+      end)
       insta.icon_style = ICON_STYLE
     end
     base.insta_show Initiative do |insta|

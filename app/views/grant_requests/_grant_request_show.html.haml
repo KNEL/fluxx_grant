@@ -66,7 +66,7 @@
       .value= model.sub_program.name if model.sub_program
   - if model.secondary_programs
     .pairs
-      .key= "Secondary #{I18n.t(:program_name).pluralize}:"
+      .key= "Secondary #{(I18n.t(:program_name)).pluralize}:"
       .value= model.secondary_programs.map(&:name).to_sentence
   .pairs
     .key Lead Program Officer/Director:

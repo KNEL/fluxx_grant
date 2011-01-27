@@ -14,10 +14,10 @@
 
 %ul
   - unless FLUXX_CONFIGURATION[:hide_program]
-    %li= link_to I18n.t(:program_name).pluralize, programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => I18n.t(:program_name).pluralize
+    %li= link_to (I18n.t(:program_name)).pluralize, programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:program_name)).pluralize
   - unless FLUXX_CONFIGURATION[:hide_sub_program]
-    %li= link_to I18n.t(:sub_program_name).pluralize, sub_programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => I18n.t(:sub_program_name).pluralize
+    %li= link_to (I18n.t(:sub_program_name)).pluralize, sub_programs_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:sub_program_name)).pluralize
   - unless FLUXX_CONFIGURATION[:hide_initiative]
-    %li= link_to I18n.t(:initiative_name).pluralize, initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => I18n.t(:initiative_name).pluralize
+    %li= link_to (I18n.t(:initiative_name)).pluralize, initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:initiative_name)).pluralize
   - unless FLUXX_CONFIGURATION[:hide_sub_initiative]
-    %li= link_to I18n.t(:sub_initiative_name).pluralize, sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => I18n.t(:sub_initiative_name).pluralize
+    %li= link_to (I18n.t(:sub_initiative_name)).pluralize, sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:sub_initiative_name)).pluralize

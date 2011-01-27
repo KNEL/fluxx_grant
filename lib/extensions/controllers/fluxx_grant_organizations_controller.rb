@@ -4,7 +4,7 @@ module FluxxGrantOrganizationsController
     base.insta_index Organization do |insta|
       insta.filter_title = "Organizations Filter"
       insta.filter_template = 'organizations/organization_filter'
-      insta.search_conditions = (lambda do |params, controller_dsl|
+      insta.search_conditions = (lambda do |params, controller_dsl, controller|
         if params[:related_org_ids]
           {}
         else

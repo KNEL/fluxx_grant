@@ -3,9 +3,14 @@ module FluxxProgramsController
   def self.included(base)
     base.insta_index Program do |insta|
       insta.template = 'program_list'
-      insta.filter_title = "#{I18n.t(:program_name).pluralize} Filter"
+      insta.filter_title = "Filter"
       insta.filter_template = 'programs/program_filter'
       insta.order_clause = 'name asc'
+      insta.search_conditions = (lambda do |params, controller_dsl, controller|
+        if params[:program] && params[:program][:not_retired]
+          '(programs.retired is null or programs.retired = 0)'
+        end
+      end)
       insta.icon_style = ICON_STYLE
     end
     base.insta_show Program do |insta|

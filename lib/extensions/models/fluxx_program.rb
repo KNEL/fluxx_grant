@@ -1,4 +1,5 @@
 module FluxxProgram
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id]
   LIQUID_METHODS = [:name]
 
   def self.included(base)
@@ -10,8 +11,12 @@ module FluxxProgram
 
     base.belongs_to :parent_program, :class_name => 'Program', :foreign_key => :parent_id
     base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_id
+    base.send :attr_accessor, :not_retired
     
-    base.insta_search
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES
+      insta.derived_filters = {}
+    end
     base.insta_export
     base.insta_realtime
     base.insta_multi

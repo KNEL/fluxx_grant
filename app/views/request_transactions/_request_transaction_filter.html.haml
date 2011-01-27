@@ -1,8 +1,8 @@
 - unless FLUXX_CONFIGURATION[:hide_program]
-  = form.input :grant_program_ids, :required => false, :label => I18n.t(:program_name).pluralize, :as => :select, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+  = form.input :grant_program_ids, :required => false, :label => (I18n.t(:program_name)).pluralize, :as => :select, :collection => Program.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
 - unless FLUXX_CONFIGURATION[:hide_sub_program]
-  = form.input :grant_sub_program_ids, :label => I18n.t(:sub_program_name).pluralize, :as => :select, :required => false, :collection => SubProgram.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
-= form.input :request_type, :required => false, :label => 'Request Type:', :as => :select, :collection => [['Grants', GrantRequest.name], [I18n.t(:fip_name).pluralize, FipRequest.name]], :input_html => {:class => 'add-another'}
+  = form.input :grant_sub_program_ids, :label => (I18n.t(:sub_program_name)).pluralize, :as => :select, :required => false, :collection => SubProgram.all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}, :input_html => {:class => 'add-another'}
+= form.input :request_type, :required => false, :label => 'Request Type:', :as => :select, :collection => [['Grants', GrantRequest.name], [(I18n.t(:fip_name)).pluralize, FipRequest.name]], :input_html => {:class => 'add-another'}
 = form.input :filter_state, :label => 'Status:', :required => false, :as => :select, :collection => ([:new, :tentatively_due, :actually_due, :paid].map{|state|[RequestTransaction.state_to_english_translation(state), state]}), :input_html => {:class => 'add-another'}
 = form.input :due_in_days, :label => 'Due in:', :required => false, :as => :select, :collection => (0..31).map{|num| [num, num]}, :aft => 'Days'
 = form.input :overdue_by_days, :label => 'OverDue By:', :required => false, :as => :select, :collection => (0..31).map{|num| [num, num]}, :aft => 'Days'
