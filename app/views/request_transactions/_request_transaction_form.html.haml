@@ -6,7 +6,7 @@
 
 = render :partial => "organizations/single_org_lookup", :locals => { :model => model, :form => form, :organization_name => :organization_payee, :organization_label => 'Payee (Organization):' }
 
-- bank_accounts = model.request.tax_class_org.bank_accounts if model && model.request && model.request.tax_class_org || []
+- bank_accounts = (model.request.tax_class_org.bank_accounts if model && model.request && model.request.tax_class_org) || []
 = form.input :bank_account, :as => :select, :collection => bank_accounts.map {|account| [account.autocomplete_to_s, account.id]}
 
 %h4 Funding Sources
