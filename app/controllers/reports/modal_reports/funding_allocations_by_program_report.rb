@@ -3,7 +3,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
   set_type_as_show
 
   def report_label
-    "Budget Overview by program"
+    "Budget Overview by #{I18n.t(:program_name)}"
   end
 
   def compute_show_plot_data controller, index_object, params
