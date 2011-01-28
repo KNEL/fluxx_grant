@@ -7,7 +7,7 @@
     %li.relationship{:class=>"action-item"}
       - if current_user.has_delete_for_model? model
         %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), project_request_path(model), {:class => 'as-delete', 'data-on-success' => 'refreshCaller'}
-      = image_tag("/images/fluxx_engine/theme/default/card-icons/button_card_requests.png", :class=> 'float_left', :width=> '18px')
+      = image_tag("/images/fluxx_engine/theme/default/card-icons/button_card_#{model.granted ? 'grants' : 'requests'}.png", :class=> 'float_left', :width=> '18px')
       = model.request.base_request_id if model.request
       <br/>
       %p.caption= model.description
