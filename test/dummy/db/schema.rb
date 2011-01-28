@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110124213141) do
+ActiveRecord::Schema.define(:version => 20110128052701) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -925,6 +925,28 @@ ActiveRecord::Schema.define(:version => 20110124213141) do
   add_index "wiki_documents", ["created_by_id"], :name => "wiki_documents_created_by_id"
   add_index "wiki_documents", ["updated_by_id"], :name => "wiki_documents_updated_by_id"
   add_index "wiki_documents", ["wiki_document_template_id"], :name => "wiki_documents_template_id"
+
+  create_table "work_tasks", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "name"
+    t.text     "task_text"
+    t.string   "taskable_type"
+    t.integer  "taskable_id"
+    t.datetime "due_at"
+    t.integer  "task_order"
+    t.integer  "assigned_user_id"
+    t.boolean  "task_completed",   :default => false
+    t.datetime "deleted_at"
+    t.datetime "locked_until"
+    t.integer  "locked_by_id"
+  end
+
+  add_index "work_tasks", ["assigned_user_id"], :name => "work_tasks_assigned_user_id"
+  add_index "work_tasks", ["created_by_id"], :name => "work_tasks_created_by_id"
+  add_index "work_tasks", ["updated_by_id"], :name => "work_tasks_updated_by_id"
 
   create_table "workflow_events", :force => true do |t|
     t.datetime "created_at"
