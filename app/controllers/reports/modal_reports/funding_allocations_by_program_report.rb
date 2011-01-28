@@ -35,7 +35,10 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
     granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
     #Paid
-    #TODO
+    query = "select sum(rt.amount_paid) AS amount,  fsa.program_id AS program_id from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
+      WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
+      AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) GROUP BY fsa.program_id"
+    paid = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
     #Budgeted
     query = "SELECT SUM(tmp.amount) AS amount, tmp.program_id AS program_id FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?) GROUP BY tmp.program_id"
@@ -48,9 +51,9 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
     hash = {:library => "jqPlot"}
 
-    hash[:data] = [total_granted, granted, budgeted, pipeline]
+    hash[:data] = [total_granted, granted, paid, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
+    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
     hash[:stackSeries] = false;
     hash[:type] = "bar"
 

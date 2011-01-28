@@ -49,7 +49,10 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     pipeline << res["amount"].to_i
 
     #Paid
-    # TODO: requires additional columns
+    query = "select sum(rt.amount_paid) AS amount,  YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
+      WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
+      AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
+    paid = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
     #Budgeted
     query = "SELECT SUM(amount) AS amount FROM #{temp_table_name} WHERE retired=0 AND deleted_at IS NULL AND program_id IN (?) AND spending_year IN (?)"
@@ -65,9 +68,9 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
     plot = {:library => "jqplot"}
 
-    hash[:data] = [total_granted, granted, budgeted, pipeline]
+    hash[:data] = [total_granted, granted, paid, budgeted, pipeline]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
+    hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
     hash[:stackSeries] = false;
     hash[:type] = "bar"
 
