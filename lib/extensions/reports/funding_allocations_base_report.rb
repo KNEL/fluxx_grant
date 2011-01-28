@@ -21,7 +21,7 @@ module FundingAllocationsBaseReport
 
   def create_temp_funding_allocations_table name
     queries = ["DROP TABLE IF EXISTS #{name}",
-      "CREATE TEMPORARY TABLE #{name} SELECT * FROM funding_source_allocations",
+      "CREATE TEMPORARY TABLE #{name} SELECT * FROM funding_source_allocations WHERE deleted_at IS NULL",
       "UPDATE #{name} tmp LEFT JOIN sub_programs sp ON tmp.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL",
       "UPDATE #{name} tmp LEFT JOIN initiatives i ON tmp.initiative_id = i.id LEFT JOIN sub_programs sp ON i.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL",
       "UPDATE #{name} tmp LEFT JOIN sub_initiatives si ON tmp.sub_initiative_id = si.id LEFT JOIN initiatives i ON si.initiative_id = i.id LEFT JOIN sub_programs sp ON i.sub_program_id = sp.id SET tmp.program_id = sp.program_id WHERE tmp.program_id IS NULL"]
