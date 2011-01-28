@@ -7,4 +7,4 @@
 %h4
   = model.request.grant_id if model.request
   <br />
-  = model.request.program_organization.display_name if model.request
+  = model.request.program_organization.display_name if model.request && model.request.program_organization
