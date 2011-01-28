@@ -108,6 +108,9 @@ module FluxxGrantBlueprint
 
     FundingSourceAllocation.blueprint do
       funding_source {FundingSource.make}
+      amount rand(99999)
+      spending_year Time.now.year
+      authority {MultiElementValue.first}
     end
     
     RequestProgram.blueprint do

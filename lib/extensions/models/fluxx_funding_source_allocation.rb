@@ -11,6 +11,10 @@ module FluxxFundingSourceAllocation
     base.belongs_to :sub_initiative
     base.belongs_to :authority, :class_name => 'MultiElementValue', :foreign_key => 'authority_id'
     base.has_many :request_funding_sources
+    base.validates_presence_of :funding_source
+    base.validates_presence_of :amount
+    base.validates_presence_of :spending_year
+    base.validates_presence_of :authority
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
