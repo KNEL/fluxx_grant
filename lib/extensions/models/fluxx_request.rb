@@ -818,6 +818,14 @@ module FluxxRequest
       "#{grant_prefix}-#{base_request_id}" if self.granted && base_request_id
     end
     
+    def display_id
+      if granted
+        grant_id
+      else
+        request_id
+      end
+    end
+      
     def grant_or_request_id
       is_grant? ? grant_id : request_id
     end
