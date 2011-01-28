@@ -50,6 +50,7 @@ module FluxxRequest
     base.belongs_to :sub_program
     base.after_create :generate_request_id
     base.after_save :process_before_save_blocks
+    base.after_save :handle_cascading_deletes
     
     # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
@@ -981,6 +982,13 @@ module FluxxRequest
       checking_programs = request_programs.reject{|rp| rp.program == program}
       result = checking_programs.select {|rp| rp.state != 'approved'}.empty?
       result
+    end
+    
+    # Mark related classes that show up in searches as deleted
+    def handle_cascading_deletes
+      user = User.find(updated_by_id) if updated_by_id
+      request_reports.each {|rep| rep.safe_delete(user)}
+      request_transactions.each {|trans| trans.safe_delete(user)}
     end
   end
 end

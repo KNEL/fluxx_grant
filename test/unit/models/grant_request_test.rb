@@ -191,4 +191,19 @@ class GrantRequestTest < ActiveSupport::TestCase
     request_with_fiscal_org.save
     assert !request_with_fiscal_org.fiscal_org_owner
   end
+  
+  test "test cascading deletes for request" do
+    req_tran1 = RequestTransaction.make :request => @req
+    req_tran2 = RequestTransaction.make :request => @req
+    req_rep1 = RequestReport.make  :request => @req
+    req_rep2 = RequestReport.make  :request => @req
+    cur_user = User.make
+    @req.safe_delete cur_user
+    assert @req.reload.deleted_at
+    assert req_tran1.reload.deleted_at
+    assert req_tran2.reload.deleted_at
+    assert req_rep1.reload.deleted_at
+    assert req_rep2.reload.deleted_at
+    
+  end
 end
