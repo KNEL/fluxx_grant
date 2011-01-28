@@ -69,7 +69,7 @@ module FluxxInitiative
       FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select funding_source_allocations.* from funding_source_allocations where 
         #{spending_year_clause}
         (initiative_id = ?
-          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?))",
+          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?)) and funding_source_allocations.deleted_at is null",
           self.id, self.id]))
     end
 
@@ -79,7 +79,7 @@ module FluxxInitiative
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations where 
             #{spending_year_clause}
             (initiative_id = ?
-              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?))", 
+              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?)) and funding_source_allocations.deleted_at is null", 
             self.id, self.id]))
       total_amount.fetch_row.first.to_i
     end

@@ -133,7 +133,7 @@ module FluxxProgram
           (program_id = ?
           or sub_program_id in (select id from sub_programs where program_id = ?)
           or initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
-          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?))", 
+          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?))  and funding_source_allocations.deleted_at is null", 
         self.id, self.id, self.id, self.id]))
     end
     
@@ -145,7 +145,7 @@ module FluxxProgram
             (program_id = ?
               or sub_program_id in (select id from sub_programs where program_id = ?)
               or initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
-              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?))", 
+              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?)) and funding_source_allocations.deleted_at is null", 
             self.id, self.id, self.id, self.id]))
       total_amount.fetch_row.first.to_i
     end

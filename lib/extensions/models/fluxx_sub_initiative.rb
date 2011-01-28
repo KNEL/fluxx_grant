@@ -60,7 +60,7 @@ module FluxxSubInitiative
 
       FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select funding_source_allocations.* from funding_source_allocations where 
             #{spending_year_clause}
-            (sub_initiative_id = ?)", 
+            (sub_initiative_id = ?) and funding_source_allocations.deleted_at is null", 
             self.id]))
     end
 
@@ -69,7 +69,7 @@ module FluxxSubInitiative
       total_amount = FundingSourceAllocation.connection.execute(
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations where 
             #{spending_year_clause}
-            (sub_initiative_id = ?)", 
+            (sub_initiative_id = ?) and funding_source_allocations.deleted_at is null", 
             self.id]))
       total_amount.fetch_row.first.to_i
     end

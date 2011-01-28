@@ -51,7 +51,7 @@ module FluxxSubProgram
         #{spending_year_clause}
         (sub_program_id = ?
           or initiative_id in (select initiatives.id from initiatives where sub_program_id = ?)
-          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?))", 
+          or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?)) and funding_source_allocations.deleted_at is null", 
           self.id, self.id, self.id]))
     end
     
@@ -63,7 +63,7 @@ module FluxxSubProgram
             #{spending_year_clause}
             (sub_program_id = ?
               or initiative_id in (select initiatives.id from initiatives where sub_program_id = ?)
-              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?))", 
+              or sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?)) and funding_source_allocations.deleted_at is null", 
             self.id, self.id, self.id]))
       total_amount.fetch_row.first.to_i
     end
