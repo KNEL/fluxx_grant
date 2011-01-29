@@ -57,7 +57,8 @@ module MonthlyGrantsBaseReport
     else
       aggregate = "COUNT(requests.id)"
     end
-    query = "select #{aggregate} as num, requests.grant_agreement_at as date, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
+    query = "select #{aggregate} as num, requests.grant_agreement_at as date, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program 
+      from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, request_ids]))
     req.each_hash do |row|
       year = row["year"].to_i
@@ -76,8 +77,11 @@ module MonthlyGrantsBaseReport
     if (!filter)
       filter = {}
     end
-    start_date = (Date.parse(filter["request_from_date"]) if (!filter["request_from_date"].blank?)) || Date.today
-    end_date = (Date.parse(filter["request_to_date"]) if (!filter["request_to_date"].blank?)) || Date.today
+    start_date = Date.parse(filter["request_from_date"]) if (!filter["request_from_date"].blank?)
+    end_date = Date.parse(filter["request_to_date"]) if (!filter["request_to_date"].blank?)
+    
+    start_date = Date.today if (!start_date)
+    end_date = Date.today if (!end_date)
 
     # Store these calculated dates so we can use them in the filter text
     self.start_date = start_date
@@ -115,7 +119,7 @@ module MonthlyGrantsBaseReport
         axis << [x + 1, xaxis[x]]
       end
     end
-    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => {:formatString => aggregate_type == :sum_amount ? '$%.2f' : '%d'}}}
+    plot[:axes] = { :xaxis => { :min => 0, :max => i, :ticks => axis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => {:formatString => aggregate_type == :sum_amount ? "#{I18n.t 'number.currency.format.unit'}%.2f" : '%d'}}}
     if plot[:data].count == 0
       plot[:data] << [0]
       plot.delete(:series)
