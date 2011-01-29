@@ -7,14 +7,14 @@
     = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
 
     - unless FLUXX_CONFIGURATION[:hide_program]
-      = form.input :program, :label => I18n.t(:program_name), :as => :select, :collection => Program.all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select"}
+      = form.input :program, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select"}
     - program_leads = []
     - program_leads = form.object.program.load_users if form.object.program
     - unless FLUXX_CONFIGURATION[:hide_program]
       = form.input :program_lead, :label => I18n.t(:program_lead_name), :as => :select, :collection => program_leads.map{|user| [user.full_name, user.id]}, :input_html => {:class => 'program-lead-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => users_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'program_lead_select'}
 
     - unless FLUXX_CONFIGURATION[:hide_program]
-      = form.input :sub_program, :label => I18n.t(:sub_program_name), :as => :select, :collection => SubProgram.all.map{|sub_program| [sub_program.name, sub_program.id]}
+      = form.input :sub_program, :label => I18n.t(:sub_program_name), :as => :select, :collection => SubProgram.load_all.map{|sub_program| [sub_program.name, sub_program.id]}
 
     = form.input :project_summary, :label => "Project Summary", :as => :text
 

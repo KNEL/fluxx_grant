@@ -21,6 +21,9 @@ module FluxxSubInitiative
   end
 
   module ModelClassMethods
+    def load_all
+      SubInitiative.where(:retired => 0).all
+    end
   end
   
   module ModelInstanceMethods

@@ -23,6 +23,9 @@ module FluxxSubProgram
   end
   
   module ModelClassMethods
+    def load_all
+      SubProgram.where(:retired => 0).all
+    end
   end
   
   module ModelInstanceMethods

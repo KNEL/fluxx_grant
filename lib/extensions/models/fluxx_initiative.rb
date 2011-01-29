@@ -30,6 +30,9 @@ module FluxxInitiative
   end
 
   module ModelClassMethods
+    def load_all
+      Initiative.where(:retired => 0).all
+    end
   end
 
   module ModelInstanceMethods
