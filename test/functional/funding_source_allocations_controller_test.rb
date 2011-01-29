@@ -22,7 +22,7 @@ class FundingSourceAllocationsControllerTest < ActionController::TestCase
   test "should create funding_source_allocation" do
     funding_source = FundingSource.make
     assert_difference('FundingSourceAllocation.count') do
-      post :create, :funding_source_allocation => { :funding_source_id => funding_source.id }
+      post :create, :funding_source_allocation => { :funding_source_id => funding_source.id, :amount => 1234, :spending_year => 2004, :authority_id => MultiElementValue.first.id }
     end
 
     assert 201, @response.status

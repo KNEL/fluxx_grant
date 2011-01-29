@@ -124,7 +124,11 @@ module FluxxCommonRequestsController
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
       else
         if actual_local_model.granted?
-          redirect_to send("granted_request_path", actual_local_model)
+          if outcome == :success
+            redirect_to send("granted_request_path", actual_local_model)
+          else
+            default_block.call
+          end
         else
           default_block.call
         end

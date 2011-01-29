@@ -93,7 +93,7 @@ module FluxxRequestReport
     base.aasm_state :pending_lead_approval
     base.aasm_state :pending_grant_team_approval
     base.aasm_state :pending_finance_approval
-    base.aasm_state :approved, :enter => :adjust_request_transactions
+    base.aasm_state :approved, :enter => :save_approved_at_time
     base.aasm_state :sent_back_to_pa
     base.aasm_state :sent_back_to_lead
     base.aasm_state :sent_back_to_grant_team
@@ -394,25 +394,9 @@ module FluxxRequestReport
     def is_grant_er?
       grant && grant.is_er?
     end
-
-    def adjust_request_transactions
-      # TODO ESH: confirm the exact functionality here; do we want to wait until all interim/final reports are approved or how does it work??
+    
+    def save_approved_at_time
       self.approved_at = Time.now
-      if self.report_type == 'InterimBudget' || self.report_type == 'InterimNarrative'
-        request.request_transactions.each do |rt|
-          if rt.tentatively_due? && rt.request_document_linked_to == 'interim_request'
-            rt.mark_actually_due 
-            rt.save
-          end
-        end
-      elsif self.report_type == 'FinalBudget' || self.report_type == 'FinalNarrative'
-        request.request_transactions.each do |rt|
-          if rt.tentatively_due? && rt.request_document_linked_to == 'final_request'
-            rt.mark_actually_due 
-            rt.save
-          end
-        end
-      end
     end
   end
 end

@@ -73,12 +73,10 @@ module FluxxRequestTransaction
     end
     
     base.insta_workflow do |insta|
-      insta.add_state_to_english :actually_due, 'Actually Due'
-      insta.add_state_to_english :tentatively_due, 'Tentatively Due'
+      insta.add_state_to_english :due, 'Due'
       insta.add_state_to_english :paid, 'Paid'
       insta.add_state_to_english :new, 'New'
       
-      insta.add_event_to_english :mark_actually_due, 'Mark Due'
       insta.add_event_to_english :mark_paid, 'Record Payment'      
     end
     
@@ -132,21 +130,15 @@ module FluxxRequestTransaction
 
     def add_aasm
       aasm_column :state
-      aasm_initial_state :tentatively_due
+      aasm_initial_state :new
 
       aasm_state :new
-      aasm_state :tentatively_due
-      aasm_state :actually_due, :enter => :adjust_due_date
+      aasm_state :due
       aasm_state :paid
-      aasm_event :mark_actually_due do
-        transitions :from => :new, :to => :actually_due
-        transitions :from => :tentatively_due, :to => :actually_due
-      end
 
       aasm_event :mark_paid do
         transitions :from => :new, :to => :paid
-        transitions :from => :tentatively_due, :to => :paid
-        transitions :from => :actually_due, :to => :paid
+        transitions :from => :due, :to => :paid
       end
     end
     
@@ -160,9 +152,6 @@ module FluxxRequestTransaction
       RequestTransaction.state_to_english_translation state
     end
 
-    def adjust_due_date
-      self.due_at = Time.now
-    end
     def has_been_paid
       state == 'paid' || (paid_at && amount_paid)
     end
