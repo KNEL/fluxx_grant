@@ -59,6 +59,7 @@ module ApplicationGrantHelper
 
   def build_add_card_links
     links = []
+    links << "  '#{link_to 'Tasks', work_tasks_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_tasks]
     links << "  '#{link_to 'Projects', projects_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_projects]
     links << "  '#{link_to 'Organizations', organizations_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_organizations]
     links << "  '#{link_to 'People', users_path, :class => 'new-listing'}'" unless FLUXX_CONFIGURATION[:hide_people]

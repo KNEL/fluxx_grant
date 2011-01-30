@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110128052701) do
+ActiveRecord::Schema.define(:version => 20110130003908) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -942,6 +942,7 @@ ActiveRecord::Schema.define(:version => 20110128052701) do
     t.datetime "deleted_at"
     t.datetime "locked_until"
     t.integer  "locked_by_id"
+    t.datetime "completed_at"
   end
 
   add_index "work_tasks", ["assigned_user_id"], :name => "work_tasks_assigned_user_id"
