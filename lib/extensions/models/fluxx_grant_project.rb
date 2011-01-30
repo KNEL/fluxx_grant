@@ -1,5 +1,5 @@
 module FluxxGrantProject
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :title]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :title, :project_type_id, :lead_user_id, :favorite_user_ids]
 
   def self.included(base)
     base.send :include, ::FluxxProject
@@ -44,9 +44,8 @@ module FluxxGrantProject
         indexes "lower(projects.description)", :as => :description, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at
+        has created_at, updated_at, deleted_at, project_type_id, lead_user_id
 
-        has lead_user(:id), :as => :lead_user_ids
         has favorites.user(:id), :as => :favorite_user_ids
 
         set_property :delta => :delayed
