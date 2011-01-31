@@ -5,6 +5,8 @@ module FluxxRequestFundingSource
     base.belongs_to :request
     base.belongs_to :funding_source_allocation
     base.has_many :request_transaction_funding_sources
+    base.validates_presence_of     :funding_amount
+    base.validates_presence_of     :funding_source_allocation
 
     base.send :attr_accessor, :program
     base.send :attr_accessor, :program_id

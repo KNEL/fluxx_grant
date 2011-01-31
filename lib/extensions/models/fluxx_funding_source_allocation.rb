@@ -46,6 +46,27 @@ module FluxxFundingSourceAllocation
   
 
   module ModelClassMethods
+    def build_temp_table
+      temp_table = self.name.underscore + "_tmp"
+      FundingSourceAllocation.connection.execute "DROP TABLE IF EXISTS #{temp_table}"
+      FundingSourceAllocation.connection.execute "create temporary table #{temp_table} 
+          select funding_source_allocations.id, 
+            if(program_id is not null, program_id, 
+              if(sub_program_id is not null, (select program_id from sub_programs where id = sub_program_id),
+                if(initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = initiative_id)), 
+                  if(sub_initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = sub_initiative_id))), null)))) program_id,
+            if(sub_program_id is not null, sub_program_id,
+        			if(initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = initiative_id),
+                if(sub_initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = sub_initiative_id)), null))) sub_program_id,
+         		if(initiative_id is not null, initiative_id, 
+              if(sub_initiative_id is not null, (select initiative_id from sub_initiatives where sub_initiatives.id = sub_initiative_id), null)) initiative_id,
+            sub_initiative_id,
+           deleted_at, spending_year, retired, amount, authority_id, funding_source_id
+           from funding_source_allocations"
+      retval = yield temp_table
+      FundingSourceAllocation.connection.execute("DROP TABLE IF EXISTS #{temp_table}")
+      retval
+    end
   end
   
   module ModelInstanceMethods
