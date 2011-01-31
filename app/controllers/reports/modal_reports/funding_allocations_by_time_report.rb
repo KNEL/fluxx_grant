@@ -33,12 +33,6 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
         AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
       total_granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 
-      # Total Funded
-      query = "SELECT SUM(rs.funding_amount) AS amount, YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
-        LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?)
-        GROUP BY YEAR(r.grant_agreement_at), MONTH(r.grant_agreement_at)"
-      granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
-
       #Pipeline
       query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
@@ -65,9 +59,9 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
       plot = {:library => "jqplot"}
 
-      hash[:data] = [total_granted, granted, paid, budgeted, pipeline]
-      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-      hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
+      hash[:data] = [total_granted, paid, budgeted, pipeline]
+      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%.2f" }}}
+      hash[:series] = [ {:label => "Granted"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
       hash[:stackSeries] = false;
       hash[:type] = "bar"
     end

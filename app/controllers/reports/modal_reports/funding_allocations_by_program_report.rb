@@ -29,11 +29,6 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
       query = "SELECT sum(amount_recommended) as amount, program_id FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY program_id"
       total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
-      #Total Funded
-      query = "SELECT SUM(rs.funding_amount) AS amount, tmp.program_id AS program_id FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id
-        LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) GROUP BY tmp.program_id"
-      granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
-
       #Paid
       query = "select sum(rt.amount_paid) AS amount,  fsa.program_id AS program_id from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
         WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
@@ -51,9 +46,9 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
       hash = {:library => "jqPlot"}
 
-      hash[:data] = [total_granted, granted, paid, budgeted, pipeline]
-      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => '$%.2f' }}}
-      hash[:series] = [ {:label => "Total Granted"}, {:label => "Total Funded"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
+      hash[:data] = [total_granted, paid, budgeted, pipeline]
+      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%.2f" }}}
+      hash[:series] = [ {:label => "Granted"}, {:label => "Paid"}, {:label => "Budgeted"}, {:label => "Pipeline"} ]
       hash[:stackSeries] = false;
       hash[:type] = "bar"
     end

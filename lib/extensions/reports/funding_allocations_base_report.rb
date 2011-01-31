@@ -37,7 +37,7 @@ module FundingAllocationsBaseReport
     program_ids= ReportUtility.get_program_ids filter["program_id"]
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [{:table => [I18n.t(:program_name), "Grants", "Grant Dollars", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} Dollars"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
-    categories = ["Total Granted","Total Funded", "Paid", "Budgeted", "Pipeline"]
+    categories = ["Granted", "Paid", "Budgeted", "Pipeline"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
     FundingSourceAllocation.build_temp_table do |temp_table_name|
@@ -46,14 +46,8 @@ module FundingAllocationsBaseReport
         card_title = program
         listing_url = controller.granted_requests_path
         case program
-        when "Total Granted"
+        when "Granted"
           query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) AND type = ?"
-          grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
-          fip = [query, start_date, stop_date, program_ids, 'FipRequest']
-          card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
-        when "Total Funded"
-          query = "SELECT SUM(rs.funding_amount) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r LEFT JOIN request_funding_sources rs ON rs.request_id = r.id LEFT JOIN #{temp_table_name} tmp ON tmp.id = rs.funding_source_allocation_id
-            WHERE #{always_exclude} AND r.granted = 1 AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND tmp.program_id IN (?) AND type = ?"
           grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
           fip = [query, start_date, stop_date, program_ids, 'FipRequest']
           card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
@@ -81,7 +75,7 @@ module FundingAllocationsBaseReport
                     :filter => card_filter, "listing_url".to_sym => listing_url, "card_title".to_sym => card_title}
       end
     end
-    legend
+   legend
   end
 
 end
