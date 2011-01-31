@@ -18,4 +18,11 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal new_user.id, user_org.user_id
     assert_equal org.id, user_org.organization_id
   end
+  
+  test "should get CSV index" do
+    get :index, :format => 'csv'
+    assert_response :success
+    assert_not_nil assigns(:users)
+  end
+  
 end

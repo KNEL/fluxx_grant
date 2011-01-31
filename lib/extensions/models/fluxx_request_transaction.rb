@@ -48,11 +48,28 @@ module FluxxRequestTransaction
     base.insta_favorite
     base.insta_export do |insta|
       insta.filename = 'request_transaction'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'request_id', ['Amount Paid', :currency], ['Amount Due', :currency], ['Date Due', :date], ['Date Paid', :date], 'payment_type', 'payment_confirmation']
-      insta.sql_query = "select rt.created_at, rt.updated_at, requests.base_request_id request_id, amount_paid, amount_due, due_at, paid_at, payment_type, payment_confirmation_number
-                from request_transactions rt
-                left outer join requests on rt.request_id = requests.id
-                where rt.id IN (?)"
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'request_id', ['Amount Paid', :currency], ['Amount Due', :currency], ['Date Due', :date], ['Date Paid', :date], 'payment_type', 'payment_confirmation', 'Comment', 
+        'Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
+        'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL']
+      insta.sql_query = "select rt.created_at, rt.updated_at, requests.base_request_id request_id, amount_paid, amount_due, due_at, paid_at, payment_type, payment_confirmation_number,
+                rt.comment,
+                program_organization.name, 
+                program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
+                program_org_country_states.name program_org_state_name, program_org_countries.name program_org_country_name, program_organization.postal_code program_org_postal_code,
+                program_organization.url program_org_url,
+                fiscal_organization.name,
+                fiscal_organization.street_address fiscal_org_street_address, fiscal_organization.street_address2 fiscal_org_street_address2, fiscal_organization.city fiscal_org_city,
+                fiscal_org_country_states.name fiscal_org_state_name, fiscal_org_countries.name fiscal_org_country_name, fiscal_organization.postal_code fiscal_org_postal_code,
+                fiscal_organization.url fiscal_org_url
+              from request_transactions rt
+              left outer join requests on rt.request_id = requests.id
+              LEFT OUTER JOIN organizations program_organization ON program_organization.id = requests.program_organization_id
+              LEFT OUTER JOIN organizations fiscal_organization ON fiscal_organization.id = requests.fiscal_organization_id
+              left outer join geo_states as program_org_country_states on program_org_country_states.id = program_organization.geo_state_id
+              left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
+              left outer join geo_states as fiscal_org_country_states on fiscal_org_country_states.id = fiscal_organization.geo_state_id
+              left outer join geo_countries as fiscal_org_countries on fiscal_org_countries.id = fiscal_organization.geo_country_id
+              where rt.id IN (?)"
     end
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids, :request_from_date, :request_to_date]

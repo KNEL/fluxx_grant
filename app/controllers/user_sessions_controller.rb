@@ -1,3 +1,4 @@
+# TODO ESH: add an su feature, per http://blog.steveklabnik.com/writing-a-su-feature-with-authlogic
 class UserSessionsController < ApplicationController
   skip_before_filter :require_user, :only => [:new, :create]
   before_filter :require_user, :only => :destroy
