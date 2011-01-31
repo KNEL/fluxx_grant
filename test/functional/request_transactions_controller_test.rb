@@ -37,6 +37,13 @@ class RequestTransactionsControllerTest < ActionController::TestCase
     assert_response :success
   end
   
+  test "should get CSV index" do
+    get :index, :format => 'csv'
+    assert_response :success
+    assert_not_nil assigns(:request_transactions)
+  end
+  
+  
   test "should get edit" do
     get :edit, :id => @request_transaction1.to_param
     assert_response :success
