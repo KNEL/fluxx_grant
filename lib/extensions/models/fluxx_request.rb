@@ -986,9 +986,11 @@ module FluxxRequest
     
     # Mark related classes that show up in searches as deleted
     def handle_cascading_deletes
-      user = User.find(updated_by_id) if updated_by_id
-      request_reports.each {|rep| rep.safe_delete(user)}
-      request_transactions.each {|trans| trans.safe_delete(user)}
+      if self.deleted_at
+        user = User.find(updated_by_id) if updated_by_id
+        request_reports.each {|rep| rep.safe_delete(user)}
+        request_transactions.each {|trans| trans.safe_delete(user)}
+      end
     end
   end
 end
