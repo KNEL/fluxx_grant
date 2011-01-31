@@ -89,5 +89,9 @@ module ReportUtility
     hash[:fips_total] = res["amount"]
     hash
   end
+  
+  def self.currency_label
+    CurrencyHelper.translate_symbol_to_name(I18n.t 'number.currency.format.unit') ? CurrencyHelper.translate_symbol_to_name(I18n.t 'number.currency.format.unit')[:long_name] : 'Dollar'
+  end
 
 end
