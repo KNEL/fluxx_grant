@@ -20,7 +20,7 @@ module FluxxGrantOrganization
                   postal_code, phone, other_contact, fax, email, url, blog_url, twitter_url, acronym, mev_tax_class.value tax_class_value
                   from organizations
                   left outer join geo_states on geo_states.id = geo_state_id
-                  left outer join geo_countries on geo_countries.id = organizations.country_id
+                  left outer join geo_countries on geo_countries.id = organizations.geo_country_id
                   left outer join multi_element_groups meg_tax_class on meg_tax_class.name = 'tax_classes'
                   left outer join multi_element_values mev_tax_class on multi_element_group_id = meg_tax_class.id and tax_class_id = mev_tax_class.id 
                   WHERE
