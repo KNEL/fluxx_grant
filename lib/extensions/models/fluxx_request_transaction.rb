@@ -1,5 +1,30 @@
 module FluxxRequestTransaction
+  def self.prepare_from_date search_with_attributes, name, val
+    if (Time.parse(val) rescue nil)
+      start_at = Time.parse(val)
+      if search_with_attributes[name] && search_with_attributes[name].end < FAR_IN_THE_FUTURE
+        search_with_attributes[name] = (start_at.to_i..(search_with_attributes[name].end))
+      else
+        search_with_attributes[name] = (start_at.to_i..FAR_IN_THE_FUTURE.to_i)
+      end
+      search_with_attributes
+    end || {}
+  end
+  
+  def self.prepare_to_date search_with_attributes, name, val
+    if (Time.parse(val) rescue nil)
+      end_at = Time.parse(val)
+      if search_with_attributes[name] && search_with_attributes[name].begin > 0
+        search_with_attributes[name] = ((search_with_attributes[name].begin)..end_at.to_i)
+      else
+        search_with_attributes[name] = (0..end_at.to_i)
+      end
+      search_with_attributes
+    end || {}
+  end
+
   SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state]
+  FAR_IN_THE_FUTURE = Time.now + 1000.year
   LIQUID_METHODS = [:amount_due, :due_at]
   
   def self.included(base)
@@ -30,7 +55,7 @@ module FluxxRequestTransaction
                 where rt.id IN (?)"
     end
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids]
+      insta.filter_fields = SEARCH_ATTRIBUTES  + [:group_ids, :due_in_days, :overdue_by_days, :lead_user_ids, :grant_multi_element_value_ids, :request_from_date, :request_to_date]
       insta.derived_filters = {:due_in_days => (lambda do |search_with_attributes, request_params, name, value|
         value = value.first if value && value.is_a?(Array)
           if value.to_s.is_numeric?
@@ -46,6 +71,28 @@ module FluxxRequestTransaction
             search_with_attributes[:due_at] = (0..due_date_check.to_i)
             search_with_attributes[:has_been_paid] = false
           end || {}
+        end),
+        :request_from_date => (lambda do |search_with_attributes, request_params, name, val|
+          val = val.first if val && val.is_a?(Array)
+          date_range_selector = request_params[:request_transaction][:date_range_selector] if request_params[:request_transaction]
+          date_range_selector = request_params[:date_range_selector] unless date_range_selector
+          case date_range_selector
+          when 'due_at' then
+            prepare_from_date search_with_attributes, :due_at, val
+          when 'paid_at' then
+            prepare_from_date search_with_attributes, :paid_at, val
+          end
+        end),
+        :request_to_date => (lambda do |search_with_attributes, request_params, name, val|
+          val = val.first if val && val.is_a?(Array)
+          date_range_selector = request_params[:request_transaction][:date_range_selector] if request_params[:request_transaction]
+          date_range_selector = request_params[:date_range_selector] unless date_range_selector
+          case date_range_selector
+          when 'due_at' then
+            prepare_to_date search_with_attributes, :due_at, val
+          when 'paid_at' then
+            prepare_to_date search_with_attributes, :paid_at, val
+          end
         end),
         :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
           program_id_strings = val
