@@ -1,5 +1,5 @@
 = form.input :user_id, :as => :hidden
-= form.input :roleable_type, :as => :hidden, :value => I18n.t(:program_name)
+= form.input :roleable_type, :as => :hidden, :value => Program.name
 = form.input :name, :label => 'Role', :as => :select, :collection => Program.all_role_names
 = form.input :roleable_id, :label => "Program", :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
 
