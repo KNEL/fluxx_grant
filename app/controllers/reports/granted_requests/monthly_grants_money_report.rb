@@ -3,7 +3,7 @@ class MonthlyGrantsMoneyReport < ActionController::ReportBase
   set_type_as_index
 
   def report_label
-    "Grant Dollars By Month"
+    "Grant #{CurrencyHelper.current_long_name.pluralize} By Month"
   end
 
   def compute_index_plot_data controller, index_object, params, models

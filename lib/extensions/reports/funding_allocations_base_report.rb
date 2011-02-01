@@ -36,7 +36,7 @@ module FundingAllocationsBaseReport
     years = ReportUtility.get_years start_date, stop_date
     program_ids= ReportUtility.get_program_ids filter["program_id"]
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
-    legend = [{:table => [I18n.t(:program_name), "Grants", "Grant #{ReportUtility.currency_label}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} Dollars"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
+    legend = [{:table => [I18n.t(:program_name), "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
     categories = ["Granted", "Paid", "Budgeted", "Pipeline"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
