@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110130003908) do
+ActiveRecord::Schema.define(:version => 20110201004538) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -528,8 +528,8 @@ ActiveRecord::Schema.define(:version => 20110130003908) do
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
     t.integer  "request_id",    :null => false
-    t.string   "description"
-    t.string   "comment"
+    t.text     "description",   :null => false
+    t.text     "comment",       :null => false
     t.boolean  "achieved"
   end
 
