@@ -36,7 +36,6 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       #Pipeline
       query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
-      # TODO DREW: fix the below please. Used to be granted.length, I switched it to total_granted.length so it will execute
       pipeline = Array.new.fill(0, 0, total_granted.length)
       pipeline << res["amount"].to_i
 
