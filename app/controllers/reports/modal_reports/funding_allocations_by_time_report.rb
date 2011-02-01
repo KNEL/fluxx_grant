@@ -36,7 +36,8 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       #Pipeline
       query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
-      pipeline = Array.new.fill(0, 0, granted.length)
+      # TODO DREW: fix the below please. Used to be granted.length, I switched it to total_granted.length so it will execute
+      pipeline = Array.new.fill(0, 0, total_granted.length)
       pipeline << res["amount"].to_i
 
       #Paid
@@ -48,14 +49,14 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       #Budgeted
       query = "SELECT SUM(amount) AS amount FROM #{temp_table_name} WHERE retired=0 AND deleted_at IS NULL AND program_id IN (?) AND spending_year IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, years])
-      budgeted = Array.new.fill(0, 0, granted.length)
+      # TODO DREW: fix the below please. Used to be granted.length, I switched it to total_granted.length so it will execute
+      budgeted = Array.new.fill(0, 0, total_granted.length)
       budgeted << res["amount"].to_i
 
       # Rollups
       xaxis = ReportUtility.get_xaxis(start_date, stop_date)
       xaxis << "Year to Date"
       total_granted << total_granted.inject {|sum, amount| sum + amount }
-      granted  << granted.inject {|sum, amount| sum + amount }
 
       plot = {:library => "jqplot"}
 
