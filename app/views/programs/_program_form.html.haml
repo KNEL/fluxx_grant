@@ -1,7 +1,7 @@
 - potential_parent_programs = Program.where(:parent_id => nil)
 - potential_parent_programs = potential_parent_programs.where('programs.id <> ?', model.id) if model.id
 = form.input :name, :label => "Name"
-= form.input :parent_id, :label => "Parent Program", :as => :select, :collection => potential_parent_programs.all.map{|program| [program.description || program.name, program.id]}
+= form.input :parent_id, :label => "Parent #{I18n.t(:program_name)}", :as => :select, :collection => potential_parent_programs.all.map{|program| [program.description || program.name, program.id]}
 = form.input :retired, :as => :boolean, :label => "Retired:"
 
 = form.commit_button

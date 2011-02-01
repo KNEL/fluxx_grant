@@ -57,22 +57,40 @@ module FluxxSubInitiative
       initiative.sub_program if initiative
     end
 
+    SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(sub_initiative_id = ?) and fsa.deleted_at is null"
+      
+    def sub_initiative_fsa_join_where_clause
+      SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE
+    end
+   
     def funding_source_allocations options={}
       spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
       retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
 
-      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select funding_source_allocations.* from funding_source_allocations where 
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select fsa.* from funding_source_allocations fsa where 
             #{spending_year_clause}
-            (sub_initiative_id = ?) and funding_source_allocations.deleted_at is null", 
+            #{sub_initiative_fsa_join_where_clause}", 
             self.id]))
+    end
+
+    def total_pipeline request_types=nil
+      total_amount = FundingSourceAllocation.connection.execute(
+          FundingSourceAllocation.send(:sanitize_sql, ["select sum(rfs.funding_amount) from funding_source_allocations fsa, request_funding_sources rfs, requests where 
+          requests.granted = 0 and
+          requests.deleted_at IS NULL AND requests.state <> 'rejected' and
+      	rfs.request_id = requests.id 
+      	#{Request.prepare_request_types_for_where_clause(request_types)}
+      	and rfs.funding_source_allocation_id = fsa.id and
+                #{sub_initiative_fsa_join_where_clause}",self.id]))
+      total_amount.fetch_row.first.to_i
     end
 
     def total_allocation options={}
       spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
       total_amount = FundingSourceAllocation.connection.execute(
-          FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations where 
+          FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations fsa where 
             #{spending_year_clause}
-            (sub_initiative_id = ?) and funding_source_allocations.deleted_at is null", 
+            #{sub_initiative_fsa_join_where_clause}", 
             self.id]))
       total_amount.fetch_row.first.to_i
     end

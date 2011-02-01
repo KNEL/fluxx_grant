@@ -680,6 +680,24 @@ module FluxxRequest
     def document_title_name
       'Request'
     end
+    
+    def translate_grant_type type
+      case type
+        when 'GrantRequest'
+          'Grants'
+        when 'FipRequest'
+          I18n.t(:fip_name)
+      end
+    end
+    
+    # Often need to prepare a SQL condition requests.type in (GrantRequest, FipRequest), etc.  This makes it easier to do so
+    def prepare_request_types_for_where_clause request_types
+      request_types = [request_types] if request_types.is_a?(String)
+      request_type_clause = if (request_types && request_types.is_a?(Array) && !request_types.empty?)
+        quoted_rts = request_types.map{|rt| "'#{rt}'"}
+        "AND requests.type in (#{quoted_rts.join(',')})"
+      end || ""
+    end
   end
 
   module ModelInstanceMethods

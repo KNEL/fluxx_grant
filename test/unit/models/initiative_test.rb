@@ -18,4 +18,25 @@ class InitiativeTest < ActiveSupport::TestCase
     initiative = Initiative.create :name => 'Fun Program', :sub_program => sub_prog
     assert_not_nil initiative.sub_program.id
   end
+  
+  test "make sure the funding_source_allocations call does not blow up" do
+    initiative = Initiative.create :name => 'Fun Program'
+    result = initiative.funding_source_allocations(:spending_year => 2010)
+    result = initiative.funding_source_allocations
+  end
+  
+  test "make sure the total_pipeline call does not blow up" do
+    initiative = Initiative.create :name => 'Fun Program'
+    result = initiative.total_pipeline
+    result = initiative.total_pipeline 'GrantRequest'
+    result = initiative.total_pipeline ['GrantRequest']
+    result = initiative.total_pipeline ['GrantRequest', 'FipRequest']
+  end
+  
+  test "make sure the total_allocation call does not blow up" do
+    initiative = Initiative.create :name => 'Fun Program'
+    result = initiative.total_allocation(:spending_year => 2010)
+    result = initiative.total_allocation
+  end
+  
 end
