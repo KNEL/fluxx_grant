@@ -112,6 +112,45 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     text_format = workbook.add_format()
     text_format.set_valign('top')
     text_format.set_text_wrap()
+    header_format = workbook.add_format(
+      :bold => 1,
+      :color => 9,
+      :bg_color => 8)
+    workbook.set_custom_color(40, 214, 214, 214)
+    sub_total_format = workbook.add_format(
+      :bold => 1,
+      :color => 8,
+      :bg_color => 40)
+   sub_total_border_format = workbook.add_format(
+      :top => 1,
+      :bold => 1,
+      :num_format => 0x05,
+      :color => 8,      
+      :bg_color => 40)      
+    total_format = workbook.add_format(
+      :bold => 1,
+      :color => 8,
+      :bg_color => 22)
+    total_border_format = workbook.add_format(
+      :top => 1,
+      :bold => 1,
+      :num_format => 0x05,
+      :color => 8,
+      :bg_color => 22)
+    workbook.set_custom_color(41, 128, 128, 128)      
+    final_total_format = workbook.add_format(
+      :bold => 1,
+      :color => 8,
+      :bg_color => 41)
+    final_total_border_format = workbook.add_format(
+      :top => 1,
+      :bold => 1,
+      :num_format => 0x05,
+      :color => 8,
+      :bg_color => 41)
+      
+  
+    
 
     # Calculate letter combinations for column names for the sake of formulas; A, B, C, .. Z, AB, AC, ... ZZ
     column_letters = ('A'..'Z').to_a
@@ -129,23 +168,12 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     worksheet.write(2, 0, "Spending Year: " + spending_year)
     worksheet.write(3, 0, "Report Date: " + Time.now.mdy)
 
-    # Put in a black separator line
-    (0..100).each{|i| worksheet.write(5, i, "", solid_black_format)}
 
+    [I18n.t(:program_name), I18n.t(:sub_program_name), "Grantee Name", "ID", "Type", "Budget", "Pipeline", "Committed",	"Paid"].
+      each_with_index{|label, index| worksheet.write(5, index, label, header_format)}
+    worksheet.set_column('A:H', 12)
 
-    worksheet.set_row(7, 50) # Make the header row taller
-    column = -1
-    worksheet.write(7, column+=1, I18n.t(:program_name), bold_format)
-    worksheet.write(7, column+=1, I18n.t(:sub_program_name), bold_format)
-    worksheet.write(7, column+=1, "Grantee Name", bold_format)
-    worksheet.write(7, column+=1, "ID", bold_format)
-    worksheet.write(7, column+=1, "Type", bold_format)
-    worksheet.write(7, column+=1, "Budget", bold_format)
-    worksheet.write(7, column+=1, "Pipeline", bold_format)
-    worksheet.write(7, column+=1, "Committed", bold_format)
-    worksheet.write(7, column+=1, "Paid", bold_format)
-
-    row_start = 7
+    row_start = 5
     row = row_start
     
     # lookup_table_programs = {5 => {:program => PROGRAM, 
@@ -153,13 +181,14 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     #        {13014 => {:amount => 100000, :grant_title => 'The Energy Foundation', :type => 'GrantRequest', :entity_name => '0808-13014', :sub_programs => {2 => 25000, 4 => 75000}}}}}}
     
     # lookup_table_programs={1=>{:sub_programs=>{6=>{13016=>{:type=>\"Grants\", :amount=>60000, :grant_title=>\"Land Institute\", :sub_programs=>{6=>{:funding_amount=>\"10000\", :paid_amount=>nil}}, :entity_name=>\"1007-13016\"}}}, :program=>#<Program id: 1, name: \"Climate\">}}"
-
+    total_rows = []
     lookup_table_programs.keys.map do |program_id|
       program_hash = lookup_table_programs[program_id]
       program = program_hash[:program]
       program_name = (program ? program.name : '')
       worksheet.write(row += 1, 0, program_name)
       sub_program_hash = program_hash[:sub_programs]
+      sub_total_rows = []
       sub_program_hash.keys.map do |sub_program_id|
         sub_program = lookup_table_sub_programs[sub_program_id]
         sub_program_name = (sub_program ? sub_program.name : '')
@@ -170,6 +199,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
         worksheet.write(row += 1, 1, sub_program_name)
         worksheet.write(row, 5, sub_program_budget, amount_format)
         worksheet.write(row, 6, sub_program_pipeline, amount_format)
+        start_row = stop_row = row + 2    
         request_hashes.keys.each do |request_id|
           # request_hash = {:type=>\"Grants\", :amount=>60000, :grant_title=>\"Land Institute\", :sub_programs=>{6=>{:funding_amount=>\"10000\", :paid_amount=>nil}}, :entity_name=>\"1007-13016\"}
           request_hash = request_hashes[request_id]
@@ -180,27 +210,41 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
           worksheet.write(row, 7, request_sub_program_amount, amount_format)
           request_sub_program_amount_paid = request_hash[:sub_programs][sub_program_id][:paid_amount].to_i rescue ''
           worksheet.write(row, 8, request_sub_program_amount_paid, amount_format)
+          stop_row = row + 1
         end
-        worksheet.write(row += 1, 1, "Total - #{program_name}/#{sub_program_name}")
+        sub_total_rows << stop_row + 1
+        worksheet.write(row += 1, 1, "Total - #{program_name}/#{sub_program_name}", sub_total_format)
+        worksheet.write(row, 2, '', sub_total_format)
+        worksheet.write(row, 3, '', sub_total_format)
+        worksheet.write(row, 4, '', sub_total_format)
         # TODO add sum totals for this set of requests/sub_programs
-        worksheet.write(row, 5, 0, amount_format)
-        worksheet.write(row, 6, 0, amount_format)
-        worksheet.write(row, 7, 0, amount_format)
-        worksheet.write(row, 8, 0, amount_format)
+        worksheet.write(row, 5, "=SUM(F#{start_row}:F#{stop_row})", sub_total_border_format)
+        worksheet.write(row, 6, "=SUM(G#{start_row}:G#{stop_row})", sub_total_border_format)
+        worksheet.write(row, 7, "=SUM(H#{start_row}:H#{stop_row})", sub_total_border_format)
+        worksheet.write(row, 8, "=SUM(I#{start_row}:I#{stop_row})", sub_total_border_format)
       end
-      worksheet.write(row += 1, 0, "Total - #{program_name}")
+      worksheet.write(row += 1, 0, "Total - #{program_name}", total_format)
+      worksheet.write(row, 1, '', total_format)      
+      worksheet.write(row, 2, '', total_format)
+      worksheet.write(row, 3, '', total_format)
+      worksheet.write(row, 4, '', total_format)      
       # TODO add sum totals for this set of requests/programs
-      worksheet.write(row, 5, 0, amount_format)
-      worksheet.write(row, 6, 0, amount_format)
-      worksheet.write(row, 7, 0, amount_format)
-      worksheet.write(row, 8, 0, amount_format)
+      total_rows << row + 1
+      worksheet.write(row, 5, "=SUM(F#{sub_total_rows.join(',F')})", total_border_format)
+      worksheet.write(row, 6, "=SUM(G#{sub_total_rows.join(',G')})", total_border_format)
+      worksheet.write(row, 7, "=SUM(H#{sub_total_rows.join(',H')})", total_border_format)
+      worksheet.write(row, 8, "=SUM(I#{sub_total_rows.join(',I')})", total_border_format)
     end
-    worksheet.write(row += 1, 0, "Total", bold_format)
+    worksheet.write(row += 1, 0, "Total", final_total_format)
+    worksheet.write(row, 1, '', final_total_format)      
+    worksheet.write(row, 2, '', final_total_format)
+    worksheet.write(row, 3, '', final_total_format)
+    worksheet.write(row, 4, '', final_total_format)      
     # TODO add sum totals for this set of requests/programs
-    worksheet.write(row, 5, 0, amount_format)
-    worksheet.write(row, 6, 0, amount_format)
-    worksheet.write(row, 7, 0, amount_format)
-    worksheet.write(row, 8, 0, amount_format)
+    worksheet.write(row, 5, "=SUM(F#{total_rows.join(',F')})", final_total_border_format)
+    worksheet.write(row, 6, "=SUM(G#{total_rows.join(',G')})", final_total_border_format)
+    worksheet.write(row, 7, "=SUM(H#{total_rows.join(',H')})", final_total_border_format)
+    worksheet.write(row, 8, "=SUM(I#{total_rows.join(',I')})", final_total_border_format)
     
     workbook.close
     output.string
