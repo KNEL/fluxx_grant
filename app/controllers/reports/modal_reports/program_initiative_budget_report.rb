@@ -98,7 +98,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     solid_black_format = workbook.add_format()
     solid_black_format.set_bg_color('black')
     amount_format = workbook.add_format()
-    amount_format.set_num_format(0x05)
+    amount_format.set_num_format("#{I18n.t 'number.currency.format.unit'}#,##0")
     amount_format.set_valign('bottom')
     amount_format.set_text_wrap()
     number_format = workbook.add_format()
@@ -124,7 +124,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
    sub_total_border_format = workbook.add_format(
       :top => 1,
       :bold => 1,
-      :num_format => 0x05,
+      :num_format => "#{I18n.t 'number.currency.format.unit'}#,##0",
       :color => 8,      
       :bg_color => 40)      
     total_format = workbook.add_format(
@@ -134,7 +134,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     total_border_format = workbook.add_format(
       :top => 1,
       :bold => 1,
-      :num_format => 0x05,
+      :num_format => "#{I18n.t 'number.currency.format.unit'}#,##0",
       :color => 8,
       :bg_color => 22)
     workbook.set_custom_color(41, 128, 128, 128)      
@@ -145,7 +145,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     final_total_border_format = workbook.add_format(
       :top => 1,
       :bold => 1,
-      :num_format => 0x05,
+      :num_format => "#{I18n.t 'number.currency.format.unit'}#,##0",
       :color => 8,
       :bg_color => 41)
       

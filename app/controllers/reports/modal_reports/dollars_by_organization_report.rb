@@ -45,7 +45,7 @@ class DollarsByOrganizationReport < ActionController::ReportBase
     solid_black_format = workbook.add_format()
     solid_black_format.set_bg_color('black')
     amount_format = workbook.add_format()
-    amount_format.set_num_format(0x05)
+    amount_format.set_num_format("#{I18n.t 'number.currency.format.unit'}#,##0")
     amount_format.set_valign('bottom')
     amount_format.set_text_wrap()
     number_format = workbook.add_format()
