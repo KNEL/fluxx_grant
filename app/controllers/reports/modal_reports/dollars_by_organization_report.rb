@@ -10,15 +10,15 @@ class DollarsByOrganizationReport < ActionController::ReportBase
   end
   
   def report_label
-    'Dollars By Organizaton'
+    "#{CurrencyHelper.current_long_name.pluralize} By Organizaton"
   end
 
   def report_description
-    'Dollars By Organizaton'
+    "#{CurrencyHelper.current_long_name.pluralize} By Organizaton"
   end
   
   def compute_show_document_headers controller, show_object, params
-    ['fluxx_' + 'dollars_by_organization' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
+    ['fluxx_' + "#{CurrencyHelper.current_long_name.pluralize}_by_organization" + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
   
   def compute_show_document_data controller, show_object, params
@@ -70,7 +70,7 @@ class DollarsByOrganizationReport < ActionController::ReportBase
   
     # Add page summary
     # worksheet.write(0, 0, 'The Energy Foundation', non_wrap_bold_format)
-    worksheet.write(1, 0, 'Dollars By Organization Report', non_wrap_bold_format)
+    worksheet.write(1, 0, "#{CurrencyHelper.current_long_name.pluralize} By Organization Report", non_wrap_bold_format)
     worksheet.write(2, 0, "Date Range: " + start_date.mdy + " - " + end_date.mdy)
     worksheet.write(3, 0, "Report Date: " + Time.now.mdy)
 
