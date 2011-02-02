@@ -7,7 +7,7 @@
     = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
 
     - unless FLUXX_CONFIGURATION[:hide_program]
-      = form.input :program, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select"}
+      = form.input :program, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all_nonrollup.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select"}
     - program_leads = []
     - program_leads = form.object.program.load_users if form.object.program
     - unless FLUXX_CONFIGURATION[:hide_program]

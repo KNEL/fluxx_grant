@@ -94,12 +94,16 @@ module FluxxProgram
       User.joins(:role_users).where({:role_users => {:roleable_type => self.name}}).group("users.id").compact
     end
 
+    def load_all_nonrollup
+      load_all_without_children_programs
+    end
+
     def load_all
-      Program.where(:retired => 0).all
+      Program.where(:retired => 0).order(:name).all
     end
     
     def load_all_without_children_programs
-      Program.where(:retired => 0).where('(select count(*) from programs subprog where subprog.parent_id = programs.id) = 0').all
+      Program.where(:retired => 0).where('(select count(*) from programs subprog where subprog.parent_id = programs.id) = 0').order(:name).all
     end
   end
 
