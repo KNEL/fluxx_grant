@@ -1,6 +1,6 @@
 = form.input :name, :label => "Name"
 - unless FLUXX_CONFIGURATION[:hide_program]
-  = form.input :program_id, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select"}
+  = form.input :program_id, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all_nonrollup.map{|program| [program.description || program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child-param' => 'program_id', 'data-related-child' => ".sub-program-select"}
 = form.input :retired, :as => :boolean, :label => "Retired:"
 
 = form.commit_button

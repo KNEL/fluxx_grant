@@ -31,7 +31,7 @@ module FluxxInitiative
 
   module ModelClassMethods
     def load_all
-      Initiative.where(:retired => 0).all
+      Initiative.where(:retired => 0).order(:name).all
     end
   end
 

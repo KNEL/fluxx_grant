@@ -22,7 +22,7 @@ module FluxxSubInitiative
 
   module ModelClassMethods
     def load_all
-      SubInitiative.where(:retired => 0).all
+      SubInitiative.where(:retired => 0).order(:name).all
     end
   end
   
