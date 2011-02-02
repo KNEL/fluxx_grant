@@ -18,7 +18,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
   end
   
   def compute_show_document_headers controller, show_object, params
-    ['fluxx_' + 'dollars_by_organization' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
+    ['fluxx_' + 'program_initiative_budget' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
   
   def compute_show_document_data controller, show_object, params
