@@ -29,6 +29,7 @@ module PipelineBaseReport
     end
   
     FundingSourceAllocation.build_temp_table do |temp_table|
+      # TODO ESH: add support for filtering by program_id, sub_program_id and funding_source_id
   
       # Note that the amount_requested, amount_recommended is incorrect for org_type because it is grouping multiple requests together so you just get the last amount instead of the sum.
       #  Further note that if you do a simple SUM, you get doublecounting because the same request is counted multiple times per funding request
