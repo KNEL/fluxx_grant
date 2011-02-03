@@ -230,10 +230,17 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
       worksheet.write(row, 4, '', total_format)      
       # TODO add sum totals for this set of requests/programs
       total_rows << row + 1
-      worksheet.write(row, 5, "=SUM(F#{sub_total_rows.join(',F')})", total_border_format)
-      worksheet.write(row, 6, "=SUM(G#{sub_total_rows.join(',G')})", total_border_format)
-      worksheet.write(row, 7, "=SUM(H#{sub_total_rows.join(',H')})", total_border_format)
-      worksheet.write(row, 8, "=SUM(I#{sub_total_rows.join(',I')})", total_border_format)
+      if (sub_total_rows.count > 0)
+        worksheet.write(row, 5, "=SUM(F#{sub_total_rows.join(',F')})", total_border_format)
+        worksheet.write(row, 6, "=SUM(G#{sub_total_rows.join(',G')})", total_border_format)
+        worksheet.write(row, 7, "=SUM(H#{sub_total_rows.join(',H')})", total_border_format)
+        worksheet.write(row, 8, "=SUM(I#{sub_total_rows.join(',I')})", total_border_format)
+      else
+        worksheet.write(row, 5, 0, total_border_format)
+        worksheet.write(row, 6, 0, total_border_format)
+        worksheet.write(row, 7, 0, total_border_format)
+        worksheet.write(row, 8, 0, total_border_format)
+     end    
     end
     worksheet.write(row += 1, 0, "Total", final_total_format)
     worksheet.write(row, 1, '', final_total_format)      
@@ -241,11 +248,17 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     worksheet.write(row, 3, '', final_total_format)
     worksheet.write(row, 4, '', final_total_format)      
     # TODO add sum totals for this set of requests/programs
-    worksheet.write(row, 5, "=SUM(F#{total_rows.join(',F')})", final_total_border_format)
-    worksheet.write(row, 6, "=SUM(G#{total_rows.join(',G')})", final_total_border_format)
-    worksheet.write(row, 7, "=SUM(H#{total_rows.join(',H')})", final_total_border_format)
-    worksheet.write(row, 8, "=SUM(I#{total_rows.join(',I')})", final_total_border_format)
-    
+    if (total_rows.count > 0)
+      worksheet.write(row, 5, "=SUM(F#{total_rows.join(',F')})", final_total_border_format)
+      worksheet.write(row, 6, "=SUM(G#{total_rows.join(',G')})", final_total_border_format)
+      worksheet.write(row, 7, "=SUM(H#{total_rows.join(',H')})", final_total_border_format)
+      worksheet.write(row, 8, "=SUM(I#{total_rows.join(',I')})", final_total_border_format)
+    else
+      worksheet.write(row, 5, 0, final_total_border_format)
+      worksheet.write(row, 6, 0, final_total_border_format)
+      worksheet.write(row, 7, 0, final_total_border_format)
+      worksheet.write(row, 8, 0, final_total_border_format)
+    end  
     workbook.close
     output.string
   end
