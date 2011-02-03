@@ -199,7 +199,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
         worksheet.write(row += 1, 1, sub_program_name)
         worksheet.write(row, 5, sub_program_budget, amount_format)
         worksheet.write(row, 6, sub_program_pipeline, amount_format)
-        start_row = stop_row = row + 2    
+        start_row = stop_row = row + 1    
         request_hashes.keys.each do |request_id|
           # request_hash = {:type=>\"Grants\", :amount=>60000, :grant_title=>\"Land Institute\", :sub_programs=>{6=>{:funding_amount=>\"10000\", :paid_amount=>nil}}, :entity_name=>\"1007-13016\"}
           request_hash = request_hashes[request_id]
