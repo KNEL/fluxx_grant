@@ -59,8 +59,8 @@ class RenderHgrantsRssResponse
     end
   end
   def render_requests_to_xml grants, block
-    block.call '<?xml version="1.0" encoding="UTF-8"?>\n'
-    block.call '<rss version="2.0">\n'
+    block.call '<?xml version="1.0" encoding="UTF-8"?>'
+    block.call '<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">'
     block.call "  <channel>\n"
     block.call "    <title>EnergyFoundation hGrant Feed</title>\n"
     block.call "    <description>EnergyFoundation hGrant Feed</description>\n"
