@@ -77,7 +77,7 @@ class RenderHgrantsRssResponse
 
   def render_request_to_xml hash, block
     block.call "<item>\n"
-    block.call "  <title>#{hash['program_org_name']} #{hash['granted'] == '1' ? hash['grant_id'] : hash['request_id']} #{((hash['amount_recommended'] || hash['amount_requested']).to_i rescue 0).to_currency} </title>\n"
+    block.call "  <title><![CDATA[#{hash['program_org_name']} #{hash['granted'] == '1' ? hash['grant_id'] : hash['request_id']} #{((hash['amount_recommended'] || hash['amount_requested']).to_i rescue 0).to_currency} ]]</title>\n"
   
     block.call "<description>\n"
     block.call "  <![CDATA[\n"
