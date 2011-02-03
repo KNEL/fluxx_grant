@@ -82,12 +82,12 @@ class RenderHgrantsRssResponse
     block.call "<description>\n"
     block.call "  <![CDATA[\n"
     block.call(DisplayRssFeedGrantHTML.generate_grant_html(hash))
-    block.call "  ]]>\n"
+    block.call "]]>"
     block.call "</description>\n"
 
     block.call "  <pubDate></pubDate>\n"
-    block.call "  <link>/grant_requests/7</link>\n"
-    block.call "  <guid>7</guid>\n"
+    block.call "  <link>/hgrantrss/#{hash['id']}</link>\n"
+    block.call "  <guid>/hgrantrss/#{hash['id']}</guid>\n"
     block.call "</item>\n"
   end  
 end
