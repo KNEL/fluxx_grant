@@ -66,7 +66,7 @@ class RenderHgrantsRssResponse
     block.call "    <description>EnergyFoundation hGrant Feed</description>\n"
     # TODO ESH: find a way to call paths from within rack middleware
     # block.call "    <link>#{hgrants_path}</link>\n"
-    block.call "    <pubDate>#{Time.now}</pubDate>\n"
+    block.call "    <pubDate>#{Time.now.rfc2822}</pubDate>\n"
     block.call "    <language>en</language>\n"
     while hash = grants.fetch_hash
       render_request_to_xml hash, block
@@ -77,15 +77,16 @@ class RenderHgrantsRssResponse
 
   def render_request_to_xml hash, block
     block.call "<item>\n"
-    block.call "  <title><![CDATA[#{hash['program_org_name']} #{hash['granted'] == '1' ? hash['grant_id'] : hash['request_id']} #{((hash['amount_recommended'] || hash['amount_requested']).to_i rescue 0).to_currency} ]]></title>\n"
+    block.call "  <title><![CDATA[#{hash['program_org_name']} #{hash['granted'] == '1' ? hash['grant_id'] : hash['request_id']} #{((hash['amount_recommended'] || hash['amount_requested']).to_i rescue 0).to_currency} ]]></title>\n".gsub("€", "&euro;")
   
     block.call "<description>\n"
     block.call "  <![CDATA[\n"
     block.call(DisplayRssFeedGrantHTML.generate_grant_html(hash))
     block.call "]]>"
     block.call "</description>\n"
+    begins_at = Time.parse( hash['grant_begins_at']) rescue nil if hash['grant_begins_at']
 
-    block.call "  <pubDate></pubDate>\n"
+    block.call "  <pubDate>#{begins_at ? begins_at.rfc2822 : ''}</pubDate>\n"
     block.call "  <link>/hgrantrss/#{hash['id']}</link>\n"
     block.call "  <guid>/hgrantrss/#{hash['id']}</guid>\n"
     block.call "</item>\n"
