@@ -12,6 +12,20 @@ module LiquidFilters
     number_to_currency(number, :unit => unit, :delimiter => delimiter, :precision => precision, :format => format)
   end
   
+  def to_rtf(string)
+    # http://en.wikipedia.org/wiki/Rich_Text_Format#Character_encoding
+    # RTF is an 8-bit format. That would limit it to ASCII, but RTF can encode characters beyond ASCII by escape sequences.
+    # For a Unicode escape the control word \u is used, followed by a 16-bit signed decimal integer giving the Unicode code point number.
+    # ... Until RTF specification version 1.5 release in 1997, RTF has only handled 7-bit characters directly and 8-bit characters encoded as hexadecimal (using \'xx).
+    # ... RTF files are usually 7-bit ASCII plain text.
+    return nil unless string
+    string.gsub!("\n", "\\line\n")
+    string.gsub!("\t", "\\tab\t")
+    
+    # unicode rtf output to covert non-ascii chars: 8-bit to hex, 16-bit to code point
+    string.unpack('U*').map { |n| n < 128 ? n.chr : n < 256 ? "\\'#{n.to_s(16)}" : "\\u#{n}\\'3f" }.join('')
+  end
+  
 end
 
 Liquid::Template.register_filter(LiquidFilters)
