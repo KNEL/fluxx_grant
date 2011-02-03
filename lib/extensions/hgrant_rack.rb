@@ -80,7 +80,7 @@ class RenderHgrantsRssResponse
     block.call "  <title>#{hash['program_org_name']} #{hash['granted'] == '1' ? hash['grant_id'] : hash['request_id']} #{((hash['amount_recommended'] || hash['amount_requested']).to_i rescue 0).to_currency} </title>\n"
   
     block.call "<description>\n"
-    block.call "  <![[CDATA\n"
+    block.call "  <![CDATA[\n"
     block.call(DisplayRssFeedGrantHTML.generate_grant_html(hash))
     block.call "  ]]>\n"
     block.call "</description>\n"
