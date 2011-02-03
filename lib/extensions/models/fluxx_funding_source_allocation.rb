@@ -82,6 +82,45 @@ module FluxxFundingSourceAllocation
       request_funding_sources.reject{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
     end
     
+    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
+    def program_display_name
+      obj = if sub_initiative
+        sub_initiative.initiative.sub_program.program if sub_initiative.initiative && sub_initiative.initiative.sub_program
+      elsif initiative
+        initiative.sub_program.program if initiative.sub_program
+      elsif sub_program
+        sub_program.program
+      else
+        program
+      end
+      obj.name if obj
+    end
+
+    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
+    def sub_program_display_name
+      obj = if sub_initiative
+        sub_initiative.initiative.sub_program if sub_initiative.initiative
+      elsif initiative
+        initiative.sub_program
+      else
+        sub_program
+      end
+      obj.name if obj
+    end
+
+    def initiative_display_name
+      obj = if sub_initiative
+        sub_initiative.initiative
+      else
+        initiative
+      end
+      obj.name if obj
+    end
+
+    def sub_initiative_display_name
+      sub_initiative.name if sub_initiative
+    end
+    
     def composite_name
       program_name = program.name if program
       sub_program_name = sub_program.name if sub_program
