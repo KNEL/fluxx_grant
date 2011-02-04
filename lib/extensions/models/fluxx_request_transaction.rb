@@ -142,6 +142,8 @@ module FluxxRequestTransaction
       insta.add_state_to_english :new, 'New'
       
       insta.add_event_to_english :mark_paid, 'Record Payment'      
+
+      insta.add_non_validating_event :reject
     end
     
     base.insta_template do |insta|

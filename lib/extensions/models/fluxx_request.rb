@@ -308,6 +308,11 @@ module FluxxRequest
       insta.add_event_to_english :become_grant, 'Promote to Grant'
       insta.add_event_to_english :close_grant, 'Close'
       insta.add_event_to_english :cancel_grant, 'Cancel'        
+      
+      insta.add_non_validating_event :reject
+      insta.add_non_validating_event :po_send_back
+      insta.add_non_validating_event :president_send_back
+      insta.add_non_validating_event :grant_team_send_back
     end
 
     base.extend(ModelClassMethods)

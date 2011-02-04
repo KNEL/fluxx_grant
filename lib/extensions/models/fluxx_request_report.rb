@@ -159,6 +159,11 @@ module FluxxRequestReport
       insta.add_event_to_english RequestReport.grant_team_send_back_event, 'Send Back'
       insta.add_event_to_english RequestReport.finance_approve_event, 'Approve'
       insta.add_event_to_english RequestReport.finance_send_back_event, 'Send Back'
+
+      insta.add_non_validating_event :reject
+      insta.add_non_validating_event RequestReport.lead_send_back_event
+      insta.add_non_validating_event RequestReport.grant_team_send_back_event
+      insta.add_non_validating_event RequestReport.finance_send_back_event
     end
     
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
