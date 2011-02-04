@@ -7,5 +7,5 @@
   |
   = model.initiative.name if model.initiative
 %h4 
-  = model.total_allocation.to_currency
-  Total Funding
+  = model.total_allocation(:spending_year => spending_year).to_currency
+  Current Year Funding
