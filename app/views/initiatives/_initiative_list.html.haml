@@ -5,5 +5,5 @@
   |
   = model.sub_program.name if model.sub_program
 %h4 
-  = model.total_allocation.to_currency
-  Total Funding
+  = model.total_allocation(:spending_year => spending_year).to_currency
+  Current Year Funding
