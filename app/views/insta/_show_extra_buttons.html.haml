@@ -1,0 +1,2 @@
+- if model.is_a?(FipRequest) && model.granted?
+  %li= link_to 'Add a Transaction', new_request_transaction_path(:request_transaction => {:request_id => model.id}), :title => 'Add A Transaction', :class => 'to-modal', :link_class => 'btn', 'data-on-success' => 'refreshCaller,close' if current_user.has_create_for_model?(RequestTransaction)

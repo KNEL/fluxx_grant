@@ -90,8 +90,6 @@
       .key Amount Paid to Date:
       .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
 
-- if model.is_a?(FipRequest) && model.granted?
-  = link_to 'Add a Transaction', new_request_transaction_path(:request_transaction => {:request_id => model.id}), :title => 'Add A Transaction', :class => 'to-modal', 'data-on-success' => 'refreshCaller,close' if current_user.has_create_for_model?(RequestTransaction)
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
 %div.partial
   = render :partial => "grant_requests/grant_request_show_relationships", :locals => { :model => model}
