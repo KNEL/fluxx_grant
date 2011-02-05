@@ -1,6 +1,9 @@
 module FluxxSubProgram
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id]
   LIQUID_METHODS = [:name]
+  SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.sub_program_id = ?
+    or fsa.initiative_id in (select initiatives.id from initiatives where sub_program_id = ?)
+    or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?)) and fsa.deleted_at is null"
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -15,6 +18,20 @@ module FluxxSubProgram
       insta.derived_filters = {}
     end
     base.liquid_methods *( LIQUID_METHODS )
+    
+    base.insta_export do |insta|
+      insta.filename = 'sub_program'
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
+      insta.sql_query = "            select sub_programs.created_at, sub_programs.updated_at, sub_programs.name, if(spending_year is null, 'none', spending_year), sum(amount)
+                   from sub_programs
+                   left outer join funding_source_allocations fsa on true
+                    where
+                   #{SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE.gsub /\?/, 'sub_programs.id'}
+                      and sub_programs.id IN (?)
+                      group by name, if(spending_year is null, 0, spending_year)
+                  "
+    end
+    
 
     base.extend(ModelClassMethods)
     base.class_eval do
@@ -46,9 +63,6 @@ module FluxxSubProgram
       Initiative.find :all, :select => select_field_sql, :conditions => ['sub_program_id = ?', id], :order => :name
     end
     
-    SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.sub_program_id = ?
-      or fsa.initiative_id in (select initiatives.id from initiatives where sub_program_id = ?)
-      or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?)) and fsa.deleted_at is null"
       
     def sub_program_fsa_join_where_clause
       SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE

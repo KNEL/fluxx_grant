@@ -1,5 +1,6 @@
 module FluxxSubInitiative
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :sub_program_id, :initiative_id]
+  SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(sub_initiative_id = ?) and fsa.deleted_at is null"
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -8,6 +9,18 @@ module FluxxSubInitiative
     base.send :attr_accessor, :not_retired
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
+    base.insta_export do |insta|
+      insta.filename = 'sub_initiative'
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
+      insta.sql_query = "            select sub_initiatives.created_at, sub_initiatives.updated_at, sub_initiatives.name, if(spending_year is null, 'none', spending_year), sum(amount)
+                   from sub_initiatives
+                   left outer join funding_source_allocations fsa on true
+                    where
+                   #{SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE.gsub /\?/, 'sub_initiatives.id'}
+                      and sub_initiatives.id IN (?)
+                      group by name, if(spending_year is null, 0, spending_year)
+                  "
+    end
 
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
@@ -57,7 +70,6 @@ module FluxxSubInitiative
       initiative.sub_program if initiative
     end
 
-    SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(sub_initiative_id = ?) and fsa.deleted_at is null"
       
     def sub_initiative_fsa_join_where_clause
       SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE

@@ -1,6 +1,10 @@
 module FluxxProgram
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id]
   LIQUID_METHODS = [:name]
+  PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.program_id = ?
+  or fsa.sub_program_id in (select id from sub_programs where program_id = ?)
+  or fsa.initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
+  or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?)) and fsa.deleted_at is null"
 
   def self.included(base)
     base.acts_as_audited
@@ -17,7 +21,20 @@ module FluxxProgram
       insta.filter_fields = SEARCH_ATTRIBUTES
       insta.derived_filters = {}
     end
-    base.insta_export
+
+    base.insta_export do |insta|
+      insta.filename = 'program'
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
+      insta.sql_query = "            select programs.created_at, programs.updated_at, programs.name, if(spending_year is null, 'none', spending_year), sum(amount)
+                   from programs
+                   left outer join funding_source_allocations fsa on true
+                    where
+                   #{PROGRAM_FSA_JOIN_WHERE_CLAUSE.gsub /\?/, 'programs.id'}
+                      and programs.id IN (?)
+                      group by name, if(spending_year is null, 0, spending_year)
+                  "
+    end
+    
     base.insta_realtime
     base.insta_multi
     base.insta_template do |insta|
@@ -128,10 +145,6 @@ module FluxxProgram
       user_query.group("users.id").compact
     end
     
-    PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.program_id = ?
-    or fsa.sub_program_id in (select id from sub_programs where program_id = ?)
-    or fsa.initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
-    or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?)) and fsa.deleted_at is null"
     
     def program_fsa_join_where_clause
       PROGRAM_FSA_JOIN_WHERE_CLAUSE
