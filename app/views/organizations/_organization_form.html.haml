@@ -19,9 +19,9 @@
   = form.input :other_contact, :label => "Other Contact"
   = form.input :fax, :label => "Fax"
   = form.input :email, :label => "Email"
-  = form.input :url, :label => "Url"
-  = form.input :blog_url, :label => "Blog Url"
-  = form.input :twitter_url, :label => "Twitter Url"
+  = form.input :url, :label => "URL"
+  = form.input :blog_url, :label => "Blog URL"
+  = form.input :twitter_url, :label => "Twitter URL"
   = form.input :tax_class, :label => "Tax Class", :collection => Organization.sorted_tax_classes
   = form.input :tax_id, :label => "Tax ID"
   = render :partial => "organizations/more_org_form", :locals => { :model => model, :form => form}
