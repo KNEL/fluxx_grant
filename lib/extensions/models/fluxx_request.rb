@@ -28,7 +28,7 @@ module FluxxRequest
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
   # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics]  
+  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to]  
 
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
@@ -920,6 +920,18 @@ module FluxxRequest
 
     def related_request_reports limit_amount=20
       request_reports.where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
+    end
+    
+    def letter_project_summary
+      request_project_summary = project_summary || ''
+      request_project_summary = request_project_summary.strip
+      request_project_summary = request_project_summary.gsub /\.$/, ''
+      request_project_summary = request_project_summary.first.downcase + request_project_summary[1..request_project_summary.size]
+    end
+
+    def letter_project_summary_without_leading_to
+      request_project_summary = letter_project_summary || ''
+      request_project_summary.gsub /^To/i, ''
     end
 
     # Find out all the states a request of this type can pass through from the time it is new doing normal promotion
