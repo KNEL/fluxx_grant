@@ -1,5 +1,5 @@
 module FluxxInitiative
-  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id]
+  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :retired]
   LIQUID_METHODS = [:name]
   INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(initiative_id = ?
     or sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?)) and fsa.deleted_at is null"
@@ -63,7 +63,7 @@ module FluxxInitiative
       else
         'sub_initiatives.*'
       end
-      SubInitiative.find :all, :select => select_field_sql, :conditions => ['initiative_id = ?', id], :order => :name
+      SubInitiative.find :all, :select => select_field_sql, :conditions => ['initiative_id = ? and retired = 0', id], :order => :name
     end
     
     def program_id= program_id

@@ -1,5 +1,5 @@
 module FluxxProgram
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :retired]
   LIQUID_METHODS = [:name]
   PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.program_id = ?
   or fsa.sub_program_id in (select id from sub_programs where program_id = ?)
@@ -136,7 +136,7 @@ module FluxxProgram
       else
         'sub_programs.*'
       end
-      SubProgram.find :all, :select => select_field_sql, :conditions => ['program_id = ?', id], :order => :name
+      SubProgram.find :all, :select => select_field_sql, :conditions => ['program_id = ? and retired = 0', id], :order => :name
     end
 
     def load_users role_name=nil

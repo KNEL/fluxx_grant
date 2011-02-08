@@ -82,9 +82,8 @@ module FluxxFundingSourceAllocation
       request_funding_sources.reject{|rfs| rfs.request.granted}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
     end
     
-    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
-    def program_display_name
-      obj = if sub_initiative
+    def derive_program
+      if sub_initiative
         sub_initiative.initiative.sub_program.program if sub_initiative.initiative && sub_initiative.initiative.sub_program
       elsif initiative
         initiative.sub_program.program if initiative.sub_program
@@ -93,27 +92,44 @@ module FluxxFundingSourceAllocation
       else
         program
       end
-      obj.name if obj
     end
 
-    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
-    def sub_program_display_name
-      obj = if sub_initiative
+    def derive_sub_program
+      if sub_initiative
         sub_initiative.initiative.sub_program if sub_initiative.initiative
       elsif initiative
         initiative.sub_program
       else
         sub_program
       end
-      obj.name if obj
     end
 
-    def initiative_display_name
-      obj = if sub_initiative
+    def derive_initiative
+      if sub_initiative
         sub_initiative.initiative
       else
         initiative
       end
+    end
+    
+    def derive_sub_initiative
+      sub_initiative
+    end
+    
+    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
+    def program_display_name
+      obj = derive_program
+      obj.name if obj
+    end
+
+    # Only sub_initiative/initiative/sub_program/program is populated so we need to figure out which one is populated and derive from that
+    def sub_program_display_name
+      obj = derive_sub_program
+      obj.name if obj
+    end
+
+    def initiative_display_name
+      obj = derive_initiative
       obj.name if obj
     end
 
