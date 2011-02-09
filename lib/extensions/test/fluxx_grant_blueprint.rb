@@ -75,6 +75,7 @@ module FluxxGrantBlueprint
     end
 
     RequestFundingSource.blueprint do
+      funding_amount 5000
       funding_source_allocation {FundingSourceAllocation.make}
       request {GrantRequest.make}
     end

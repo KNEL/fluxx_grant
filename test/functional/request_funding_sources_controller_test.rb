@@ -18,7 +18,7 @@ class RequestFundingSourcesControllerTest < ActionController::TestCase
   
   test "should create request funding source" do
     assert_difference('RequestFundingSource.count') do
-      post :create, :request_funding_source => {:request_id => @request1.id, :funding_source_allocation_id => @funding_source.id}
+      post :create, :request_funding_source => {:request_id => @request1.id, :funding_amount => 2133, :funding_source_allocation_id => @funding_source.id}
     end
 
     # Figure out how to determine a 201 and the options therein; some HTTP header in the @response object

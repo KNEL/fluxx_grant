@@ -10,35 +10,35 @@ class RequestReportTest < ActiveSupport::TestCase
   end
   
   test "take a report and submit the report" do
-    @rep.submit_report
+    @rep.insta_fire_event :submit_report
     assert_equal 'pending_lead_approval', @rep.state
   end
 
   test "submit a sent-back report" do
     @rep.state = 'sent_back_to_pa'
     @rep.save
-    @rep.submit_report
+    @rep.insta_fire_event :submit_report
     assert_equal 'pending_lead_approval', @rep.state
   end
   
   test "take a report pending lead approval and submit the report" do
     @rep.state = 'pending_lead_approval'
     @rep.save
-    @rep.lead_approve
+    @rep.insta_fire_event :lead_approve
     assert_equal 'pending_grant_team_approval', @rep.state
   end
 
   test "approve a sent-back to lead report" do
     @rep.state = 'sent_back_to_lead'
     @rep.save
-    @rep.lead_approve
+    @rep.insta_fire_event :lead_approve
     assert_equal 'pending_grant_team_approval', @rep.state
   end
   
   test "take a report pending grant team approval for a non-ER request and submit the report" do
     @rep.state = 'pending_grant_team_approval'
     @rep.save
-    @rep.grant_team_approve
+    @rep.insta_fire_event :grant_team_approve
     assert_equal 'approved', @rep.state
   end
 
@@ -52,7 +52,7 @@ class RequestReportTest < ActiveSupport::TestCase
     assert er_rep.is_grant_er?
     er_rep.state = 'pending_grant_team_approval'
     er_rep.save
-    er_rep.grant_team_approve
+    er_rep.insta_fire_event :grant_team_approve
     assert_equal 'pending_finance_approval', er_rep.state
   end
 
@@ -66,21 +66,21 @@ class RequestReportTest < ActiveSupport::TestCase
     assert er_rep.is_grant_er?
     er_rep.state = 'pending_grant_team_approval'
     er_rep.save
-    er_rep.grant_team_approve
+    er_rep.insta_fire_event :grant_team_approve
     assert_equal RequestReport.approved_state, er_rep.state
   end
 
   test "approve a sent-back to grant team report for an ER request" do
     @rep.state = 'sent_back_to_grant_team'
     @rep.save
-    @rep.grant_team_approve
+    @rep.insta_fire_event :grant_team_approve
     assert_equal RequestReport.approved_state, @rep.state
   end
   
   test "create a request report and approve, make sure the approved_at time is set" do
     rep = RequestReport.make :state => 'pending_grant_team_approval'
     assert_nil rep.approved_at
-    rep.grant_team_approve
+    rep.insta_fire_event :grant_team_approve
     assert rep.approved_at
   end
   

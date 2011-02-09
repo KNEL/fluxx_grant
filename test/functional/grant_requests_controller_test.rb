@@ -456,7 +456,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
     @request1.update_attributes :deleted_at => Time.now
     get :show, :id => @request1.to_param
     assert_response :success
-    assert @response.body.index @request1.to_param.to_s
+    assert @response.body.index "Could not find detail record in system"
   end
 
   test "should get edit" do

@@ -31,37 +31,37 @@ class GrantRequestTest < ActiveSupport::TestCase
   test "create a request and try to reject" do
     Request.approval_chain.each do |cur_state|
       @req.state = cur_state
-      @req.reject
+      @req.insta_fire_event :reject
       assert_equal 'rejected', @req.state
     end
   end
 
   test "create a request and try to unreject" do
     @req.state = 'rejected'
-    @req.un_reject
+    @req.insta_fire_event :un_reject
     assert_equal 'new', @req.state
   end
 
   test "create a new request and recommend for funding" do
-    @req.recommend_funding
+    @req.insta_fire_event :recommend_funding
     assert_equal 'funding_recommended', @req.state
   end
 
   test "create a new request and complete ierf" do
     @req.state = 'funding_recommended'
-    @req.complete_ierf
+    @req.insta_fire_event :complete_ierf
     assert_equal 'pending_grant_team_approval', @req.state
   end
 
   test "create a sent_back_to_pa sentback request and complete ierf" do
     @req.state = 'sent_back_to_pa'
-    @req.complete_ierf
+    @req.insta_fire_event :complete_ierf
     assert_equal 'pending_grant_team_approval', @req.state
   end
 
   test "create a request and grant_team approve" do
     @req.state = 'pending_grant_team_approval'
-    @req.grant_team_approve
+    @req.insta_fire_event :grant_team_approve
     assert_equal 'pending_po_approval', @req.state
   end
 
@@ -69,45 +69,45 @@ class GrantRequestTest < ActiveSupport::TestCase
     @req.state = 'pending_grant_team_approval'
     @req.save
     assert_difference('WorkflowEvent.count') do
-      @req.grant_team_approve
+      @req.insta_fire_event :grant_team_approve
       @req.save
     end
     assert_equal 'pending_po_approval', @req.state
-    @req.po_send_back
+    @req.insta_fire_event :po_send_back
     @req.save
     assert_equal 'sent_back_to_pa', @req.state
-    @req.complete_ierf
+    @req.insta_fire_event :complete_ierf
     @req.save
     assert_equal 'pending_po_approval', @req.state
   end
 
   test "create a request and po approve" do
     @req.state = 'pending_po_approval'
-    @req.po_approve
+    @req.insta_fire_event :po_approve
     assert_equal 'pending_president_approval', @req.state
   end
 
   test "create a pd sent back request and po approve" do
     @req.state = 'sent_back_to_po'
-    @req.po_approve
+    @req.insta_fire_event :po_approve
     assert_equal 'pending_president_approval', @req.state
   end
 
   test "send back by po" do
     @req.state = 'pending_po_approval'
-    @req.po_send_back
+    @req.insta_fire_event :po_send_back
     assert_equal 'sent_back_to_pa', @req.state
   end
 
   test "create a request and president approve" do
     @req.state = 'pending_president_approval'
-    @req.president_approve
+    @req.insta_fire_event :president_approve
     assert_equal 'pending_grant_promotion', @req.state
   end
 
   test "send back by president" do
     @req.state = 'pending_president_approval'
-    @req.president_send_back
+    @req.insta_fire_event :president_send_back
     assert_equal 'sent_back_to_po', @req.state
   end
 
@@ -115,7 +115,7 @@ class GrantRequestTest < ActiveSupport::TestCase
     @req.state = 'pending_grant_promotion'
     @req.duration_in_months = 12
     @req.amount_recommended = 45000
-    @req.become_grant
+    @req.insta_fire_event :become_grant
     assert_equal 'granted', @req.state
   end
   
@@ -166,7 +166,7 @@ class GrantRequestTest < ActiveSupport::TestCase
   
   test "create a grant and try to cancel" do
     @req.state = 'granted'
-    @req.cancel_grant
+    @req.insta_fire_event :cancel_grant
     assert_equal 'canceled', @req.state
   end
   

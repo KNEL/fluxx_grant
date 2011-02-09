@@ -10,8 +10,12 @@ module FundingAllocationsBaseReport
   end
 
   def get_date_range filter
-    start_string = '1/1/' + filter["funding_year"]
-    start_date = Date.parse(start_string)
+    start_string = '1/1/' + filter["funding_year"] if filter && filter["funding_year"]
+    start_date = if start_string
+      Date.parse(start_string)
+    else
+      Time.at(0).to_date
+    end
     return start_date, start_date.end_of_year()
   end
 
@@ -23,7 +27,9 @@ module FundingAllocationsBaseReport
   def report_summary controller, index_object, params
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
-    program_ids= ReportUtility.get_program_ids filter["program_id"]
+    program_ids= if filter
+      ReportUtility.get_program_ids filter["program_id"]
+    end || []
     query = "SELECT id FROM requests WHERE deleted_at IS NULL AND state <> 'rejected' and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?)"
     request_ids = ReportUtility.array_query([query, start_date, stop_date, program_ids])
     hash = ReportUtility.get_report_totals request_ids
@@ -34,7 +40,9 @@ module FundingAllocationsBaseReport
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date
-    program_ids= ReportUtility.get_program_ids filter["program_id"]
+    program_ids= if filter
+      ReportUtility.get_program_ids filter["program_id"]
+    end || []
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [{:table => [I18n.t(:program_name), "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
     categories = ["Granted", "Paid", "Budgeted", "Pipeline"]
