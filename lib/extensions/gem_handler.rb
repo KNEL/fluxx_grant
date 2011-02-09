@@ -8,28 +8,18 @@ class GemHandler
       # gem "thinking-sphinx", :git => "https://github.com/freelancing-god/thinking-sphinx.git", :branch => "rails3", :require => 'thinking_sphinx'
       if dev_local 
         p "Installing dependent fluxx gems to point to local paths.  Be sure you install fluxx_engine, fluxx_crm and fluxx_grant in the same directory as the reference implementation."
-        if File.exist?("#{cur_dir}/../fluxx_engine")
-        	gem "fluxx_engine", gem_versions[:fluxx_engine], :path => "../fluxx_engine"
-        elsif File.exist?("#{cur_dir}/fluxx_engine")
-      	gem "fluxx_engine", gem_versions[:fluxx_engine], :path => "./fluxx_engine"
-        end
-
-        if File.exist?("#{cur_dir}/../fluxx_crm")
-        	gem "fluxx_crm", gem_versions[:fluxx_crm], :path => "../fluxx_crm"
-        elsif File.exist?("#{cur_dir}/fluxx_crm")
-      	gem "fluxx_crm", gem_versions[:fluxx_crm], :path => "./fluxx_crm"
-        end
-
-        if File.exist?("#{cur_dir}/../fluxx_grant")
-        	gem "fluxx_grant", gem_versions[:fluxx_grant], :path => "../fluxx_grant"
-        elsif File.exist?("#{cur_dir}/fluxx_grant")
-      	  gem "fluxx_grant", gem_versions[:fluxx_grant], :path => "./fluxx_grant"
+        gem_versions.keys.each do |repo_name|
+          repo_name_string = repo_name.to_s
+          
+          if File.exist?("#{cur_dir}/../#{repo_name_string}")
+          	gem repo_name_string, gem_versions[repo_name], :path => "../#{repo_name_string}"
+          elsif File.exist?("#{cur_dir}/#{repo_name_string}")
+        	  gem repo_name_string, gem_versions[repo_name], :path => "./#{repo_name_string}"
+          end
         end
       else
         p "Installing dependent fluxx gems."
-        gem "fluxx_engine", gem_versions[:fluxx_engine]
-        gem "fluxx_crm", gem_versions[:fluxx_crm], :require => 'fluxx_crm'
-        gem "fluxx_grant", gem_versions[:fluxx_grant], :require => 'fluxx_grant'
+        gem_versions.keys.each {|repo_name| gem repo_name.to_s, gem_versions[repo_name]}
       end
     end)
   end
