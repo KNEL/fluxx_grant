@@ -28,7 +28,7 @@ module FluxxRequest
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
   # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to]  
+  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :ierf_proposed_end_at, :ierf_budget_end_at]  
 
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
