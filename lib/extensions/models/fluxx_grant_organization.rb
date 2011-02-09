@@ -31,7 +31,7 @@ module FluxxGrantOrganization
       insta.derived_filters = {
         :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
           program_id_strings = val
-          programs = program_id_strings.map {|pid| Program.find pid rescue nil}.compact
+          programs = Program.where(:id => program_id_strings).all.compact
           program_ids = programs.map do |program| 
             children = program.children_programs
             if children.empty?
