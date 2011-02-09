@@ -22,6 +22,25 @@ module FluxxGrantUser
     
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids]
+      insta.derived_filters = {
+        :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
+          program_id_strings = val
+          programs = Program.where(:id => program_id_strings).all.compact
+          program_ids = programs.map do |program| 
+            children = program.children_programs
+            programs = if children.empty?
+              [program]
+            else
+              [program] + children
+            end
+            programs << program.parent_program if program.parent_program
+            programs
+          end.compact.flatten.map &:id
+          if program_ids && !program_ids.empty?
+            search_with_attributes[:grant_program_ids] = program_ids
+          end
+        end),
+      }
     end
     base.insta_realtime do |insta|
       insta.delta_attributes = SEARCH_ATTRIBUTES
