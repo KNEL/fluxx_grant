@@ -100,7 +100,7 @@ module FluxxCommonRequestsController
 
           # Trick rails into thinking this is the actual object by setting the ID and setting new_record to false
           local_model.instance_variable_set '@persisted', true
-          form_url = send("#{actual_local_model.class.calculate_form_name.to_s}_path", {:id => actual_local_model.id, :event_action => Request.become_grant_event})
+          form_url = send("#{actual_local_model.class.calculate_form_name.to_s}_path", {:id => actual_local_model.id, :event_action => params[:approve_grant_details]})
           send :fluxx_edit_card, controller_dsl, 'grant_requests/approve_grant_details', nil, form_url
         rescue Exception => e
           # p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
