@@ -1,5 +1,6 @@
 module LiquidFilters
   include ActionView::Helpers::NumberHelper
+  include ApplicationGrantHelper
   
   def format_date(date, format = 'full')
     return nil unless date
@@ -10,6 +11,27 @@ module LiquidFilters
   def currency(number, unit='$', delimiter=',', precision=0, format='%u%n')
     return '' if number.blank? || number == 0
     number_to_currency(number, :unit => unit, :delimiter => delimiter, :precision => precision, :format => format)
+  end
+  
+  def titlecase(string)
+    return nil unless string
+    string.titlecase
+  end
+  
+  def capitalize(string)
+    return nil unless string
+    string.capitalize
+  end
+  
+  def to_english(num)
+    return nil unless num
+    num.to_english
+  end
+  
+  # provides the ability to assign a value from the result of a filter
+  # ex: {{ request.request_reports | sort: 'due_at' | assign_to: 'request_reports' }}
+  def assign_to(value, name)
+    @context[name] = value ; nil
   end
   
   def to_rtf(string)

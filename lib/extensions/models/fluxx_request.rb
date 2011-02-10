@@ -28,7 +28,7 @@ module FluxxRequest
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
   # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :ierf_proposed_end_at, :ierf_budget_end_at]  
+  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :ierf_start_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary]  
 
   def self.included(base)
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
@@ -37,7 +37,7 @@ module FluxxRequest
     base.send :attr_accessor, :fiscal_organization_lookup
     base.has_many :request_organizations
     base.has_many :request_users
-    base.has_many :request_transactions
+    base.has_many :request_transactions, :order => "due_at"
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
     base.has_many :request_evaluation_metrics
@@ -57,7 +57,7 @@ module FluxxRequest
 
     base.send :attr_accessor, :force_all_request_programs_approved
 
-    base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL'
+    base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at"
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
     
