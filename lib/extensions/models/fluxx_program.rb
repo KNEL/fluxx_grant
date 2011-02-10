@@ -140,11 +140,20 @@ module FluxxProgram
     end
 
     def load_users role_name=nil
-      user_query = User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => self.id}})
+      children = self.children_programs
+      programs = if children.empty?
+        [self]
+      else
+        [self] + children
+      end
+      programs << self.parent_program if self.parent_program
+      
+      program_ids = programs.compact.flatten.map &:id
+      
+      user_query = User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => program_ids}})
       user_query = user_query.where({:role_users => {:name => role_name}}) if role_name
       user_query.group("users.id").compact
     end
-    
     
     def program_fsa_join_where_clause
       PROGRAM_FSA_JOIN_WHERE_CLAUSE
