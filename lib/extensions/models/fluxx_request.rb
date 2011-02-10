@@ -58,7 +58,7 @@ module FluxxRequest
     base.send :attr_accessor, :force_all_request_programs_approved
 
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at"
-    base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'"
+    base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'", :order => "due_at"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
     
     base.has_many :request_programs
