@@ -12,11 +12,11 @@ class ProgramTest < ActiveSupport::TestCase
   test "create a program and find the users" do
     user1 = User.make
     user2 = User.make
-    role_user1 = RoleUser.make :user => user1, :roleable => @program, :name => 'president'
-    role_user2 = RoleUser.make :user => user2, :roleable => @program, :name => 'vice president'
+    role_user1 = user1.has_role! 'president', @program
+    role_user2 = user2.has_role! 'vice president', @program
     assert_equal 2, @program.reload.load_users.size
-    assert_equal user1.first_name, @program.load_users(role_user1.name).first.first_name
-    assert_equal user2.first_name, @program.load_users(role_user2.name).first.first_name
+    assert_equal user1.first_name, @program.load_users(role_user1.role.name).first.first_name
+    assert_equal user2.first_name, @program.load_users(role_user2.role.name).first.first_name
   end
   
   test "make sure the funding_source_allocations call does not blow up" do

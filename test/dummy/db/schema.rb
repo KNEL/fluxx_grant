@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110201004538) do
+ActiveRecord::Schema.define(:version => 20110211010944) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -740,18 +740,30 @@ ActiveRecord::Schema.define(:version => 20110201004538) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",          :null => false
     t.integer  "user_id"
-    t.string   "roleable_type"
     t.integer  "roleable_id"
+    t.integer  "role_id"
   end
 
   add_index "role_users", ["created_by_id"], :name => "role_users_created_by_id"
-  add_index "role_users", ["name", "roleable_type", "roleable_id"], :name => "index_role_users_on_name_and_roleable_type_and_roleable_id"
+  add_index "role_users", ["role_id"], :name => "role_users_role_id"
+  add_index "role_users", ["roleable_id"], :name => "index_role_users_on_name_and_roleable_type_and_roleable_id"
   add_index "role_users", ["roleable_id"], :name => "index_role_users_on_roleable_id"
   add_index "role_users", ["updated_by_id"], :name => "role_users_updated_by_id"
-  add_index "role_users", ["user_id", "roleable_type"], :name => "index_role_users_on_user_id_and_roleable_type"
   add_index "role_users", ["user_id"], :name => "index_role_users_on_user_id"
+  add_index "role_users", ["user_id"], :name => "index_role_users_on_user_id_and_roleable_type"
+
+  create_table "roles", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "name"
+    t.string   "roleable_type"
+  end
+
+  add_index "roles", ["created_by_id"], :name => "roles_created_by_id"
+  add_index "roles", ["updated_by_id"], :name => "roles_updated_by_id"
 
   create_table "sub_initiatives", :force => true do |t|
     t.datetime "created_at"

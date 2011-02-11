@@ -80,7 +80,7 @@ module FluxxProgram
     end
     
     def deputy_director_role_name
-      'Deputy Directory'
+      'Deputy Director'
     end
 
     def cr_role_name
@@ -108,7 +108,7 @@ module FluxxProgram
     end
 
     def all_program_users
-      User.joins(:role_users).where({:role_users => {:roleable_type => self.name}}).group("users.id").compact
+      User.joins(:role_users => :role).where({:role_users => {:roles => {:roleable_type => self.name}}}).group("users.id").compact
     end
 
     def load_all_nonrollup
@@ -150,8 +150,8 @@ module FluxxProgram
       
       program_ids = programs.compact.flatten.map &:id
       
-      user_query = User.joins(:role_users).where({:test_user_flag => 0, :role_users => {:roleable_type => self.class.name, :roleable_id => program_ids}})
-      user_query = user_query.where({:role_users => {:name => role_name}}) if role_name
+      user_query = User.joins(:role_users => :role).where({:test_user_flag => 0, :role_users => {:roleable_id => program_ids, :roles => {:roleable_type => self.class.name}}})
+      user_query = user_query.where({:role_users => {:roles => {:name => role_name}}}) if role_name
       user_query.group("users.id").compact
     end
     
