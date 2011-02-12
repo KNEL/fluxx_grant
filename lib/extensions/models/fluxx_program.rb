@@ -122,6 +122,10 @@ module FluxxProgram
     def load_all_without_children_programs
       Program.where(:retired => 0).where('(select count(*) from programs subprog where subprog.parent_id = programs.id) = 0').order(:name).all
     end
+
+    def program_roles
+      Role.where(:roleable_type => Program.name).order(:name).all
+    end
   end
 
   module ModelInstanceMethods

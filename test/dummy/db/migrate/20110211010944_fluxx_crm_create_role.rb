@@ -5,6 +5,7 @@ class FluxxCrmCreateRole < ActiveRecord::Migration
       t.integer :created_by_id, :updated_by_id, :null => true, :limit => 12
       t.string :name
       t.string :roleable_type
+      t.datetime :deleted_at,                :null => true
     end
     
     add_constraint 'roles', 'roles_created_by_id', 'created_by_id', 'users', 'id'
@@ -16,7 +17,8 @@ class FluxxCrmCreateRole < ActiveRecord::Migration
       t.integer :role_id
     end
     
-    execute "update role_users set role_id = (select id from roles where roles.name = role_users.name and roles.roleable_type = role_users.roleable_type)"
+    execute "update role_users set role_id = (select id from roles where roles.name = role_users.name and roles.roleable_type = role_users.roleable_type) where role_users.roleable_type is not null"
+    execute "update role_users set role_id = (select id from roles where roles.name = role_users.name and roles.roleable_type is null) where role_users.roleable_type is null"
 
     change_table :role_users do |t|
       t.remove :name
