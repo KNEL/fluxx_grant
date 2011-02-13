@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110211010944) do
+ActiveRecord::Schema.define(:version => 20110213073108) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -813,15 +813,30 @@ ActiveRecord::Schema.define(:version => 20110211010944) do
   add_index "user_organizations", ["updated_by_id"], :name => "user_organizations_updated_by_id"
   add_index "user_organizations", ["user_id"], :name => "index_user_organizations_on_user_id"
 
+  create_table "user_permissions", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "model_type"
+    t.integer  "user_id"
+    t.string   "name"
+  end
+
+  add_index "user_permissions", ["created_by_id"], :name => "user_permissions_created_by_id"
+  add_index "user_permissions", ["updated_by_id"], :name => "user_permissions_updated_by_id"
+  add_index "user_permissions", ["user_id"], :name => "user_permissions_user_id"
+
   create_table "user_profile_rules", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "user_profile_id"
-    t.string   "role_name"
+    t.string   "permission_name"
     t.boolean  "allowed",         :default => true, :null => false
+    t.string   "model_type"
   end
 
-  add_index "user_profile_rules", ["role_name"], :name => "index_user_profile_rules_on_role_name"
+  add_index "user_profile_rules", ["permission_name"], :name => "index_user_profile_rules_on_role_name"
   add_index "user_profile_rules", ["user_profile_id"], :name => "user_profile_rules_user_profile_id"
 
   create_table "user_profiles", :force => true do |t|

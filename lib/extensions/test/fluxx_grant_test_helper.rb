@@ -47,11 +47,11 @@ module FluxxGrantTestHelper
 
   module ModelInstanceMethods
     def add_perms user
-      user.has_role! 'listview_all'
-      user.has_role! 'view_all'
-      user.has_role! 'create_all'
-      user.has_role! 'update_all'
-      user.has_role! 'delete_all'
+      user.has_permission! 'listview_all'
+      user.has_permission! 'view_all'
+      user.has_permission! 'create_all'
+      user.has_permission! 'update_all'
+      user.has_permission! 'delete_all'
     end
 
     def login_as user
