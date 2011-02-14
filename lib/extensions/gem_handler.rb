@@ -11,6 +11,7 @@ class GemHandler
         gem_versions.each do |repo_pair|
           repo_name, version = repo_pair
           repo_name_string = repo_name.to_s
+
           
           if File.exist?("#{cur_dir}/../#{repo_name_string}")
           	gem repo_name_string, version, :path => "../#{repo_name_string}"
