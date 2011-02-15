@@ -6,7 +6,7 @@ namespace :fluxx_grant do
     user_id = ENV['user_id']
     user = User.find user_id if user_id
     if user
-      user.has_role! 'admin'
+      user.has_permission! 'admin'
       user.user_profile = UserProfile.find_by_name 'employee'
       user.save
       Program.all.each do |program|

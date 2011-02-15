@@ -22,3 +22,5 @@
     %li= link_to (I18n.t(:initiative_name)).pluralize, initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:initiative_name)).pluralize
   - unless FLUXX_CONFIGURATION[:hide_sub_initiative]
     %li= link_to (I18n.t(:sub_initiative_name)).pluralize, sub_initiatives_path, :class => 'new-listing', 'data-insert' => 'after', :title => (I18n.t(:sub_initiative_name)).pluralize
+
+= render :partial => 'admin_cards/extra_admin'
