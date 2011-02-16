@@ -13,9 +13,12 @@ set :user, "fluxx"
 set :scm_user, Proc.new { Capistrano::CLI.ui.ask("Subversion user: ") }
 set :scm_password, Proc.new { Capistrano::CLI.password_prompt("Subversion password for #{scm_user}: ") }
 set :branch, (variables.include?(:branch) ? branch : 'master')
-set :engine_branch, (variables.include?(:engine_branch) ? engine_branch : 'master')
-set :crm_branch, (variables.include?(:crm_branch) ? crm_branch : 'master')
-set :grant_branch, (variables.include?(:grant_branch) ? grant_branch : 'master')
+
+DEPENDENT_REPOS.each do |triplet|
+  name_str, repo, branch_symbol = triplet
+  set branch_symbol, (variables.include?(branch_symbol) ? eval(branch_symbol.to_s) : 'master')
+end
+
 set :deploy_via, :remote_cache
 
 set :try_sudo, 'sudo'
@@ -58,10 +61,9 @@ namespace :fluxx do
     
     require 'capistrano/recipes/deploy/scm'
     require 'capistrano/recipes/deploy/strategy'
-    [['fluxx_engine', 'git@github.com:solpath/fluxx_engine.git', engine_branch], 
-     ['fluxx_crm', 'git@github.com:solpath/fluxx_crm.git', crm_branch], 
-     ['fluxx_grant', 'git@github.com:solpath/fluxx_grant.git', grant_branch]].each do |gem_triplet|
-      gem_name, gem_path, gem_branch = gem_triplet
+    DEPENDENT_REPOS.each do |gem_triplet|
+      gem_name, gem_path, gem_branch_symbol = gem_triplet
+      gem_branch = eval(gem_branch_symbol.to_s)
       gem_cache = "#{gem_name}_cache"
       local_git = Capistrano::Deploy::SCM.new('git', {:repository => gem_path, :branch => gem_branch})
 

@@ -1,5 +1,5 @@
 module FluxxSubInitiative
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :sub_program_id, :initiative_id, :retired]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, [:program_id, 'sub_initiatives'], [:sub_program_id, 'initiatives'], :initiative_id, :retired]
   SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(sub_initiative_id = ?) and fsa.deleted_at is null"
   
   def self.included(base)
