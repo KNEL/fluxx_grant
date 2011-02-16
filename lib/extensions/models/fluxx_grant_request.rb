@@ -107,11 +107,18 @@ module FluxxGrantRequest
       generate_grant_dates
       generate_grant_reports
       generate_grant_transactions
+      generate_charity_check
 
       # award_letter_template = LetterTemplate.find :first, :conditions => ['letter_type = ?', 'AwardLetterTemplate']
       # ga_letter_template = LetterTemplate.find :first, :conditions => ['letter_type = ?', 'GrantAgreementTemplate']
       # award_letter = RequestLetter.create :request => self, :letter_template => award_letter_template, :letter => award_letter_template.letter
       # ga_letter = RequestLetter.create :request => self, :letter_template => ga_letter_template, :letter => ga_letter_template.letter
+    end
+    
+    def generate_charity_check
+      # TODO Drew
+      # grab either fiscal or the program org
+      # make the call
     end
 
     def org_name_text

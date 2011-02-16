@@ -1,3 +1,5 @@
+= render :partial => 'grant_requests/display_charity_check_details', :locals => {:model => model}
+
 %h2= "Dates"
 = form.input :granted, :as => :hidden
 = form.input :grant_agreement_at, :label => "Agreement Date", :id => (rand * 999999999).to_i
