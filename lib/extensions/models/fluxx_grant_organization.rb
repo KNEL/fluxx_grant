@@ -256,7 +256,7 @@ module FluxxGrantOrganization
   end
   
   def charity_check_enabled
-    defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && !self.tax_id.empty?
+    defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && self.tax_id && !self.tax_id.empty?
   end
 
   # Update information about an organization using the Charity Check service

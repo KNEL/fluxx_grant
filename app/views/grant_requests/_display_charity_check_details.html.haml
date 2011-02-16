@@ -1,7 +1,7 @@
-- if model.tax_class_org && model.tax_class_org.charity_check_enabled
+- if model && model.charity_check_enabled
   .charity-check
-    - cc_approval = model.tax_class_org.c3_status_approved ? 'Approved' : 'Declined'
-    %h1{:class => cc_approval.downcase} Charity Check #{cc_approval} on #{model.tax_class_org.charity_check "DateGenerated"}
-    .pairs= model.tax_class_org.charity_check "IRSBMFSubsection"
-    .pairs= model.tax_class_org.charity_check "IRSBMFReasonForNonPrivateFoundationStatus"
-    .pairs Advanced Ruling Date: #{model.tax_class_org.charity_check "IRSBMFRulingDate"}
+    - cc_approval = model.c3_status_approved ? 'Approved' : 'Declined'
+    %h1{:class => cc_approval.downcase} Charity Check #{cc_approval} on #{model.charity_check "DateGenerated"}
+    .pairs= model.charity_check "IRSBMFSubsection"
+    .pairs= model.charity_check "IRSBMFReasonForNonPrivateFoundationStatus"
+    .pairs Advanced Ruling Date: #{model.charity_check "IRSBMFRulingDate"}
