@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110213073108) do
+ActiveRecord::Schema.define(:version => 20110216004812) do
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -357,29 +357,31 @@ ActiveRecord::Schema.define(:version => 20110213073108) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",            :limit => 1000,                    :null => false
+    t.string   "name",                   :limit => 1000,                    :null => false
     t.string   "street_address"
     t.string   "street_address2"
-    t.string   "city",            :limit => 100
+    t.string   "city",                   :limit => 100
     t.integer  "geo_state_id"
     t.integer  "geo_country_id"
-    t.string   "postal_code",     :limit => 100
-    t.string   "phone",           :limit => 100
-    t.string   "other_contact",   :limit => 100
-    t.string   "fax",             :limit => 100
-    t.string   "email",           :limit => 100
-    t.string   "url",             :limit => 2048
-    t.string   "blog_url",        :limit => 2048
-    t.string   "twitter_url",     :limit => 2048
-    t.string   "acronym",         :limit => 100
-    t.string   "state",                           :default => "new"
-    t.boolean  "delta",                           :default => true
+    t.string   "postal_code",            :limit => 100
+    t.string   "phone",                  :limit => 100
+    t.string   "other_contact",          :limit => 100
+    t.string   "fax",                    :limit => 100
+    t.string   "email",                  :limit => 100
+    t.string   "url",                    :limit => 2048
+    t.string   "blog_url",               :limit => 2048
+    t.string   "twitter_url",            :limit => 2048
+    t.string   "acronym",                :limit => 100
+    t.string   "state",                                  :default => "new"
+    t.boolean  "delta",                                  :default => true
     t.datetime "deleted_at"
     t.integer  "parent_org_id"
     t.datetime "locked_until"
     t.integer  "locked_by_id"
     t.integer  "tax_class_id"
     t.string   "tax_id"
+    t.boolean  "c3_status_approved",                     :default => false, :null => false
+    t.text     "c3_serialized_response"
   end
 
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
