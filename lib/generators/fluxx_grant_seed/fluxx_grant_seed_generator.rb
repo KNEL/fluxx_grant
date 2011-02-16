@@ -84,31 +84,31 @@ consultant_profile = UserProfile.create :name => 'Consultant'
 grantee_profile = UserProfile.create :name => 'Grantee'
 
 # define employee
-UserProfileRule.create :user_profile => employee_profile, :role_name => 'create_all'
-UserProfileRule.create :user_profile => employee_profile, :role_name => 'update_all'
-UserProfileRule.create :user_profile => employee_profile, :role_name => 'view_all'
-UserProfileRule.create :user_profile => employee_profile, :role_name => 'delete_all'
+UserProfileRule.create :user_profile => employee_profile, :permission_name => 'create_all'
+UserProfileRule.create :user_profile => employee_profile, :permission_name => 'update_all'
+UserProfileRule.create :user_profile => employee_profile, :permission_name => 'view_all'
+UserProfileRule.create :user_profile => employee_profile, :permission_name => 'delete_all'
 
 # define board
-UserProfileRule.create :user_profile => board_profile, :role_name => 'view_user'
-UserProfileRule.create :user_profile => board_profile, :role_name => 'view_organization'
-UserProfileRule.create :user_profile => board_profile, :role_name => 'view_grant'
-UserProfileRule.create :user_profile => board_profile, :role_name => 'view_report'
-UserProfileRule.create :user_profile => board_profile, :role_name => 'view_transaction'
+UserProfileRule.create :user_profile => board_profile, :permission_name => 'view_user'
+UserProfileRule.create :user_profile => board_profile, :permission_name => 'view_organization'
+UserProfileRule.create :user_profile => board_profile, :permission_name => 'view_grant'
+UserProfileRule.create :user_profile => board_profile, :permission_name => 'view_report'
+UserProfileRule.create :user_profile => board_profile, :permission_name => 'view_transaction'
 
 # define consultant
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_all'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'view_user', :allowed => false
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request_transaction'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request_transaction'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'create_request_funding_source'
-UserProfileRule.create :user_profile => consultant_profile, :role_name => 'update_request_funding_source'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'view_all'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'view_user', :allowed => false
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'create_request'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'update_request'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'create_request_transaction'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'update_request_transaction'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'create_request_funding_source'
+UserProfileRule.create :user_profile => consultant_profile, :permission_name => 'update_request_funding_source'
 
 # define grantee
-UserProfileRule.create :user_profile => grantee_profile, :role_name => 'create_own_request'
-UserProfileRule.create :user_profile => grantee_profile, :role_name => 'view_own_request'
+UserProfileRule.create :user_profile => grantee_profile, :permission_name => 'create_own_request'
+UserProfileRule.create :user_profile => grantee_profile, :permission_name => 'view_own_request'
 
 # project types 
 project_type_group = MultiElementGroup.create :name => 'project_type', :description => 'ProjectType', :target_class_name => 'Project'
