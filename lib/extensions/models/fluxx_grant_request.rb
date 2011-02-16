@@ -39,14 +39,14 @@ module FluxxGrantRequest
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
               :amount_due => amount_recommended * 0.5, :due_at => grant_agreement_at, :state => 'due')
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
-              :amount_due => amount_recommended * 0.4, :due_at => interim_request_document.due_at, :state => 'due', :request_document_linked_to => 'interim_request')
+              :amount_due => amount_recommended * 0.4, :due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
-              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'due', :request_document_linked_to => 'final_request')
+              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           else
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,  
               :amount_due => amount_recommended * 0.9, :due_at => grant_agreement_at, :state => 'due')
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
-              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'due', :request_document_linked_to => 'final_request')
+              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           end
         else
           # Transactions for ER non-trusted orgs
@@ -56,9 +56,9 @@ module FluxxGrantRequest
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
               :amount_due => amount_recommended * 0.6, :due_at => grant_agreement_at, :state => 'due')
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, 
-              :amount_due => amount_recommended * 0.3,:due_at => interim_request_document.due_at, :state => 'due', :request_document_linked_to => 'interim_request')
+              :amount_due => amount_recommended * 0.3,:due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
             request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,
-              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'due', :request_document_linked_to => 'final_request')
+              :amount_due => amount_recommended * 0.1,:due_at => final_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'final_request')
           end
         end
       else
@@ -67,7 +67,7 @@ module FluxxGrantRequest
           request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended * 0.5, 
             :due_at => grant_agreement_at, :state => 'due')
           request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended * 0.5, 
-            :due_at => interim_request_document.due_at, :state => 'due', :request_document_linked_to => 'interim_request')
+            :due_at => interim_request_document.due_at, :state => 'tentatively_due', :request_document_linked_to => 'interim_request')
         else
           request_transactions << RequestTransaction.new(:request_id => self.id, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id, :amount_due => amount_recommended, 
             :due_at => grant_agreement_at, :state => 'due')
