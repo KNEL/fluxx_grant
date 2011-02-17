@@ -706,6 +706,24 @@ module FluxxRequest
   end
 
   module ModelInstanceMethods
+    def validate_funding_sources
+      missing_funding_sources = ['(at least one Funding Source is required)'] if request_funding_sources.empty?
+      errors[:Missing_funding_sources] << missing_funding_sources if missing_funding_sources
+      missing_funding_sources
+    end
+
+    def validate_if_past_state_or_should_validate validate_state
+      (should_validate? && state == validate_state) || state_past(Request.approval_chain, validate_state, state)
+    end
+
+    def validate_if_in_or_past_state validate_state
+      state.to_sym==validate_state.to_sym || state_past(Request.approval_chain, validate_state, state)
+    end
+    
+    def should_validate?
+      promotion_event==true && !self.new_record?
+    end
+    
     def grant_ends_at
       (duration_in_months && grant_begins_at) ? (grant_begins_at + duration_in_months.month - 1.day) : grant_begins_at
     end
