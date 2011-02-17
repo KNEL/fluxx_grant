@@ -1,4 +1,7 @@
 module FluxxGrantOrganization
+  require 'rexml/document'
+  include REXML    
+  
   SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
 
   def self.included(base)
@@ -252,24 +255,39 @@ module FluxxGrantOrganization
     
   end
   
-  # Return a hash of information about and organization using the Charity Check service
-  def self.charity_check ein
-    hash = {}
-    if (defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && !ein.nil?)
+  def charity_check_enabled
+    defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && self.tax_id && !self.tax_id.empty?
+  end
+
+  # Update information about an organization using the Charity Check service
+  def update_charity_check
+    if (charity_check_enabled)
       # Authenticate and retrieve the cookie
       response = HTTPI.post "https://www2.guidestar.org/WebServiceLogin.asmx/Login", "userName=#{CHARITY_CHECK_USERNAME}&password=#{CHARITY_CHECK_PASSWORD}"
       cookie = response.headers["Set-Cookie"] 
     
       # Call the GetCCInfo webservice
       request = HTTPI::Request.new "https://www2.guidestar.org/WebService.asmx/GetCCInfo"
-      request.body =  "ein=#{ein}"
+      request.body =  "ein=#{self.tax_id}"
       request.headers["Cookie"] = cookie
       response = HTTPI.post request
-      xml = Crack::XML.parse(response.body)["string"]
-      # Charity Check seems to incorrectly return the XML encoding as utf-16
-      hash = Crack::XML.parse(xml.sub('<?xml version="1.0" encoding="utf-16"?>', '<?xml version="1.0" encoding="utf-8"?>'))
+      if response.code == 200
+        # Charity Check seems to incorrectly return the XML encoding as utf-16
+        xml = Crack::XML.parse(response.body)["string"].sub('<?xml version="1.0" encoding="utf-16"?>', '<?xml version="1.0" encoding="utf-8"?>')
+        hash = Crack::XML.parse(xml)
+        type = hash["GuideStarCharityCheckWebService"]["IRSBMFDetails"]["IRSBMFSubsection"] rescue nil
+        self.update_attributes(
+          :c3_serialized_response => xml,
+          :c3_status_approved => type =~ /501\(c\)\(3\)/ ? true : false)
+      end
     end
     hash
+  end
+  
+  # Return values from the charity check response using XPath
+  def charity_check key
+    xmldoc = Document.new(self.c3_serialized_response)
+    XPath.first(xmldoc, "//#{key}/text()") rescue nill
   end
   
   # Return an array of grants related to an organization

@@ -116,9 +116,7 @@ module FluxxGrantRequest
     end
     
     def generate_charity_check
-      # TODO Drew
-      # grab either fiscal or the program org
-      # make the call
+      tax_class_org.update_charity_check
     end
 
     def org_name_text

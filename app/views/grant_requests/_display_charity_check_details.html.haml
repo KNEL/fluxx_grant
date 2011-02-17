@@ -1,8 +1,7 @@
--# TODO Drew Flesh out
--#.pairs
--#  .key Charity Check Approved?
--#  .value= model.tax_class_org.c3_status_approved ? "Yes" : "No" if model.tax_class_org
--#.pairs
--#  .key Charity Check Last Checked
--#  # TODO Drew do something more interesting; look into serialized field
--#  .value= model.tax_class_org.charity_check_date if model.tax_class_org3
+- if model && model.charity_check_enabled
+  .charity-check
+    - cc_approval = model.c3_status_approved ? 'Approved' : 'Declined'
+    %h1{:class => cc_approval.downcase} Charity Check #{cc_approval} on #{model.charity_check "DateGenerated"}
+    .pairs= model.charity_check "IRSBMFSubsection"
+    .pairs= model.charity_check "IRSBMFReasonForNonPrivateFoundationStatus"
+    .pairs Advanced Ruling Date: #{model.charity_check "IRSBMFRulingDate"}

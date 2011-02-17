@@ -1,4 +1,4 @@
-= render :partial => 'grant_requests/display_charity_check_details', :locals => {:model => model}
+= render :partial => 'grant_requests/display_charity_check_details', :locals => {:model => model.tax_class_org}
 
 %h2= "Dates"
 = form.input :granted, :as => :hidden
