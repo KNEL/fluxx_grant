@@ -1,6 +1,8 @@
 # Supplements FluxxOrganizationsController in fluxx_crm
 module FluxxGrantOrganizationsController
   def self.included(base)
+    base.send :include, FluxxOrganizationsController
+    
     base.insta_index Organization do |insta|
       insta.filter_title = "Organizations Filter"
       insta.filter_template = 'organizations/organization_filter'
