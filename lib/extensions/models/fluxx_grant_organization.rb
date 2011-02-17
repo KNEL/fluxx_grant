@@ -255,6 +255,18 @@ module FluxxGrantOrganization
     
   end
   
+  def self.charity_check_api service, ein
+    # Authenticate and retrieve the cookie
+    response = HTTPI.post "https://www2.guidestar.org/WebServiceLogin.asmx/Login", "userName=#{CHARITY_CHECK_USERNAME}&password=#{CHARITY_CHECK_PASSWORD}"
+    cookie = response.headers["Set-Cookie"] 
+  
+    # Call the GetCCPDF webservice
+    request = HTTPI::Request.new "https://www2.guidestar.org/WebService.asmx/#{service}"
+    request.body =  "ein=#{ein}"
+    request.headers["Cookie"] = cookie
+    HTTPI.post request    
+  end
+  
   def charity_check_enabled
     defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && self.tax_id && !self.tax_id.empty?
   end
@@ -262,15 +274,7 @@ module FluxxGrantOrganization
   # Update information about an organization using the Charity Check service
   def update_charity_check
     if (charity_check_enabled)
-      # Authenticate and retrieve the cookie
-      response = HTTPI.post "https://www2.guidestar.org/WebServiceLogin.asmx/Login", "userName=#{CHARITY_CHECK_USERNAME}&password=#{CHARITY_CHECK_PASSWORD}"
-      cookie = response.headers["Set-Cookie"] 
-    
-      # Call the GetCCInfo webservice
-      request = HTTPI::Request.new "https://www2.guidestar.org/WebService.asmx/GetCCInfo"
-      request.body =  "ein=#{self.tax_id}"
-      request.headers["Cookie"] = cookie
-      response = HTTPI.post request
+      response = FluxxGrantOrganization.charity_check_api("GetCCInfo", self.tax_id);
       if response.code == 200
         # Charity Check seems to incorrectly return the XML encoding as utf-16
         xml = Crack::XML.parse(response.body)["string"].sub('<?xml version="1.0" encoding="utf-16"?>', '<?xml version="1.0" encoding="utf-8"?>')
@@ -283,6 +287,17 @@ module FluxxGrantOrganization
     end
     hash
   end
+    
+  # Return the charity check pdf
+  # todo consolodate
+  def charity_check_pdf
+    if (charity_check_enabled)
+      response = FluxxGrantOrganization.charity_check_api("GetCCPDF", self.tax_id);
+      if response.code == 200
+        return Base64.decode64(Crack::XML.parse(response.body)["base64Binary"]) rescue nil
+      end
+    end    
+  end  
   
   # Return values from the charity check response using XPath
   def charity_check key
