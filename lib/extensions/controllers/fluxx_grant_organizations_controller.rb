@@ -12,6 +12,36 @@ module FluxxGrantOrganizationsController
         end
       end)
     end
+
+    base.insta_show Organization do |insta|
+      insta.format do |format|
+        format.pdf do |triple|
+          controller_dsl, outcome, default_block = triple
+          if params[:run_charity_check] == '1'            
+            render :text => @model.charity_check_pdf            
+          else
+            default_block.call
+          end
+        end        
+        format.html do |triple|          
+          controller_dsl, outcome, default_block = triple          
+          if params[:satellites] == '1'
+            send :fluxx_show_card, controller_dsl, {:template => 'organizations/organization_satellites', :footer_template => 'insta/simple_footer', :layout => false}
+          elsif params[:run_charity_check] == '1'
+            send :fluxx_show_card, controller_dsl, {:template => 'organizations/charity_check_show', :footer_template => 'insta/simple_footer', :layout => false}
+          else  
+            default_block.call
+          end
+        end
+      end
+      insta.post do |triple|
+        controller_dsl, model, outcome = triple
+        if params[:run_charity_check] == '1'
+          model.update_charity_check
+        end
+        #todo
+      end
+    end
     
     base.insta_related Organization do |insta|
       insta.add_related do |related|
