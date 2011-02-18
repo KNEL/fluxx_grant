@@ -1,12 +1,12 @@
 module FluxxGrantOrganization
   require 'rexml/document'
-  include REXML    
-  
+  include REXML
+
   SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
 
   def self.included(base)
     base.send :include, ::FluxxOrganization
-    
+
     base.has_many :grants, :class_name => 'GrantRequest', :foreign_key => :program_organization_id, :conditions => {:granted => 1}
     base.has_many :grant_requests, :class_name => 'Request', :foreign_key => :program_organization_id
     base.has_many :fiscal_requests, :class_name => 'Request', :foreign_key => :fiscal_organization_id
@@ -16,26 +16,26 @@ module FluxxGrantOrganization
     base.insta_export
     base.insta_export do |insta|
       insta.filename = 'organization'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'name', 'street_address', 'street_address2', 'city', 'state_name', 
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'name', 'street_address', 'street_address2', 'city', 'state_name',
                   'country_name', 'postal_code', 'phone', 'other_contact', 'fax', 'email', 'url', 'blog_url', 'twitter_url', 'acronym', 'tax_class']
-      insta.sql_query = "select organizations.created_at, organizations.updated_at, organizations.name, street_address, street_address2, city, geo_states.name state_name,  
+      insta.sql_query = "select organizations.created_at, organizations.updated_at, organizations.name, street_address, street_address2, city, geo_states.name state_name,
                   geo_countries.name country_name,
                   postal_code, phone, other_contact, fax, email, url, blog_url, twitter_url, acronym, mev_tax_class.value tax_class_value
                   from organizations
                   left outer join geo_states on geo_states.id = geo_state_id
                   left outer join geo_countries on geo_countries.id = organizations.geo_country_id
                   left outer join multi_element_groups meg_tax_class on meg_tax_class.name = 'tax_classes'
-                  left outer join multi_element_values mev_tax_class on multi_element_group_id = meg_tax_class.id and tax_class_id = mev_tax_class.id 
+                  left outer join multi_element_values mev_tax_class on multi_element_group_id = meg_tax_class.id and tax_class_id = mev_tax_class.id
                   WHERE
                   organizations.id IN (?)"
     end
-    
+
     base.insta_search do |insta|
       insta.derived_filters = {
         :grant_program_ids => (lambda do |search_with_attributes, request_params, name, val|
           program_id_strings = val
           programs = Program.where(:id => program_id_strings).all.compact
-          program_ids = programs.map do |program| 
+          program_ids = programs.map do |program|
             children = program.children_programs
             if children.empty?
               program
@@ -157,7 +157,7 @@ module FluxxGrantOrganization
         set_property :delta => :delayed
       end
     end
-    
+
     def sorted_tax_classes
       group = MultiElementGroup.find :first, :conditions => {:name => 'tax_classes', :target_class_name => 'Organization'}
       tax_status_choices = if group
@@ -183,7 +183,7 @@ module FluxxGrantOrganization
       end
     end
 
-    # Check if this is a satellite location and if so grab the tax class from the headquarters 
+    # Check if this is a satellite location and if so grab the tax class from the headquarters
     def hq_tax_class
       if is_satellite? && parent_org
         parent_org.tax_class
@@ -199,39 +199,39 @@ module FluxxGrantOrganization
     def grant_sub_program_ids
       grants.map{|grant| grant.sub_program.id if grant.sub_program}.flatten.compact
     end
-    
+
     def related_org_ids
       []
     end
-    
+
     def related_requests look_for_granted=false, limit_amount=20
       granted_param = look_for_granted ? 1 : 0
-      Request.find_by_sql(["SELECT requests.* 
-        FROM requests 
+      Request.find_by_sql(["SELECT requests.*
+        FROM requests
         WHERE deleted_at IS NULL AND (program_organization_id = ? or fiscal_organization_id = ?) AND granted = ?
         UNION
-      SELECT requests.* 
-        FROM requests, request_organizations 
+      SELECT requests.*
+        FROM requests, request_organizations
         WHERE deleted_at IS NULL AND requests.id = request_organizations.request_id AND request_organizations.organization_id = ?
-      GROUP BY requests.id 
+      GROUP BY requests.id
       ORDER BY grant_agreement_at DESC, request_received_at DESC
       LIMIT ?", self.id, self.id, granted_param, self.id, limit_amount])
     end
-    
+
     def related_grants limit_amount=20
       related_requests true, limit_amount
     end
-    
+
     def related_transactions limit_amount=20
       grants = related_grants limit_amount
       RequestTransaction.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
     end
-    
+
     def related_reports limit_amount=20
       grants = related_grants limit_amount
       RequestReport.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
     end
-    
+
     def is_trusted?
       !grants.empty?
     end
@@ -249,24 +249,24 @@ module FluxxGrantOrganization
       when 'non-US' then true
       when 'Non-Exempt' then true
       else
-        raise "Invalid tax_class: '#{tax_class_value}'" 
+        raise "Invalid tax_class: '#{tax_class_value}'"
       end
     end
-    
+
   end
-  
+
   def self.charity_check_api service, ein
     # Authenticate and retrieve the cookie
     response = HTTPI.post "https://www2.guidestar.org/WebServiceLogin.asmx/Login", "userName=#{CHARITY_CHECK_USERNAME}&password=#{CHARITY_CHECK_PASSWORD}"
-    cookie = response.headers["Set-Cookie"] 
-  
+    cookie = response.headers["Set-Cookie"]
+
     # Call the GetCCPDF webservice
     request = HTTPI::Request.new "https://www2.guidestar.org/WebService.asmx/#{service}"
     request.body =  "ein=#{ein}"
     request.headers["Cookie"] = cookie
-    HTTPI.post request    
+    HTTPI.post request
   end
-  
+
   def charity_check_enabled
     defined?(CHARITY_CHECK_USERNAME) && defined?(CHARITY_CHECK_PASSWORD) && self.tax_id && !self.tax_id.empty?
   end
@@ -287,7 +287,7 @@ module FluxxGrantOrganization
     end
     hash
   end
-    
+
   # Return the charity check pdf
   def charity_check_pdf
     if (charity_check_enabled)
@@ -295,24 +295,24 @@ module FluxxGrantOrganization
       if response.code == 200
         return Base64.decode64(Crack::XML.parse(response.body)["base64Binary"]) rescue nil
       end
-    end    
-  end  
-  
+    end
+  end
+
   # Return values from the charity check response using XPath
   def charity_check key
     xmldoc = Document.new(self.c3_serialized_response)
     XPath.first(xmldoc, "//#{key}/text()") rescue nill
   end
-  
+
   # Return an array of grants related to an organization
   def self.foundation_center_api ein, pagenum=nil
     response = HTTPI.get "http://gis.foundationcenter.org/web_services/fluxx/getRecipientGrants.php?ein=#{ein.sub('-', '')}#{pagenum.nil? ? '' : '&pagenum=' + pagenum.to_s}"
     Crack::JSON.parse(response.body)
   end
-  
+
   def outside_grants
     if (self.tax_id && !self.tax_id.empty?)
-      FluxxGrantOrganization.foundation_center_api self.tax_id
+      FluxxGrantOrganization.foundation_center_api self.tax_id, 1
     end
-  end  
+  end
 end
