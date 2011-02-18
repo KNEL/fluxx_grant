@@ -67,7 +67,7 @@ module FluxxGrantRequestsController
       insta.template = 'grant_request_form'
       insta.icon_style = ICON_STYLE
     end
-    base.insta_related GrantRequest do |insta|
+    base.insta_related GrantRequest do |insta|      
       insta.add_related do |related|
         related.display_name = 'People'
         related.add_title_block do |model|

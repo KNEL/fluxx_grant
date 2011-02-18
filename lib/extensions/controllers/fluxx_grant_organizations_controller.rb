@@ -70,7 +70,7 @@ module FluxxGrantOrganizationsController
           send :granted_request_path, :id => model.id
         end
       end
-      insta.add_related do |related|
+      insta.add_related do |related|        
         related.display_name = 'People'
         related.for_search do |model|
           model.related_users
@@ -99,6 +99,12 @@ module FluxxGrantOrganizationsController
         end
         related.display_template = '/request_reports/related_documents'
       end
+      insta.add_related do |related|
+        related.display_name = 'Outside Grants'
+        related.add_lazy_load_url do |model|
+          send :outside_grants_path, :id => model.id
+        end        
+      end      
     end
 
     base.extend(ModelClassMethods)

@@ -1,5 +1,6 @@
 module LiquidFilters
   include ActionView::Helpers::NumberHelper
+  include ActionView::Helpers::TextHelper
   include ApplicationGrantHelper
   
   def format_date(date, format = 'full')
