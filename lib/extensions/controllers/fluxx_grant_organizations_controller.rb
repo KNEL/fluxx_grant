@@ -27,6 +27,7 @@ module FluxxGrantOrganizationsController
         end        
         format.html do |triple|          
           controller_dsl, outcome, default_block = triple          
+          # TODO ESH: allow the satellite logic to exist in fluxx_crm.  Need to be able to add a chain of parameter based view handlers.  If a particular view handler (format.html) rendered a view, we would stop.  If it said, I don't need to do anything here, OK go ahead and do the default, we would let other view handlers have a crack at the request
           if params[:satellites] == '1'
             send :fluxx_show_card, controller_dsl, {:template => 'organizations/organization_satellites', :footer_template => 'insta/simple_footer', :layout => false}
           elsif params[:run_charity_check] == '1'
