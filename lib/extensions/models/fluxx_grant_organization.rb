@@ -289,7 +289,6 @@ module FluxxGrantOrganization
   end
     
   # Return the charity check pdf
-  # todo consolodate
   def charity_check_pdf
     if (charity_check_enabled)
       response = FluxxGrantOrganization.charity_check_api("GetCCPDF", self.tax_id);
@@ -306,9 +305,14 @@ module FluxxGrantOrganization
   end
   
   # Return an array of grants related to an organization
-  def self.foundation_center_grants ein, pagenum
-    response = HTTPI.get "http://gis.foundationcenter.org/web_services/fluxx/getRecipientGrants.php?ein=#{ein}#{pagenum.empty? ? '' : '&pagenum=' + pagenum.to_s}"
+  def self.foundation_center_api ein, pagenum=nil
+    response = HTTPI.get "http://gis.foundationcenter.org/web_services/fluxx/getRecipientGrants.php?ein=#{ein.sub('-', '')}#{pagenum.nil? ? '' : '&pagenum=' + pagenum.to_s}"
     Crack::JSON.parse(response.body)
   end
   
+  def outside_grants
+    if (self.tax_id && !self.tax_id.empty?)
+      FluxxGrantOrganization.foundation_center_api self.tax_id
+    end
+  end  
 end

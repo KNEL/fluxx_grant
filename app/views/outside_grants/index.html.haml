@@ -1,0 +1,7 @@
+- @data.each do |element|
+  %li.entry
+    %span.fluxx-card-content-metadata-section-title= element["amount_authorized"].to_currency
+    %span.fluxx-card-content-metadata-section-info
+      = "Granted #{element['year_authorized']} - #{element['duration_months']} months"
+      %br
+      = element["foundation_name"]        
