@@ -183,7 +183,7 @@ module FluxxRequest
     
     
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids, :all_request_program_ids, :request_program_ids]
 
       insta.derived_filters = {
           :has_been_rejected => (lambda do |search_with_attributes, request_params, name, val|
@@ -592,6 +592,8 @@ module FluxxRequest
         has "null", :type => :multi, :as => :funding_source_ids
 
         has "null", :type => :multi, :as => :group_ids
+        has request_programs(:id), :as => :request_program_ids
+        has "CONCAT(requests.program_id, CONCAT(',', GROUP_CONCAT(DISTINCT IFNULL(`request_programs`.`program_id`, '0') SEPARATOR ',')))", :type => :multi, :as => :all_request_program_ids
 
         set_property :delta => :delayed
       end
@@ -635,6 +637,9 @@ module FluxxRequest
         has request_funding_sources.funding_source_allocation.funding_source(:id), :as => :funding_source_ids
 
         has "null", :type => :multi, :as => :group_ids
+        has "null", :type => :multi, :as => :request_program_ids
+        has "null", :type => :multi, :as => :all_request_program_ids
+        
 
         set_property :delta => :delayed
       end
@@ -677,6 +682,8 @@ module FluxxRequest
         has "null", :type => :multi, :as => :funding_source_ids
 
         has group_members.group(:id), :type => :multi, :as => :group_ids
+        has "null", :type => :multi, :as => :request_program_ids
+        has "null", :type => :multi, :as => :all_request_program_ids
 
         set_property :delta => :delayed
       end
