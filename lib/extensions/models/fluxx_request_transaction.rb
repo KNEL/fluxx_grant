@@ -233,7 +233,7 @@ module FluxxRequestTransaction
     end
 
     def title
-      "Request Transaction of #{amount_due.to_currency :precision => 0} for #{request.grant_id}" if amount_due && request
+      "Grant Transaction of #{amount_due.to_currency :precision => 0} for #{request.grant_id}" if amount_due && request
     end
 
     def filter_state
