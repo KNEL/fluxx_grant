@@ -49,6 +49,10 @@ module LiquidFilters
     string.unpack('U*').map { |n| n < 128 ? n.chr : n < 256 ? "\\'#{n.to_s(16)}" : "\\u#{n}\\'3f" }.join('')
   end
   
+  def with_line_break(string)
+    string.present? ? "#{string}<br/>" : string
+  end
+  
 end
 
 Liquid::Template.register_filter(LiquidFilters)
