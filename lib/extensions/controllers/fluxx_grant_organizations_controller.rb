@@ -102,7 +102,7 @@ module FluxxGrantOrganizationsController
       insta.add_related do |related|
         related.display_name = 'Outside Grants'
         related.add_lazy_load_url do |model|
-          send :outside_grants_path, :id => model.id
+          send :outside_grants_path, :id => model.id, :pagenum => 1
         end        
       end      
     end

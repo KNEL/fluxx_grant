@@ -310,9 +310,9 @@ module FluxxGrantOrganization
     Crack::JSON.parse(response.body)
   end
 
-  def outside_grants
+  def outside_grants pagenum
     if (self.tax_id && !self.tax_id.empty?)
-      FluxxGrantOrganization.foundation_center_api self.tax_id, 1
+      FluxxGrantOrganization.foundation_center_api self.tax_id, pagenum
     end
   end
 end
