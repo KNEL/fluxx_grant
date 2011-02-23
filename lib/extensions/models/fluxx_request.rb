@@ -41,7 +41,6 @@ module FluxxRequest
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
     base.has_many :request_evaluation_metrics
-    base.has_one :grant_approved_event, :class_name => 'WorkflowEvent', :conditions => {:workflowable_type => base.name, :new_state => 'granted'}, :foreign_key => :workflowable_id
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.has_many :wiki_documents, :as => :model
     base.acts_as_audited({:full_model_enabled => true, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
@@ -548,6 +547,20 @@ module FluxxRequest
     end
     
     def add_sphinx
+      
+      # Allow the overriding of the state name and rewriting of the rejected clause
+      state_name = if self.respond_to? :sphinx_state_name
+        self.sphinx_state_name
+      else
+        'state'
+      end
+      
+      rejected_state_clause = if self.respond_to? :sphinx_rejected_state_clause
+        self.sphinx_rejected_state_clause
+      else
+        "IF(requests.#{state_name} = 'rejected', 1, 0)"
+      end
+      
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
       define_index :request_first do
         # fields
@@ -574,10 +587,10 @@ module FluxxRequest
           :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "null", :as => :grant_ends_at, :type => :datetime
-        has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
+        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
-        has :state, :type => :string, :crc => true, :as => :filter_state
+        has "requests.#{state_name}", :type => :string, :crc => true, :as => :filter_state
         has program_lead(:id), :as => :lead_user_ids
 
         has "null", :type => :multi, :as => :org_owner_user_ids
@@ -594,6 +607,7 @@ module FluxxRequest
         has "null", :type => :multi, :as => :group_ids
         has request_programs(:id), :as => :request_program_ids
         has "CONCAT(requests.program_id, CONCAT(',', GROUP_CONCAT(DISTINCT IFNULL(`request_programs`.`program_id`, '0') SEPARATOR ',')))", :type => :multi, :as => :all_request_program_ids
+        has "CONCAT(program_organization_id, ',', fiscal_organization_id)", :type => :multi, :as => :program_or_fiscal_org_ids
 
         set_property :delta => :delayed
       end
@@ -620,10 +634,10 @@ module FluxxRequest
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
-        has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
+        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
-        has :state, :type => :string, :crc => true, :as => :filter_state
+        has "requests.#{state_name}", :type => :string, :crc => true, :as => :filter_state
         has "null", :type => :multi, :as => :lead_user_ids
 
         has grantee_org_owner(:id), :as => :org_owner_user_ids
@@ -639,7 +653,7 @@ module FluxxRequest
         has "null", :type => :multi, :as => :group_ids
         has "null", :type => :multi, :as => :request_program_ids
         has "null", :type => :multi, :as => :all_request_program_ids
-        
+        has "CONCAT(program_organization_id, ',', fiscal_organization_id)", :type => :multi, :as => :program_or_fiscal_org_ids
 
         set_property :delta => :delayed
       end
@@ -666,10 +680,10 @@ module FluxxRequest
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "null", :as => :grant_ends_at, :type => :datetime
-        has "IF(requests.state = 'rejected', 1, 0)", :as => :has_been_rejected, :type => :boolean
+        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
-        has :state, :type => :string, :crc => true, :as => :filter_state
+        has "requests.#{state_name}", :type => :string, :crc => true, :as => :filter_state
         has "null", :type => :multi, :as => :lead_user_ids
 
         has "null", :type => :multi, :as => :org_owner_user_ids
@@ -684,7 +698,8 @@ module FluxxRequest
         has group_members.group(:id), :type => :multi, :as => :group_ids
         has "null", :type => :multi, :as => :request_program_ids
         has "null", :type => :multi, :as => :all_request_program_ids
-
+        has "CONCAT(program_organization_id, ',', fiscal_organization_id)", :type => :multi, :as => :program_or_fiscal_org_ids
+       
         set_property :delta => :delayed
       end
     end

@@ -4,7 +4,7 @@
   = render :partial => "grant_requests/fiscal_org",  :locals => { :model => model, :form => form }
 %fieldset.inputs
   %ol
-    = form.input :amount_requested, :label => "Amount Requested" if model.state_in(GrantRequest.pre_recommended_chain + Request.grant_states)
+    = form.input :amount_requested, :label => "Amount Requested"
 
     = render :partial => "grant_requests/program",  :locals => { :model => model, :form => form }
 

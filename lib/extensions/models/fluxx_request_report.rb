@@ -171,6 +171,13 @@ module FluxxRequestReport
 
   module ModelClassMethods
     def add_sphinx
+      # Allow the overriding of the state name
+      state_name = if self.respond_to? :sphinx_state_name
+        self.sphinx_state_name
+      else
+        'state'
+      end
+      
       define_index :req_report_first do
         # fields
         indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
@@ -183,11 +190,11 @@ module FluxxRequestReport
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
         has grant.sub_program(:id), :as => :grant_sub_program_ids
-        has grant.state, :type => :string, :crc => true, :as => :grant_state
+        has "requests.#{state_name}", :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
-        has :state, :type => :string, :crc => true
+        has "request_reports.#{state_name}", :type => :string, :crc => true
         has 'null', :type => :multi, :as => :favorite_user_ids
-        has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
+        has "IF(request_reports.#{state_name} = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
         # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
         # has request.lead_user_roles.roles_users.user(:id), :as => :lead_user_ids
@@ -208,9 +215,9 @@ module FluxxRequestReport
         has 'null', :type => :multi, :as => :grant_sub_program_ids
         has 'null', :type => :multi, :type => :string, :crc => true, :as => :grant_state
         has :report_type, :type => :string, :crc => true
-        has :state, :type => :string, :crc => true
+        has "request_reports.#{state_name}", :type => :string, :crc => true
         has favorites.user(:id), :as => :favorite_user_ids
-        has "IF(request_reports.state = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
+        has "IF(request_reports.#{state_name} = 'approved', 1, 0)", :as => :has_been_approved, :type => :boolean
         has 'null', :type => :multi, :as => :related_organization_ids
         # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
         # has 'null', :type => :multi, :as => :lead_user_ids
