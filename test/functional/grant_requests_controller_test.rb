@@ -2,18 +2,6 @@ require 'test_helper'
 
 class GrantRequestsControllerTest < ActionController::TestCase
   
-  def check_models_are_updated
-    assert_difference('WorkflowEvent.count') do
-      yield
-    end
-  end
-  
-  def check_models_are_not_updated
-    assert_difference('WorkflowEvent.count', 0) do
-      yield
-    end
-  end
-  
   def setup
     @org = Organization.make
     @program = Program.make

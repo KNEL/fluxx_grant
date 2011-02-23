@@ -1,5 +1,6 @@
 module FluxxGrantTestHelper
   def self.included(base)
+    base.send :include, ::FluxxCrmTestHelper
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

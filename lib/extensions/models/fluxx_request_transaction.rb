@@ -167,6 +167,13 @@ module FluxxRequestTransaction
 
   module ModelClassMethods
     def add_sphinx
+      # Allow the overriding of the state name
+      state_name = if self.respond_to? :sphinx_state_name
+        self.sphinx_state_name
+      else
+        'state'
+      end
+      
       define_index :request_transaction_first do
         # fields
         indexes request.program_organization.name, :as => :request_org_name, :sortable => true
@@ -176,13 +183,13 @@ module FluxxRequestTransaction
         # attributes
         has created_at, updated_at, deleted_at, due_at, paid_at, amount_paid, amount_due
         set_property :delta => :delayed
-        has :state, :type => :string, :crc => true, :as => :filter_state
-        has grant.state, :type => :string, :crc => true, :as => :grant_state
+        has "request_transactions.#{state_name}", :type => :string, :crc => true, :as => :filter_state
+        has "requests.#{state_name}", :type => :string, :crc => true, :as => :grant_state
         has grant(:id), :as => :grant_ids
         has grant.program(:id), :as => :grant_program_ids
         has grant.sub_program(:id), :as => :grant_sub_program_ids
         has request(:type), :type => :string, :crc => true, :as => :request_type
-        has "IF(request_transactions.state = 'paid' OR (paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
+        has "IF((paid_at IS NOT NULL AND amount_paid IS NOT NULL), 1, 0)", :as => :has_been_paid, :type => :boolean
         has "CONCAT(IFNULL(`requests`.`program_organization_id`, '0'), ',', IFNULL(`requests`.`fiscal_organization_id`, '0'))", :as => :related_organization_ids, :type => :multi
         has grant.multi_element_choices.multi_element_value_id, :type => :multi, :as => :grant_multi_element_value_ids
         # TODO ESH: derive the following which are no longer basd on roles_users but instead on program_lead_requests, grantee_org_owner_requests, grantee_signatory_requests, fiscal_org_owner_requests, fiscal_signatory_requests
