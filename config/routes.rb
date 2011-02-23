@@ -29,5 +29,6 @@ Rails.application.routes.draw do
   resources :request_reports
   resources :project_requests
   resources :outside_grants
+  resources :grantee_portal
 
 end
