@@ -1,0 +1,75 @@
+-[{:title=>"Requests", :data=>@requests}, {:title => "Grants", :data => @grants}].each do |result|
+  .content
+    .titlebar
+      .title= result[:title]
+    %table.tabular{:cellspacing => 0}
+      %thead
+        %tr
+          %th
+            Request
+          %th
+            Date Submitted
+          %th
+            Amount
+          %th
+            Program
+          %th
+            Status      
+      -result[:data].each do |model|    
+        %tbody
+          %tr
+            %td.border= model.grant_or_request_id
+            %td.border= mdy_date_format(model.request_received_at)
+            %td.border= dollars_format(model.granted? ? model.amount_recommended : model.amount_requested)
+            %td.border= (model.program ? model.program.name : '')
+            %td.border= model.state.humanize
+          %tr
+            %td{:colspan => 5}= model.project_summary
+                    
+.content
+  .titlebar
+    .title
+      Reports
+  %table.tabular{:cellspacing => 0}
+    %thead
+      %tr
+        %th
+          Report
+        %th
+          Due Date
+        %th
+          Status
+    -@reports.each do |model|    
+      %tbody
+        %tr
+          %td.border= "#{model.type_to_english} for #{model.request.grant_id}"
+          %td.border= mdy_date_format(model.due_at)
+          %td.border= model.state.humanize
+        -model.model_documents.each do |doc| 
+          - if doc
+            %tr
+              %td{:colspan => 3}          
+                = link_to doc.document_file_name, doc.document.url, :target => '_blank', :class => mime_type_to_class(doc.document_content_type)
+
+.content
+  .titlebar
+    .title
+      Transactions
+  %table.tabular{:cellspacing => 0}
+    %thead
+      %tr
+        %th
+          Grant
+        %th
+          Amount
+        %th
+          Scheduled
+        %th
+          Paid1
+    -@transactions.each do |model|    
+      %tbody
+        %tr
+          %td.border= model.request.grant_id
+          %td.border= dollars_format(model.amount_paid)
+          %td.border= mdy_date_format(model.due_at)
+          %td.border= mdy_date_format(model.paid_at)
