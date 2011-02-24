@@ -73,7 +73,7 @@ module FundingAllocationsBaseReport
           query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
           grant = [query, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
           fip = [query, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
-          filter_states = "&request[filter_state][]=" + ((GrantRequest.pre_recommended_chain) + GrantRequest.approval_chain + GrantRequest.sent_back_states + GrantRequest.rejected_states).select{|state| ReportUtility.pre_pipeline_states.index(state.to_s).nil? }.join("&request[filter_state][]=")
+          filter_states = "&request[filter_state][]=" + (GrantRequest.all_states).select{|state| ReportUtility.pre_pipeline_states.index(state.to_s).nil? }.join("&request[filter_state][]=")
           card_filter ="utf8=%E2%9C%93&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=") + filter_states
           listing_url = controller.grant_requests_path
         end

@@ -281,18 +281,18 @@ module FluxxRequest
     end
     
     base.insta_workflow do |insta|
-      insta.add_state_to_english :new, 'New Request'
-      insta.add_state_to_english :pending_grant_team_approval, 'Pending Grant Team Approval'
-      insta.add_state_to_english :pending_po_approval, 'Pending PO Approval'
-      insta.add_state_to_english :pending_president_approval, 'Pending President Approval'
-      insta.add_state_to_english :rejected, 'Rejected'
-      insta.add_state_to_english :funding_recommended, 'Funding Recommended'
-      insta.add_state_to_english :pending_grant_promotion, "Pending Grant/FIP Promotion"
-      insta.add_state_to_english :sent_back_to_pa, 'Sent back to PA'
-      insta.add_state_to_english :sent_back_to_po, 'Sent back to PO'
-      insta.add_state_to_english :granted, 'Granted'
-      insta.add_state_to_english :closed, 'Closed'
-      insta.add_state_to_english :canceled, 'Canceled'
+      insta.add_state_to_english :new, 'New Request', 'new'
+      insta.add_state_to_english :pending_grant_team_approval, 'Pending Grant Team Approval', 'approval'
+      insta.add_state_to_english :pending_po_approval, 'Pending PO Approval', 'approval'
+      insta.add_state_to_english :pending_president_approval, 'Pending President Approval', 'approval'
+      insta.add_state_to_english :rejected, 'Rejected', 'rejected'
+      insta.add_state_to_english :funding_recommended, 'Funding Recommended', 'approval'
+      insta.add_state_to_english :pending_grant_promotion, "Pending Grant/FIP Promotion", 'approval'
+      insta.add_state_to_english :sent_back_to_pa, 'Sent back to PA', 'sent_back'
+      insta.add_state_to_english :sent_back_to_po, 'Sent back to PO', 'sent_back'
+      insta.add_state_to_english :granted, 'Granted', 'granted'
+      insta.add_state_to_english :closed, 'Closed', 'granted'
+      insta.add_state_to_english :canceled, 'Canceled', 'granted'
       
       insta.add_event_to_english :recommend_funding, 'Recommend Funding'
       insta.add_event_to_english :complete_ierf, 'Mark IERF Completed'
@@ -374,109 +374,19 @@ module FluxxRequest
       aasm_initial_state :new
 
       aasm_state :new
-      class_inheritable_reader :local_pre_recommended_chain
-      write_inheritable_attribute :local_pre_recommended_chain, [:new]
-      class_inheritable_reader :local_approval_chain
-      write_inheritable_attribute :local_approval_chain, [:funding_recommended, :pending_grant_team_approval, :pending_po_approval, :pending_president_approval, :pending_grant_promotion]
-      class_inheritable_reader :local_approved
-      write_inheritable_attribute :local_approved, (local_approval_chain - [:pending_grant_team_approval])
-      class_inheritable_reader :local_sent_back_states
-      write_inheritable_attribute :local_sent_back_states, [:sent_back_to_pa, :sent_back_to_po]
       class_inheritable_reader :local_sent_back_state_mapping_to_workflow
       write_inheritable_attribute :local_sent_back_state_mapping_to_workflow, {:sent_back_to_pa => :funding_recommended, :sent_back_to_po => :pending_po_approval}
-      class_inheritable_reader :local_pre_approval_states
-      write_inheritable_attribute :local_pre_approval_states, [:new, :rejected]
       
-      class_inheritable_reader :local_rejected_states
-      write_inheritable_attribute :local_rejected_states, [:rejected]
-      class_inheritable_reader :local_grant_states
-      write_inheritable_attribute :local_grant_states, [:granted, :closed]
-      class_inheritable_reader :local_canceled_states
-      write_inheritable_attribute :local_canceled_states, [:canceled]
-
-      class_inheritable_reader :local_promotion_events
-      write_inheritable_attribute :local_promotion_events, [:recommend_funding, :complete_ierf, :grant_team_approve, :po_approve, :president_approve]
-      class_inheritable_reader :local_grant_events
-      write_inheritable_attribute :local_grant_events, [:become_grant, :close_grant]
-      class_inheritable_reader :local_send_back_events
-      write_inheritable_attribute :local_send_back_events, [:grant_team_send_back, :po_send_back, :president_send_back]
-      class_inheritable_reader :local_reject_events
-      write_inheritable_attribute :local_reject_events, [:reject]
-      class_inheritable_reader :local_cancel_grant_events
-      write_inheritable_attribute :local_cancel_grant_events, [:cancel_grant]
-      class_inheritable_reader :local_un_reject_events
-      write_inheritable_attribute :local_un_reject_events, [:un_reject]
-      
-      def self.new_states
-        [:new]
-      end
-
-      def self.grant_states
-        local_grant_states
-      end
-      
-      def self.granted_state
-        :granted
-      end
-
-      def self.canceled_states
-        local_canceled_states
-      end
-
-      def self.pre_recommended_chain
-        local_pre_recommended_chain
-      end
-
-      def self.rejected_states
-        local_rejected_states
-      end
-
-      def self.approval_chain
-        local_approval_chain
-      end
-
-      def self.sent_back_states
-        local_sent_back_states
-      end
-
       def self.sent_back_state_mapping_to_workflow
         local_sent_back_state_mapping_to_workflow
       end
 
-      def self.pre_approval_states
-        local_pre_approval_states
-      end
-
-      def self.promotion_events
-        local_promotion_events
-      end
-
-      def self.grant_events
-        local_grant_events
-      end
-
-      def self.send_back_events
-        local_send_back_events
-      end
-
-      def self.cancel_grant_events
-        local_cancel_grant_events
-      end
-
-      def self.reject_events
-        local_reject_events
-      end
-
-      def self.un_reject_events
-        local_un_reject_events
-      end
-      
       def self.become_grant_event
         'become_grant'
       end
       
 
-      local_sent_back_states.each {|cur_state| aasm_state cur_state }
+      [:sent_back_to_pa, :sent_back_to_po].each {|cur_state| aasm_state cur_state }
 
       aasm_state :pending_grant_team_approval
       aasm_state :pending_po_approval
@@ -490,7 +400,7 @@ module FluxxRequest
       aasm_state :canceled # The grants team can cancel a grant after it has been granted
 
       aasm_event :reject do
-        (Request.pre_recommended_chain + Request.approval_chain + Request.sent_back_states).each do |cur_state|
+        (Request.all_states - Request.all_rejected_states).each do |cur_state|
           transitions :from => cur_state, :to => :rejected unless cur_state == :rejected
         end
       end
@@ -735,11 +645,11 @@ module FluxxRequest
     end
 
     def validate_if_past_state_or_should_validate validate_state
-      (should_validate? && state == validate_state) || state_past(Request.approval_chain, validate_state, state)
+      (should_validate? && state == validate_state) || state_past(Request.all_workflow_states, validate_state, state)
     end
 
     def validate_if_in_or_past_state validate_state
-      state.to_sym==validate_state.to_sym || state_past(Request.approval_chain, validate_state, state)
+      state.to_sym==validate_state.to_sym || state_past((Request.all_workflow_states), validate_state, state)
     end
     
     def should_validate?
@@ -832,14 +742,6 @@ module FluxxRequest
 
     def title
       "#{tax_class_org ? tax_class_org.name : ''} #{self.granted ? grant_id : request_id} #{(amount_recommended || amount_requested).to_currency(:precision => 0)}"
-    end
-
-    def allowed_to_edit?(user)
-      user_roles = program.roles_for_user user
-      if local_pre_approval_states.include? state.to_sym
-        (Program.request_roles & user_roles).empty? # any user with a request role for this program can edit if it's in the pre approval state
-      elsif false
-      end
     end
 
     ## Letter specific helpers
@@ -980,7 +882,8 @@ module FluxxRequest
       self.state = 'new'
       timeline = Request.suspended_delta(false)  do
         working_timeline = [self.state]
-        while cur_event = (self.aasm_events_for_current_state & (Request.promotion_events + Request.grant_events)).last
+
+        while cur_event = (self.aasm_events_for_current_state & (Request.all_workflow_events)).last
           self.force_all_request_programs_approved = true if cur_event == :secondary_pd_approve
           self.send cur_event
           working_timeline << self.state
@@ -1032,7 +935,7 @@ module FluxxRequest
     end
     
     def state_after_pre_recommended_chain
-      state && !((Request.pre_recommended_chain + Request.rejected_states).include?(state.to_sym))
+      state && !(in_new_state? || in_reject_state?)
     end
     
     def signatory_contact

@@ -121,7 +121,7 @@
 
 %div
   %div.partial
-    - unless model.state_in(GrantRequest.new_states)
+    - unless model.in_new_state?
       %h3 Strategic Assessment
       %dl.qa
         %dt Goals: How does this grant or cluster of grants fit into your logic model?  What will this grant or cluster of grants accomplish if it is successful?
@@ -131,7 +131,7 @@
         %dt Probability: What is the likelihood that the grantee(s) will succeed in the tactics they lay out?  What are the possible failure scenarios?
         %dd= simple_format(model.ierf_probability)
   %div.partial
-    - unless model.state_in(GrantRequest.new_states)
+    - unless model.in_new_state?
       %h3 Due Diligence Assessment
       %dl.qa
         %dt Does this grant overlap with any other sectors or key funders?  If so, please explain which sectors/funder, and provide any scheduled meetings.

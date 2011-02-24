@@ -43,7 +43,7 @@ module FluxxCommonRequestsController
 
   module ModelInstanceMethods
     def funnel_allowed_states
-      Request.pre_recommended_chain + Request.approval_chain + Request.sent_back_states + [Request.granted_state]
+      Request.all_states - Request.all_rejected_states
     end
 
     def grant_request_index_format_html controller_dsl, outcome, default_block
@@ -138,25 +138,16 @@ module FluxxCommonRequestsController
     def set_enabled_variables controller_dsl
       fluxx_request = instance_variable_get "@model"
       if fluxx_request
-        promotion_events = fluxx_request.current_allowed_events(Request.promotion_events + Request.grant_events)
+        promotion_events = fluxx_request.current_allowed_events(Request.all_workflow_states)
         allowed_promotion_events = event_allowed?(promotion_events, fluxx_request)
         promotion_event = allowed_promotion_events && allowed_promotion_events.first
 
         # If there is no promote or sendback event available in the workflow, do not let the user edit
-        edit_enabled = (!(fluxx_request && fluxx_request.granted) && promotion_event) ||
-          (fluxx_request && fluxx_request.state == Request.granted_state.to_s) && has_role_for_event?(Request.become_grant_event, fluxx_request)
-        edit_funding_sources_enabled = if !Program.finance_roles.select{|role_name| current_user.has_role? role_name}.empty?
-          true
-        else
-          fluxx_request && !fluxx_request.granted?
-        end
+        edit_enabled = promotion_event
+        delete_events = edit_enabled
 
-        delete_events = fluxx_request.current_allowed_events(Request.promotion_events + Request.grant_events + Request.send_back_events)
-        allowed_delete_events = event_allowed?(delete_events, fluxx_request)
-        delete_enabled = allowed_delete_events && !allowed_delete_events.empty?
         if current_user.has_permission?('admin') || current_user.has_permission?('data_cleanup')
           edit_enabled = true
-          edit_funding_sources_enabled = true
           delete_enabled = true
         end
 

@@ -29,7 +29,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
   # end
 
   test "try to reject a request" do
-     [(GrantRequest.approval_chain + GrantRequest.sent_back_states).first].each do |cur_state|
+     [(GrantRequest.all_workflow_states + GrantRequest.all_sent_back_states).first].each do |cur_state|
       @controller = GrantRequestsController.new
       Program.request_roles.each do |role_name|
         @request1.state = cur_state.to_s
