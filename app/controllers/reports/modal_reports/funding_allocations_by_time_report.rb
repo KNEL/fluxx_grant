@@ -24,7 +24,10 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       allocation_ids = ReportUtility.extract_ids [query, program_ids]
 
       # Never include these requests
-      always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+      rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
+      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid')])
+
+      always_exclude = "r.deleted_at IS NULL AND r.state not in #{rejected_states}"
 
       # Series
 
@@ -41,7 +44,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
       #Paid
       query = "select sum(rtfs.amount) AS amount,  YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
-        WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
+        WHERE #{always_exclude} AND rt.state in #{paid_states} AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
         AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
       paid = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
 

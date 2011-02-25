@@ -24,6 +24,11 @@ module FluxxFipRequest
   end
 
   module ModelClassMethods
+    def model_name
+      u = ActiveModel::Name.new FipRequest
+      u.instance_variable_set '@human', "#{I18n.t(:fip_name)} Request"
+      u
+    end
   end
 
   module ModelInstanceMethods

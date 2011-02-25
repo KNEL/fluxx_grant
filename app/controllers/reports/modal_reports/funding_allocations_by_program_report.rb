@@ -17,7 +17,10 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
       years = ReportUtility.get_years start_date, stop_date
 
       # Never include these requests
-      always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+      rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
+      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid')])
+      
+      always_exclude = "r.deleted_at IS NULL AND r.state not in #{rejected_states}"
 
       # Selected Programs
       query = "SELECT name, id FROM programs WHERE id IN (?)"
@@ -31,7 +34,7 @@ class FundingAllocationsByProgramReport < ActionController::ReportBase
 
       #Paid
       query = "select sum(rtfs.amount) AS amount,  fsa.program_id AS program_id from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
-        WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
+        WHERE #{always_exclude} AND rt.state in #{paid_states} AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
         AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) GROUP BY fsa.program_id"
       paid = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
