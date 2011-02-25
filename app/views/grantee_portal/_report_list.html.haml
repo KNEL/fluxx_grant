@@ -1,0 +1,24 @@
+.titlebar
+  .title
+    Reports
+%table.tabular{:cellspacing => 0}
+  %thead
+    %tr
+      %th
+        Report
+      %th
+        Due Date
+      %th
+        Status
+  -@data.each do |model|    
+    %tbody
+      %tr
+        %td.border= "#{model.type_to_english} for #{model.request.grant_id}"
+        %td.border= mdy_date_format(model.due_at)
+        %td.border= (model.state.nil? ? '' : model.state.humanize)
+      -model.model_documents.each do |doc| 
+        - if doc
+          %tr
+            %td{:colspan => 3}          
+              = link_to doc.document_file_name, doc.document.url, :target => '_blank', :class => mime_type_to_class(doc.document_content_type)
+= render :partial => "paging_actions"

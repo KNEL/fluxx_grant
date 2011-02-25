@@ -1,0 +1,22 @@
+.titlebar
+  .title
+    Transactions
+%table.tabular{:cellspacing => 0}
+  %thead
+    %tr
+      %th
+        Grant
+      %th
+        Amount
+      %th
+        Scheduled
+      %th
+        Paid
+  -@data.each do |model|    
+    %tbody
+      %tr
+        %td.border= model.request.grant_id
+        %td.border= dollars_format(model.amount_paid)
+        %td.border= mdy_date_format(model.due_at)
+        %td.border= mdy_date_format(model.paid_at)
+= render :partial => "paging_actions"        
