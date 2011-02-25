@@ -38,7 +38,7 @@ module FluxxGrantRequestsController
       insta.icon_style = ICON_STYLE
     end
     base.insta_edit GrantRequest do |insta|
-      insta.template = 'grant_request_form'
+      insta.template = (lambda { |params| current_user.is_grantee? ? 'grantee_portal/grant_request_form' : 'grant_request_form' })
       insta.icon_style = ICON_STYLE
       insta.format do |format|
         format.html do |triple|

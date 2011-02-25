@@ -2,7 +2,7 @@ class OutsideGrantsController < ApplicationController
   def index
     org = Organization.find(params[:id])    
     @data = org.outside_grants(params[:pagenum])
-    if @data.count > 0
+    if @data && @data.count > 0
       @show_paging = @data.first["total_pages_available"].to_i > 1
       @pagenum = @data.first["page_num"]
       @total_pages = @data.first["total_pages_available"]    
