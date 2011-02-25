@@ -117,10 +117,12 @@ module FluxxCommonRequestsController
 
     def grant_request_update_format_html controller_dsl, outcome, default_block
       actual_local_model = instance_variable_get '@model'
-      if params[:event_action] == 'recommend_funding' && outcome == :success
+      event_action = params[:event_action]
+      event_action = event_action.to_s.to_sym if event_action
+      if Request.all_events_with_category('edit_on_transition').include?(event_action) && outcome == :success
         # redirect to the edit screen IF THE USER
         redirect_to send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
-      elsif params[:event_action] == 'become_grant' && outcome == :success
+      elsif Request.all_events_with_category('become_grant').include?(event_action) && outcome == :success
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
       else
         if actual_local_model.granted?
