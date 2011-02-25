@@ -10,18 +10,18 @@
 
     = form.input :project_summary, :label => "Project Summary", :as => :text
 
-    - unless model.state_in(GrantRequest.new_states)
+    - unless model.in_new_state?
       = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
       - if model.program_organization
         = render :partial => "model_documents/list_model_documents", :locals => { :model => model.program_organization}
-    = render(:partial => "grant_requests/approve_grant_details", :locals => { :model => model, :form => form}) if model.state_in(Request.grant_states)
+    = render(:partial => "grant_requests/approve_grant_details", :locals => { :model => model, :form => form}) if model.granted
 
-    - unless model.state_in GrantRequest.new_states
+    - unless model.in_new_state?
       = form.input :funding_general_operating_support, :label => "This grant is funding general operating support.", :label_class=>'wide_label'
       = form.input :board_authorization_required, :label => "This grant required direct board authority.", :label_class=>'wide_label'
       = form.input :renewal_grant, :label => "This grant is a renewal.", :label_class=>'wide_label'
       = form.input :initiative_types, :label => "Initiative types.", :label_class=>''
-      = form.input(:amount_recommended, :label => "Recommended amount to fund.", :label_class=>'') if model.state_in(GrantRequest.new_states + GrantRequest.pre_recommended_chain + GrantRequest.approval_chain.up_to(:pending_president_approval) + GrantRequest.sent_back_states + Request.grant_states)
+      = form.input(:amount_recommended, :label => "Recommended amount to fund.", :label_class=>'')
       = form.input :duration_in_months, {:label => 'Duration (months):', :as => :select, :collection => (1..36).to_a, :input_html => {:class => 'select_short'}}
       = form.input :ierf_start_at, :label => "Start Date:"
       = form.input :ierf_proposed_end_at, :label => "Final Proposal Date:"
@@ -31,7 +31,7 @@
       = form.input :usa_means, :label => "Means:", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
       = form.input :china_means, :label => "Type of Organization (China use only):", :as => :select, :wrapper_html => {:class => 'multiple-select-transfer'}
 
-    - unless model.state_in GrantRequest.new_states
+    - unless model.in_new_state?
       %fieldset.inputs
         %h3 Strategic Assessment
         %ol
@@ -39,7 +39,7 @@
           = form.input :ierf_tactics, :label => "Tactics: What are the primary means the grantee(s) will use?  How are the tactics linked to the strategy?", :label_class=>'wide_label'
           = form.input :ierf_probability, :label => "Probability: What is the likelihood that the grantee(s) will succeed in the tactics they lay out?  What are the possible failure scenarios?", :label_class=>'wide_label'
 
-    - unless model.state_in GrantRequest.new_states
+    - unless model.in_new_state?
       %fieldset.inputs
         %h3 Due Diligence Assessment
         %ol

@@ -41,7 +41,7 @@ class FipRequestsControllerTest < ActionController::TestCase
   # end
 
   test "try to reject a request" do
-     [(FipRequest.approval_chain + FipRequest.sent_back_states).first].each do |cur_state|
+     [(FipRequest.all_workflow_states + FipRequest.all_sent_back_states).first].each do |cur_state|
       @controller = FipRequestsController.new
       Program.request_roles.each do |role_name|
         @request1.state = cur_state.to_s

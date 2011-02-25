@@ -6,7 +6,7 @@
 = form.input :grant_begins_at, :label => "Start Date", :id => (rand * 999999999).to_i
 
 - unless model.type == 'FipRequest'
-  - if model.state && Request.grant_states.include?(model.state.to_sym)
+  - if model.state && model.granted
     = form.input :funds_expended_amount, :label => 'Funds Expended'
     = form.input :funds_expended_at, :label => 'Funds Expended Date', :id => (rand * 999999999).to_i
   
