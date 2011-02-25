@@ -14,7 +14,7 @@
       %th
         Status      
   -@data.each do |model|
-    %tbody
+    %tbody{"data-url".to_sym => url_for([:edit, model])}
       %tr
         %td.border= model.grant_or_request_id
         %td.border= mdy_date_format(model.request_received_at)

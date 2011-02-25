@@ -41,7 +41,16 @@
 						var $area = $elem.parents('.content');
 						$.fn.loadTable($area, 1);
 	        }
-	      ]
+	      ],
+				'tbody' : [
+					'click', function(e) {
+						e.preventDefault();
+						var $elem = $(this);
+						var url = $elem.attr('data-url');
+						if (url)
+							window.location = url;
+					}
+				]
 			}
 		}
 	});
