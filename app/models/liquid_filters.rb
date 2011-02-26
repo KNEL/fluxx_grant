@@ -53,6 +53,10 @@ module LiquidFilters
     string.present? ? "#{string}<br/>" : string
   end
   
+  def date_add_months(time, number_months=0)
+    time + number_months.to_i.months
+  end
+  
 end
 
 Liquid::Template.register_filter(LiquidFilters)
