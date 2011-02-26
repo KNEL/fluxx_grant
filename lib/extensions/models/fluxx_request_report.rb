@@ -90,6 +90,7 @@ module FluxxRequestReport
     base.aasm_initial_state :new
 
     base.aasm_state :new
+    base.aasm_state :report_received
     base.aasm_state :pending_lead_approval
     base.aasm_state :pending_grant_team_approval
     base.aasm_state :pending_finance_approval
@@ -98,8 +99,12 @@ module FluxxRequestReport
     base.aasm_state :sent_back_to_lead
     base.aasm_state :sent_back_to_grant_team
 
+    base.aasm_event :receive_report do
+      transitions :from => :new, :to => :report_received
+    end
+
     base.aasm_event :submit_report do
-      transitions :from => :new, :to => :pending_lead_approval
+      transitions :from => :report_received, :to => :pending_lead_approval
       transitions :from => :sent_back_to_pa, :to => :pending_lead_approval
     end
 
@@ -145,6 +150,7 @@ module FluxxRequestReport
     base.insta_workflow do |insta|
       insta.add_state_to_english RequestReport.new_state, 'New', 'new'
       insta.add_state_to_english RequestReport.pending_lead_approval_state, 'Pending Lead Approval', 'approval'
+      insta.add_state_to_english RequestReport.report_received_state, 'Report Received', 'approval'
       insta.add_state_to_english RequestReport.pending_grant_team_approval_state, 'Pending Grants Team Approval', 'approval'
       insta.add_state_to_english RequestReport.pending_finance_approval_state, 'Pending Finance Approval', 'approval'
       insta.add_state_to_english RequestReport.approved_state, 'Approved', 'approval'
@@ -152,6 +158,8 @@ module FluxxRequestReport
       insta.add_state_to_english RequestReport.sent_back_to_lead_state, 'Sent Back to Lead', 'sent_back'
       insta.add_state_to_english RequestReport.sent_back_to_grant_team_state, 'Sent Back to Grants Team', 'sent_back'
       
+      
+      insta.add_event_to_english RequestReport.receive_report_event, 'Receive Report'
       insta.add_event_to_english RequestReport.submit_report_event, 'Submit Report'
       insta.add_event_to_english RequestReport.lead_approve_event, 'Approve'
       insta.add_event_to_english RequestReport.lead_send_back_event, 'Send Back'
@@ -261,6 +269,10 @@ module FluxxRequestReport
       end
     end
     
+    
+    def receive_report_event
+      'receive_report'
+    end
     def submit_report_event
       'submit_report'
     end
@@ -285,6 +297,9 @@ module FluxxRequestReport
 
     def new_state
       'new'
+    end
+    def report_received_state
+      'report_received'
     end
     def pending_lead_approval_state
       'pending_lead_approval'
