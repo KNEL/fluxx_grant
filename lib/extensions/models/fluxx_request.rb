@@ -54,7 +54,7 @@ module FluxxRequest
     # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
-    base.send :attr_accessor, :force_all_request_programs_approved
+    base.send :attr_accessor, :running_timeline
 
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at"
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'", :order => "due_at"
@@ -878,19 +878,20 @@ module FluxxRequest
 
     # Find out all the states a request of this type can pass through from the time it is new doing normal promotion
     def event_timeline
+      self.running_timeline = true
       old_state = self.state
       self.state = 'new'
       timeline = Request.suspended_delta(false)  do
         working_timeline = [self.state]
 
         while cur_event = (self.aasm_events_for_current_state & (Request.all_workflow_events)).last
-          self.force_all_request_programs_approved = true if cur_event == :secondary_pd_approve
           self.send cur_event
           working_timeline << self.state
         end
         working_timeline
       end || []
       self.state = old_state
+      self.running_timeline = false
       timeline
     end
 
@@ -956,7 +957,7 @@ module FluxxRequest
     end
     
     def all_request_programs_approved? program=nil
-      return force_all_request_programs_approved if force_all_request_programs_approved # for event_timeline purposes
+      return running_timeline if running_timeline # for event_timeline purposes
       checking_programs = request_programs.reject{|rp| rp.program == program}
       result = checking_programs.select {|rp| rp.state != 'approved'}.empty?
       result
