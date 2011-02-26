@@ -103,10 +103,6 @@ module FluxxProgram
       [finance_administrator_role_name]
     end
     
-    def all_role_names
-      (request_roles + grant_roles + finance_roles).uniq
-    end
-
     def all_program_users
       User.joins(:role_users => :role).where({:role_users => {:roles => {:roleable_type => self.name}}}).group("users.id").compact
     end
