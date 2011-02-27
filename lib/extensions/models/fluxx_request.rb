@@ -54,8 +54,6 @@ module FluxxRequest
     # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
-    base.send :attr_accessor, :running_timeline
-
     base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at"
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'", :order => "due_at"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
@@ -885,6 +883,7 @@ module FluxxRequest
         working_timeline = [self.state]
 
         while cur_event = (self.aasm_events_for_current_state & (Request.all_workflow_events)).last
+          p "ESH: currently in [#{self.state}] state, cur_event=#{cur_event}"
           self.send cur_event
           working_timeline << self.state
         end
