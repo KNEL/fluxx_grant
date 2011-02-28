@@ -8,8 +8,16 @@ class RequestReportTest < ActiveSupport::TestCase
   test "create a report and check initial state transition" do
     assert_equal 'new', @rep.state
   end
+
+  test "take a report and receive the report" do
+    @rep.insta_fire_event :receive_report
+    assert_equal 'report_received', @rep.state
+  end
+
   
   test "take a report and submit the report" do
+    @rep.state = 'report_received'
+    @rep.save
     @rep.insta_fire_event :submit_report
     assert_equal 'pending_lead_approval', @rep.state
   end

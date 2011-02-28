@@ -39,6 +39,12 @@ module FluxxCommonRequestsController
         end
       end
     end
+    
+    # NOTE: this logic also exists in fluxx_request.rb, we need to keep these two in sync!!!
+    def translate_delta_type granted=false
+      # Note ESH: we need to not differentiate between FipRequest and GrantRequest so that they can show mixed up within the same card
+      'Request' + (granted ? 'Granted' : 'NotYetGranted')
+    end
   end
 
   module ModelInstanceMethods

@@ -9,7 +9,7 @@ module FluxxGrantRequestsController
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
       insta.icon_style = ICON_STYLE
-      insta.delta_type = Request.translate_delta_type false # Vary the request type based on whether a request has been granted yet or not
+      insta.delta_type = GrantRequestsController.translate_delta_type false # Vary the request type based on whether a request has been granted yet or not
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple

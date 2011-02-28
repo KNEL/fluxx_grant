@@ -337,11 +337,6 @@ module FluxxRequest
       ['Request', 'GrantRequest', 'FipRequest']
     end
     
-    def translate_delta_type granted=false
-      # Note ESH: we need to not differentiate between FipRequest and GrantRequest so that they can show mixed up within the same card
-      'Request' + (granted ? 'Granted' : 'NotYetGranted')
-    end
-
     # Translate the old state to the next state that will be completed
     # Useful for the funnel
     def old_state_complete_english_translation state_name
@@ -896,7 +891,8 @@ module FluxxRequest
 
     # Make the delta type 
     def realtime_classname
-      Request.translate_delta_type self.granted
+      # NOTE: this logic also exists in fluxx_common_requests_controller.rb, we need to keep these two in sync!!!
+      'Request' + (self.granted ? 'Granted' : 'NotYetGranted')
     end
     
     def add_president_approval_date
